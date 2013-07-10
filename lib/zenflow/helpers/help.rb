@@ -26,10 +26,11 @@ module Zenflow
 
     def unknown_command
       if options[:command].nil?
-        Trollop::die "Missing command".red
+        Zenflow::Log("Missing command", :color => :red)
       else
-        Trollop::die "Unknown command #{options[:command].inspect}".red
+        Zenflow::Log("Unknown command #{options[:command].inspect}", :color => :red)
       end
+      exit(1)
     end
   end
 
