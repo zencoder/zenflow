@@ -176,4 +176,13 @@ describe Zenflow::Changelog do
     end
   end
 
+  describe '.create' do
+    it "writes the changelog template to the changelog" do
+      file = double()
+      file.should_receive(:write).with(Zenflow::Changelog.changelog_template)
+      File.should_receive(:open).with('CHANGELOG.md', 'w').and_yield(file)
+      Zenflow::Changelog.create
+    end
+  end
+
 end
