@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+$: << File.expand_path("#{File.dirname(__FILE__)}/../lib")
+require 'rubygems'
+require 'zenflow'
+
+Zenflow::LogToFile("====== Zenflow #{Zenflow::VERSION}/#{Time.now.strftime('%c')} ======")
+Zenflow::LogToFile("$ zenflow #{ARGV.join(' ')}\n")
+
+if ARGV.first != "setup" && !Zenflow::Config.configured?
+  Zenflow::Log("This project has not been configured. Please run `zenflow init`.", :color => :red)
+  exit(1)
+end
+
+Zenflow::CLI.start(ARGV)
+
+Zenflow::LogToFile("\n")
+exit(Zenflow::Shell.status)

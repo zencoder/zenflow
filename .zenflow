@@ -1,0 +1,10 @@
+---
+project: zenflow
+development_branch: master
+qa_branch: qa
+backup_remote: false
+confirm_review: true
+confirm_staging: true
+remote: origin
+release_branch: production
+staging_branch: staging

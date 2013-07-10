@@ -1,0 +1,6 @@
+*.gem
+.zenflow-log
+.rvmrc
+.DS_Store
+coverage
+tmp
