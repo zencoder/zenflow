@@ -62,7 +62,10 @@ describe Zenflow::Changelog do
   describe '.prepend_change_to_changelog' do
     context "when the rotate option is not invoked" do
       it "prepends changes to the changelog" do
-        File.should_receive(:open).with("CHANGELOG.md", "w")
+        Zenflow::Changelog.should_receive(:prepended_changelog).with('changed the world').and_return('some other text I suppose')
+        file_handler = double()
+        file_handler.should_receive(:write).with('some other text I suppose')
+        File.should_receive(:open).with("CHANGELOG.md", "w").and_yield(file_handler)
         Zenflow::Changelog.should_not_receive(:rotate)
         Zenflow::Shell.should_receive(:run).with("git add . && git commit -a -m 'Adding line to CHANGELOG: changed the world'")
         Zenflow::Changelog.prepend_change_to_changelog('changed the world')
@@ -103,7 +106,9 @@ describe Zenflow::Changelog do
         it "rotates the changelog but does not create a commit" do
           Zenflow::Version.should_receive(:current)
           Zenflow.should_receive(:Log)
-          File.should_receive(:open).with("CHANGELOG.md", "w")
+          file_handler = double()
+          file_handler.should_receive(:write).with('amazing new changelog')
+          File.should_receive(:open).with("CHANGELOG.md", "w").and_yield(file_handler)
           Zenflow::Shell.should_not_receive(:run)
           Zenflow::Changelog.rotate
         end
@@ -113,7 +118,9 @@ describe Zenflow::Changelog do
         it "rotates the changelog and creates a commit" do
           Zenflow::Version.should_receive(:current)
           Zenflow.should_receive(:Log)
-          File.should_receive(:open).with("CHANGELOG.md", "w")
+          file_handler = double()
+          file_handler.should_receive(:write).with('amazing new changelog')
+          File.should_receive(:open).with("CHANGELOG.md", "w").and_yield(file_handler)
           Zenflow::Shell.should_receive(:run).with("git add CHANGELOG.md && git commit -a -m 'Rotating CHANGELOG.'")
           Zenflow::Changelog.rotate(:commit => true)
         end
