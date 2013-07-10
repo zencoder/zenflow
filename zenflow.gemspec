@@ -14,6 +14,8 @@ Gem::Specification.new do |s|
   s.email       = ["b@zencoder.com", "c@zencoder.com", "a@zencoder.com"]
   s.homepage    = "http://github.com/zencoder/zenflow"
   s.summary     = "Branch management and deployment tool."
+  s.description = "Zenflow is a development workflow management tool."
+  s.license     = 'MIT'
   s.executables << "zenflow"
   s.add_dependency "thor", "~> 0.18.1"
   s.add_dependency "colored", "~> 1.2"
