@@ -3,8 +3,8 @@ module Zenflow
 
     class << self
       def list
-        pulls = Zenflow::GithubRequest.get("/pulls").parsed_response.include?("pulls") ? Zenflow::GithubRequest.get("/pulls").parsed_response["pulls"] : []
-        pulls.map{ |pull| new(pull) }
+        response = Zenflow::GithubRequest.get("/pulls").parsed_response
+        response.map{ |pull| new(pull) }
       end
 
       def find(number)
@@ -24,22 +24,21 @@ module Zenflow
       end
 
       def find_by_ref!(ref)
-        Zenflow::Log("Looking up pull request for #{ref}")
-        if pull = find_by_ref(ref, :silent => true)
+        if pull = find_by_ref(ref)
           new(pull)
         else
-          Zenflow::Log("No open pull request was found for #{ref}", :color => :red)
+          Zenflow::Log("No open pull request was found for #{ref}", color: :red)
           exit(1)
         end
       end
 
       def exist?(ref)
-        !!find_by_ref(ref)[:number]
+        !!find_by_ref(ref)
       end
 
       def create(options={})
         response = Zenflow::GithubRequest.post("/pulls",
-          :body => {
+          body: {
             "base"  => options[:base],
             "head"  => options[:head],
             "title" => options[:title],

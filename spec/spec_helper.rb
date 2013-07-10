@@ -1,12 +1,21 @@
 require 'simplecov'
 SimpleCov.start do
   add_filter '/spec/'
-
-  add_group 'Helpers', 'lib/zenflow/helpers'
 end
 
 Dir["./spec/support/**/*.rb"].sort.each {|f| require f}
 require 'zenflow'
+require 'vcr'
+
+VCR.configure do |c|
+  c.configure_rspec_metadata!
+  c.cassette_library_dir = 'spec/fixtures/cassettes'
+  c.hook_into :webmock
+  c.default_cassette_options = { :record => :new_episodes }
+  c.filter_sensitive_data('<GITHUB-USER>'){ Zenflow::Github.user }
+  c.filter_sensitive_data('<GITHUB-TOKEN>'){ Zenflow::Github.token }
+  c.filter_sensitive_data('<ZENFLOW-TOKEN>'){ Zenflow::Github.zenflow_token }
+end
 
 RSpec.configure do |config|
   config.order = "random"

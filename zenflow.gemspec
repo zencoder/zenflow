@@ -26,6 +26,8 @@ Gem::Specification.new do |s|
   s.add_development_dependency('debugger', '~> 1.6.1')
   s.add_development_dependency('fuubar', '~> 1.1.1')
   s.add_development_dependency('guard-rspec', '~> 3.0.2')
+  s.add_development_dependency('vcr', '~> 2.5.0')
+  s.add_development_dependency('webmock', '~> 1.13.0')
   s.files = `git ls-files`.split("\n")
   s.require_path = "lib"
 end
