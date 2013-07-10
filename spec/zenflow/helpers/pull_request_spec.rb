@@ -40,7 +40,6 @@ describe Zenflow::PullRequest do
 
     context 'non-existent ref', vcr: { cassette_name: "pull request for non-existent ref" } do
       let(:ref){'feature/foo'}
-      at_exit{ exit(1) }
 
       it 'logs the failure' do
         Zenflow.should_receive(:Log).with(Regexp.new(ref), color: :red)
