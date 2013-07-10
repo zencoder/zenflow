@@ -135,4 +135,45 @@ describe Zenflow::Changelog do
     end
   end
 
+  describe '.get_changes' do
+    context "when the changelog file doesn't exist" do
+      before do
+        Zenflow::Changelog.should_receive(:exist?).and_return(false)
+      end
+
+      it 'does nothing' do
+        File.should_not_receive(:read)
+        expect(Zenflow::Changelog.get_changes).to be_nil
+      end
+    end
+
+    context "when the changelog exists" do
+      before do
+        Zenflow::Changelog.should_receive(:exist?).and_return(true)
+      end
+
+      context "but there are no changes" do
+        before do
+          file = "\n--------------------------------------------------------------------------------\nold changes"
+          File.should_receive(:read).with('CHANGELOG.md').and_return(file)
+        end
+
+        it 'returns nil' do
+          expect(Zenflow::Changelog.get_changes).to be_nil
+        end
+      end
+
+      context "and there are changes" do
+        before do
+          file = "new changes\n--------------------------------------------------------------------------------\nold changes"
+          File.should_receive(:read).with('CHANGELOG.md').and_return(file)
+        end
+
+        it "returns the new changes and the rest of the changelog" do
+          expect(Zenflow::Changelog.get_changes).to eq(["new changes", "--------------------------------------------------------------------------------\nold changes"])
+        end
+      end
+    end
+  end
+
 end
