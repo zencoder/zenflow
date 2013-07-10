@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    zenflow (0.7.0)
+    zenflow (0.8.0)
       colored (~> 1.2)
       httparty (~> 0.11.0)
       terminal-table (~> 1.4.5)
