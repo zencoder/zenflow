@@ -115,4 +115,32 @@ describe Zenflow::CLI do
       end
     end
   end
+
+  describe "#configure_qa_branch" do
+    let(:question) {["Use a branch for testing features?", {:options => ["Y", "n"], :default => "Y"}]}
+
+    context "when the user wants to configure a staging branch" do
+      before do
+        Zenflow.should_receive(:Ask).with(*question).and_return('y')
+      end
+
+      it 'names the staging branch whatever the user wants' do
+        Zenflow.should_receive(:Ask).with("What is the name of that branch?", :default => "qa").and_return('qa')
+        Zenflow::Config.should_receive(:[]=).with(:qa_branch, 'qa')
+        subject.configure_qa_branch
+      end
+    end
+
+    context "when the user does not want to configure a staging branch" do
+      before do
+        Zenflow.should_receive(:Ask).with(*question).and_return('n')
+      end
+
+      it 'names the staging branch whatever the user wants' do
+        Zenflow::Config.should_receive(:[]=).with(:qa_branch, false)
+        subject.configure_qa_branch
+      end
+    end
+  end
+
 end
