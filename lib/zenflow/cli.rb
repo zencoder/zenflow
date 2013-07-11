@@ -36,14 +36,8 @@ module Zenflow
     subcommand "deploy", Zenflow::Deploy
 
     desc "init", "Write the zenflow config file."
-    def init
-      if Zenflow::Config.configured?
-        Zenflow::Log("Warning", :color => :red)
-        if Zenflow::Ask("There is an existing config file. Overwrite it?", :options => ["y", "N"], :default => "N") == "n"
-          Zenflow::Log("Aborting...", :color => :red)
-          exit(1)
-        end
-      end
+    def init(force=true)
+      already_configured if Zenflow::Config.configured? && !force
       authorize_github
       Zenflow::Log("Project")
       Zenflow::Config[:project] = Zenflow::Ask("What is the name of this project?", :required => true)
@@ -91,6 +85,20 @@ module Zenflow
       else
         Zenflow::Github.authorize
       end
+    end
+
+    no_commands do
+
+      def already_configured
+        Zenflow::Log("Warning", :color => :red)
+        if Zenflow::Ask("There is an existing config file. Overwrite it?", :options => ["y", "N"], :default => "N") == "y"
+          init(true)
+        else
+          Zenflow::Log("Aborting...", :color => :red)
+          exit(1)
+        end
+      end
+
     end
 
   end
