@@ -114,4 +114,14 @@ describe Zenflow::CLI do
     end
   end
 
+  describe "#configure_project" do
+    it 'asks the user to name their project' do
+      Zenflow.should_receive(:Ask).with("What is the name of this project?", :required => true).and_return('zenflow')
+      Zenflow.should_receive(:Log).with("Project")
+      Zenflow::Config.should_receive(:[]=).with(:project, 'zenflow')
+      subject.configure_project
+    end
+
+  end
+
 end

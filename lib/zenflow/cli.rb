@@ -39,8 +39,7 @@ module Zenflow
     def init(force=true)
       already_configured if Zenflow::Config.configured? && !force
       authorize_github
-      Zenflow::Log("Project")
-      Zenflow::Config[:project] = Zenflow::Ask("What is the name of this project?", :required => true)
+      configure_project
       Zenflow::Log("Branches")
       Zenflow::Config[:development_branch] = Zenflow::Ask("What is the name of the main development branch?", :default => "master")
       configure_branch(:staging_branch, "Use a branch for staging releases and hotfixes?", "staging")
@@ -93,6 +92,11 @@ module Zenflow
         else
           Zenflow::Config[branch] = false
         end
+      end
+
+      def configure_project
+        Zenflow::Log("Project")
+        Zenflow::Config[:project] = Zenflow::Ask("What is the name of this project?", :required => true)
       end
 
     end
