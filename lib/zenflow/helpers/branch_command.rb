@@ -18,15 +18,7 @@ module Zenflow
                                   error_message: "Names can only contain dashes, 0-9, and a-z",
                                   response:      name).downcase
 
-      if !options[:offline]
-        Zenflow::Branch.update(branch(:source))
-        Zenflow::Branch.create("#{flow}/#{branch_name}", branch(:source))
-        Zenflow::Branch.push("#{flow}/#{branch_name}")
-        Zenflow::Branch.track("#{flow}/#{branch_name}")
-      else
-        Zenflow::Branch.checkout(branch(:source))
-        Zenflow::Branch.create("#{flow}/#{branch_name}", branch(:source))
-      end
+      create_new_branch(options[:offline])
     end
 
     desc "deploy [OPTIONS]", "Deploy"
@@ -203,6 +195,18 @@ module Zenflow
       def delete_branches
         Zenflow::Branch.delete_remote("#{flow}/#{branch_name}") if !options[:offline]
         Zenflow::Branch.delete_local("#{flow}/#{branch_name}", force: true)
+      end
+
+      def create_new_branch(offline=false)
+        if !offline
+          Zenflow::Branch.update(branch(:source))
+          Zenflow::Branch.create("#{flow}/#{branch_name}", branch(:source))
+          Zenflow::Branch.push("#{flow}/#{branch_name}")
+          Zenflow::Branch.track("#{flow}/#{branch_name}")
+        else
+          Zenflow::Branch.checkout(branch(:source))
+          Zenflow::Branch.create("#{flow}/#{branch_name}", branch(:source))
+        end
       end
     end
 
