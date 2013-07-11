@@ -89,83 +89,27 @@ describe Zenflow::CLI do
     end
   end
 
-  describe "#configure_staging_branch" do
-    let(:question) {["Use a branch for staging releases and hotfixes?", {:options => ["Y", "n"], :default => "Y"}]}
-
+  describe "#configure_branch" do
     context "when the user wants to configure a staging branch" do
       before do
-        Zenflow.should_receive(:Ask).with(*question).and_return('y')
+        Zenflow.should_receive(:Ask).with("Use a branch for staging releases and hotfixes?", :options => ["Y", "n"], :default => "Y").and_return('y')
       end
 
       it 'names the staging branch whatever the user wants' do
         Zenflow.should_receive(:Ask).with("What is the name of that branch?", :default => "staging").and_return('staging')
         Zenflow::Config.should_receive(:[]=).with(:staging_branch, 'staging')
-        subject.configure_staging_branch
+        subject.configure_branch(:staging_branch, "Use a branch for staging releases and hotfixes?", 'staging')
       end
     end
 
     context "when the user does not want to configure a staging branch" do
       before do
-        Zenflow.should_receive(:Ask).with(*question).and_return('n')
+        Zenflow.should_receive(:Ask).with("Use a branch for staging releases and hotfixes?", :options => ["Y", "n"], :default => "Y").and_return('n')
       end
 
       it 'names the staging branch whatever the user wants' do
         Zenflow::Config.should_receive(:[]=).with(:staging_branch, false)
-        subject.configure_staging_branch
-      end
-    end
-  end
-
-  describe "#configure_qa_branch" do
-    let(:question) {["Use a branch for testing features?", {:options => ["Y", "n"], :default => "Y"}]}
-
-    context "when the user wants to configure a qa branch" do
-      before do
-        Zenflow.should_receive(:Ask).with(*question).and_return('y')
-      end
-
-      it 'names the staging branch whatever the user wants' do
-        Zenflow.should_receive(:Ask).with("What is the name of that branch?", :default => "qa").and_return('qa')
-        Zenflow::Config.should_receive(:[]=).with(:qa_branch, 'qa')
-        subject.configure_qa_branch
-      end
-    end
-
-    context "when the user does not want to configure a qa branch" do
-      before do
-        Zenflow.should_receive(:Ask).with(*question).and_return('n')
-      end
-
-      it 'names the staging branch whatever the user wants' do
-        Zenflow::Config.should_receive(:[]=).with(:qa_branch, false)
-        subject.configure_qa_branch
-      end
-    end
-  end
-
-  describe "#configure_release_branch" do
-    let(:question) {["Use a release branch?", {:options=>["Y", "n"], :default=>"Y"}]}
-
-    context "when the user wants to configure a release branch" do
-      before do
-        Zenflow.should_receive(:Ask).with(*question).and_return('y')
-      end
-
-      it 'names the staging branch whatever the user wants' do
-        Zenflow.should_receive(:Ask).with("What is the name of the release branch?", :default => "production").and_return('production')
-        Zenflow::Config.should_receive(:[]=).with(:release_branch, 'production')
-        subject.configure_release_branch
-      end
-    end
-
-    context "when the user does not want to configure a release branch" do
-      before do
-        Zenflow.should_receive(:Ask).with(*question).and_return('n')
-      end
-
-      it 'names the staging branch whatever the user wants' do
-        Zenflow::Config.should_receive(:[]=).with(:release_branch, false)
-        subject.configure_release_branch
+        subject.configure_branch(:staging_branch, "Use a branch for staging releases and hotfixes?", 'staging')
       end
     end
   end
