@@ -93,16 +93,8 @@ module Zenflow
       Zenflow::Branch.checkout("#{flow}/#{branch_name}")
       Zenflow::Branch.merge(destination)
       update_version_and_changelog(version, changelog)
-
-      [branch(:source), branch(:destination)].compact.each do |finish|
-        Zenflow::Branch.checkout(finish)
-        Zenflow::Branch.merge("#{flow}/#{branch_name}")
-        Zenflow::Branch.push(finish) if !options[:offline]
-      end
-      if tag
-        Zenflow::Branch.tag(Zenflow::Version.current.to_s, @change)
-        Zenflow::Branch.push(:tags) if !options[:offline]
-      end
+      merge_branches
+      create_tag
       Zenflow::Branch.delete_remote("#{flow}/#{branch_name}") if !options[:offline]
       Zenflow::Branch.delete_local("#{flow}/#{branch_name}", force: true)
     end
@@ -189,6 +181,20 @@ module Zenflow
         end
         if changelog
           @change = Zenflow::Changelog.update(rotate: (changelog == :rotate), name: branch_name)
+        end
+      end
+
+      def create_tag
+        return unless tag
+        Zenflow::Branch.tag(Zenflow::Version.current.to_s, @change)
+        Zenflow::Branch.push(:tags) if !options[:offline]
+      end
+
+      def merge_branches
+        [branch(:source), branch(:destination)].compact.each do |finish|
+          Zenflow::Branch.checkout(finish)
+          Zenflow::Branch.merge("#{flow}/#{branch_name}")
+          Zenflow::Branch.push(finish) if !options[:offline]
         end
       end
     end
