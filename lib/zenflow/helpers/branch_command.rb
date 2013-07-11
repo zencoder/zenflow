@@ -70,34 +70,7 @@ module Zenflow
     desc "review", "Start a code review."
     def review
       branch_name
-      if pull = Zenflow::PullRequest.find_by_ref("#{flow}/#{branch_name}")
-        Zenflow::Log("A pull request for #{flow}/#{branch_name} already exists", color: :red)
-        Zenflow::Log(pull[:html_url], indent: true, color: false)
-        exit(1)
-      else
-        pull = Zenflow::PullRequest.create(
-          base:  branch(:source),
-          head:  "#{flow}/#{branch_name}",
-          title: "#{flow}: #{branch_name}",
-          body:  Zenflow::Ask("Describe this #{flow}:", required: true)
-        )
-        if pull.valid?
-          Zenflow::Log("Pull request was created!")
-          Zenflow::Log(pull["html_url"], indent: true, color: false)
-          Zenflow::Shell["open #{pull['html_url']}"]
-        else
-          Zenflow::Log("There was a problem creating the pull request:", color: :red)
-          if pull["errors"]
-            pull["errors"].each do |error|
-              Zenflow::Log("* #{error['message'].gsub(/^base\s*/,'')}", indent: true, color: :red)
-            end
-          elsif pull["message"]
-            Zenflow::Log("* #{pull['message']}", indent: true, color: :red)
-          else
-            Zenflow::Log(" * unexpected failure, both 'errors' and 'message' were empty in the response")
-          end
-        end
-      end
+      create_pull_request
     end
 
     desc "abort", "Aborts the branch and cleans up"
@@ -174,6 +147,41 @@ module Zenflow
       def tag
         self.class.tag
       end
+
+      def create_pull_request
+        already_created?(Zenflow::PullRequest.find_by_ref("#{flow}/#{branch_name}"))
+
+        pull = Zenflow::PullRequest.create(
+          base:  branch(:source),
+          head:  "#{flow}/#{branch_name}",
+          title: "#{flow}: #{branch_name}",
+          body:  Zenflow::Ask("Describe this #{flow}:", required: true)
+        )
+        if pull.valid?
+          Zenflow::Log("Pull request was created!")
+          Zenflow::Log(pull["html_url"], indent: true, color: false)
+          Zenflow::Shell["open #{pull['html_url']}"]
+        else
+          Zenflow::Log("There was a problem creating the pull request:", color: :red)
+          if pull["errors"]
+            pull["errors"].each do |error|
+              Zenflow::Log("* #{error['message'].gsub(/^base\s*/,'')}", indent: true, color: :red)
+            end
+          elsif pull["message"]
+            Zenflow::Log("* #{pull['message']}", indent: true, color: :red)
+          else
+            Zenflow::Log(" * unexpected failure, both 'errors' and 'message' were empty in the response")
+          end
+        end
+      end
+
+      def already_created?(pull)
+        return unless pull
+        Zenflow::Log("A pull request for #{flow}/#{branch_name} already exists", color: :red)
+        Zenflow::Log(pull[:html_url], indent: true, color: false)
+        exit(1)
+      end
+
     end
 
 
