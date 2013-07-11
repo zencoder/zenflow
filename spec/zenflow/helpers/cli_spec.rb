@@ -123,14 +123,6 @@ describe Zenflow::CLI do
     end
   end
 
-  def configure_branches
-    Zenflow::Log("Branches")
-    Zenflow::Config[:development_branch] = Zenflow::Ask("What is the name of the main development branch?", :default => "master")
-    configure_branch(:staging_branch, "Use a branch for staging releases and hotfixes?", "staging")
-    configure_branch(:qa_branch, "Use a branch for testing features?", "qa")
-    configure_branch(:release_branch, "Use a release branch?", "production")
-  end
-
   describe "#configure_branches" do
     it 'configures branches for the project' do
       Zenflow.should_receive(:Ask).with("What is the name of the main development branch?", :default => "master").and_return('master')
@@ -138,6 +130,145 @@ describe Zenflow::CLI do
       Zenflow::Config.should_receive(:[]=).with(:development_branch, 'master')
       subject.should_receive(:configure_branch).exactly(3).times
       subject.configure_branches
+    end
+  end
+
+  describe "#configure_remotes" do
+    context "when the user wants to configure a backup remote" do
+      before do
+        Zenflow.should_receive(:Ask).with("Use a backup remote?", :options => ["Y", "n"], :default => "n").and_return('y')
+      end
+
+      it 'configures the primary remote and a backup remote' do
+        Zenflow.should_receive(:Ask).with("What is the name of your primary remote?", :default => "origin").and_return('origin')
+        Zenflow::Config.should_receive(:[]=).with(:remote, 'origin')
+        Zenflow.should_receive(:Ask).with("What is the name of your backup remote?", :default => "backup").and_return('backup')
+        Zenflow::Config.should_receive(:[]=).with(:backup_remote, 'backup')
+        subject.configure_remotes
+      end
+    end
+
+    context "when the user does not want to configure a backup remote" do
+      before do
+        Zenflow.should_receive(:Ask).with("Use a backup remote?", :options => ["Y", "n"], :default => "n").and_return('n')
+      end
+
+      it 'configures the primary remote and a backup remote' do
+        Zenflow.should_receive(:Ask).with("What is the name of your primary remote?", :default => "origin").and_return('origin')
+        Zenflow::Config.should_receive(:[]=).with(:remote, 'origin')
+        Zenflow.should_not_receive(:Ask).with("What is the name of your backup remote?", :default => "backup")
+        Zenflow::Config.should_receive(:[]=).with(:backup_remote, false)
+        subject.configure_remotes
+      end
+    end
+  end
+
+  describe "#set_up_changelog" do
+    context "when the changelog doesn't already exist" do
+      before do
+        File.should_receive(:exist?).with("CHANGELOG.md").and_return(false)
+        Zenflow.should_receive(:Log).with("Changelog Management")
+      end
+
+      context "when the user wants to set up a changelog" do
+        it 'sets up the changelog' do
+          Zenflow.should_receive(:Ask).with("Set up a changelog?", :options => ["Y", "n"], :default => "Y").and_return('y')
+          Zenflow::Changelog.should_receive(:create)
+          subject.set_up_changelog
+        end
+      end
+
+      context "when the user does not want to set up a changelog" do
+        it 'does not set up the changelog' do
+          Zenflow.should_receive(:Ask).with("Set up a changelog?", :options => ["Y", "n"], :default => "Y").and_return('n')
+          Zenflow::Changelog.should_not_receive(:create)
+          subject.set_up_changelog
+        end
+      end
+    end
+
+    context "when the changelog already exists" do
+      before do
+        File.should_receive(:exist?).with("CHANGELOG.md").and_return(true)
+      end
+
+      it 'does not set up the changelog' do
+        Zenflow.should_not_receive(:Log).with("Changelog Management")
+        Zenflow.should_not_receive(:Ask).with("Set up a changelog?", :options => ["Y", "n"], :default => "Y")
+        Zenflow::Changelog.should_not_receive(:create)
+        subject.set_up_changelog
+      end
+    end
+  end
+
+  describe "#confirm_some_stuff" do
+    it "confirms staging deployment and code review requirements" do
+      Zenflow.should_receive(:Log).with("Confirmations")
+      Zenflow.should_receive(:Ask).with("Require deployment to a staging environment?", :options => ["Y", "n"], :default => "Y").and_return('y')
+      Zenflow::Config.should_receive(:[]=).with(:confirm_staging, true)
+      Zenflow.should_receive(:Ask).with("Require code reviews?", :options => ["Y", "n"], :default => "Y").and_return('n')
+      Zenflow::Config.should_receive(:[]=).with(:confirm_review, false)
+      subject.confirm_some_stuff
+    end
+  end
+
+  describe "#init" do
+    context "when zenflow has not been configured" do
+      before do
+        Zenflow::Config.should_receive(:configured?).and_return(false)
+      end
+
+      it 'configures zenflow' do
+        subject.should_not_receive(:already_configured)
+        subject.should_receive(:authorize_github)
+        subject.should_receive(:configure_project)
+        subject.should_receive(:configure_branches)
+        subject.should_receive(:configure_remotes)
+        subject.should_receive(:confirm_some_stuff)
+        subject.should_receive(:set_up_changelog)
+        Zenflow::Config.should_receive(:save!)
+        subject.init
+      end
+    end
+
+    context "when zenflow has already been configured" do
+      before do
+        Zenflow::Config.should_receive(:configured?).and_return(true)
+      end
+
+      context 'and it is forced to initialize' do
+        it 'configures zenflow' do
+          subject.should_not_receive(:already_configured)
+          subject.should_receive(:authorize_github)
+          subject.should_receive(:configure_project)
+          subject.should_receive(:configure_branches)
+          subject.should_receive(:configure_remotes)
+          subject.should_receive(:confirm_some_stuff)
+          subject.should_receive(:set_up_changelog)
+          Zenflow::Config.should_receive(:save!)
+          subject.init(true)
+        end
+      end
+
+      context 'and it is forced to initialize' do
+        before do
+          Zenflow.should_receive(:Log).with('Warning', :color => :red)
+          Zenflow.should_receive(:Ask).and_return('n')
+          Zenflow.should_receive(:Log).with('Aborting...', :color => :red)
+        end
+
+        it 'calls already_configured' do
+          subject.should_receive(:already_configured).and_call_original
+          subject.should_not_receive(:authorize_github)
+          subject.should_not_receive(:configure_project)
+          subject.should_not_receive(:configure_branches)
+          subject.should_not_receive(:configure_remotes)
+          subject.should_not_receive(:confirm_some_stuff)
+          subject.should_not_receive(:set_up_changelog)
+          Zenflow::Config.should_not_receive(:save!)
+          lambda{ subject.init}.should raise_error(SystemExit)
+        end
+      end
     end
   end
 
