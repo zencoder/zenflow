@@ -53,16 +53,20 @@ module Zenflow
       def run_with_result_check(command, options={})
         output = `#{command}`
         Zenflow::LogToFile(output)
-        if $?.to_i > 0
+        if last_exit_status.to_i > 0
           if output.strip != ""
             puts "#{output.strip}\n"
           end
           Zenflow::Log("Process aborted", color: :red)
-          Zenflow::Log("Exit status: #{$?}", color: :red, indent: true)
+          Zenflow::Log("Exit status: #{last_exit_status}", color: :red, indent: true)
           Zenflow::Log("You may need to run any following commands manually...", color: :red)
           failed!($?.to_i)
         end
         output
+      end
+
+      def last_exit_status
+        $?
       end
 
       def shell_escape_for_single_quoting(string)

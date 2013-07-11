@@ -115,18 +115,20 @@ describe Zenflow::Shell do
     end
 
     context 'unsuccessful' do
-      pending('need to fail the command or mock $?') do
-        let(:command){'ls'}
-        let(:response){'foo\nbar'}
+      let(:command){'ls'}
+      let(:response){'100'}
 
-        before(:each){
-          Zenflow::Shell.should_receive(:`).with(command).and_return(response)
-          Zenflow.should_receive(:Log)
-        }
+      before(:each){
+        allow(Zenflow::Shell).to receive(:last_exit_status).and_return(response)
+        Zenflow::Shell.should_receive(:`).with(command).and_return(response)
+        Zenflow::Shell.should_receive(:puts).with(Regexp.new(response))
+        Zenflow.should_receive(:Log).with(/aborted/, color: :red)
+        Zenflow.should_receive(:Log).with(/exit status: #{response}/i, color: :red, indent: true)
+        Zenflow.should_receive(:Log).with(/following commands manually/, color: :red)
+      }
 
-        subject{Zenflow::Shell.run_with_result_check(command)}
-        it{expect(subject).to eq(response)}
-      end
+      subject{Zenflow::Shell.run_with_result_check(command)}
+      it{expect(subject).to eq(response)}
     end
   end
 
