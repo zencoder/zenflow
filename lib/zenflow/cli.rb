@@ -36,34 +36,11 @@ module Zenflow
     subcommand "deploy", Zenflow::Deploy
 
     desc "init", "Write the zenflow config file."
-    def init
-      if Zenflow::Config.configured?
-        Zenflow::Log("Warning", :color => :red)
-        if Zenflow::Ask("There is an existing config file. Overwrite it?", :options => ["y", "N"], :default => "N") == "n"
-          Zenflow::Log("Aborting...", :color => :red)
-          exit(1)
-        end
-      end
+    def init(force=true)
+      already_configured if Zenflow::Config.configured? && !force
       authorize_github
-      Zenflow::Log("Project")
-      Zenflow::Config[:project] = Zenflow::Ask("What is the name of this project?", :required => true)
-      Zenflow::Log("Branches")
-      Zenflow::Config[:development_branch] = Zenflow::Ask("What is the name of the main development branch?", :default => "master")
-      if Zenflow::Ask("Use a branch for staging releases and hotfixes?", :options => ["Y", "n"], :default => "Y") == "y"
-        Zenflow::Config[:staging_branch] = Zenflow::Ask("What is the name of that branch?", :default => "staging")
-      else
-        Zenflow::Config[:staging_branch] = false
-      end
-      if Zenflow::Ask("Use a branch for testing features?", :options => ["Y", "n"], :default => "Y") == "y"
-        Zenflow::Config[:qa_branch] = Zenflow::Ask("What is the name of that branch?", :default => "qa")
-      else
-        Zenflow::Config[:qa_branch] = false
-      end
-      if Zenflow::Ask("Use a release branch?", :options => ["Y", "n"], :default => "Y") == "y"
-        Zenflow::Config[:release_branch] = Zenflow::Ask("What is the name of the release branch?", :default => "production")
-      else
-        Zenflow::Config[:release_branch] = false
-      end
+      configure_project
+      configure_branches
       Zenflow::Config[:remote] = Zenflow::Ask("What is the name of your primary remote?", :default => "origin")
       if Zenflow::Ask("Use a backup remote?", :options => ["Y", "n"], :default => "n") == "y"
         Zenflow::Config[:backup_remote] = Zenflow::Ask("What is the name of your backup remote?", :default => "backup")
@@ -91,6 +68,41 @@ module Zenflow
       else
         Zenflow::Github.authorize
       end
+    end
+
+    no_commands do
+
+      def already_configured
+        Zenflow::Log("Warning", :color => :red)
+        if Zenflow::Ask("There is an existing config file. Overwrite it?", :options => ["y", "N"], :default => "N") == "y"
+          init(true)
+        else
+          Zenflow::Log("Aborting...", :color => :red)
+          exit(1)
+        end
+      end
+
+      def configure_project
+        Zenflow::Log("Project")
+        Zenflow::Config[:project] = Zenflow::Ask("What is the name of this project?", :required => true)
+      end
+
+      def configure_branches
+        Zenflow::Log("Branches")
+        Zenflow::Config[:development_branch] = Zenflow::Ask("What is the name of the main development branch?", :default => "master")
+        configure_branch(:staging_branch, "Use a branch for staging releases and hotfixes?", "staging")
+        configure_branch(:qa_branch, "Use a branch for testing features?", "qa")
+        configure_branch(:release_branch, "Use a release branch?", "production")
+      end
+
+      def configure_branch(branch, question, default)
+        if Zenflow::Ask(question, :options => ["Y", "n"], :default => "Y") == "y"
+          Zenflow::Config[branch] = Zenflow::Ask("What is the name of that branch?", :default => default)
+        else
+          Zenflow::Config[branch] = false
+        end
+      end
+
     end
 
   end
