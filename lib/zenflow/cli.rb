@@ -40,11 +40,7 @@ module Zenflow
       already_configured if Zenflow::Config.configured? && !force
       authorize_github
       configure_project
-      Zenflow::Log("Branches")
-      Zenflow::Config[:development_branch] = Zenflow::Ask("What is the name of the main development branch?", :default => "master")
-      configure_branch(:staging_branch, "Use a branch for staging releases and hotfixes?", "staging")
-      configure_branch(:qa_branch, "Use a branch for testing features?", "qa")
-      configure_branch(:release_branch, "Use a release branch?", "production")
+      configure_branches
       Zenflow::Config[:remote] = Zenflow::Ask("What is the name of your primary remote?", :default => "origin")
       if Zenflow::Ask("Use a backup remote?", :options => ["Y", "n"], :default => "n") == "y"
         Zenflow::Config[:backup_remote] = Zenflow::Ask("What is the name of your backup remote?", :default => "backup")
@@ -86,17 +82,25 @@ module Zenflow
         end
       end
 
+      def configure_project
+        Zenflow::Log("Project")
+        Zenflow::Config[:project] = Zenflow::Ask("What is the name of this project?", :required => true)
+      end
+
+      def configure_branches
+        Zenflow::Log("Branches")
+        Zenflow::Config[:development_branch] = Zenflow::Ask("What is the name of the main development branch?", :default => "master")
+        configure_branch(:staging_branch, "Use a branch for staging releases and hotfixes?", "staging")
+        configure_branch(:qa_branch, "Use a branch for testing features?", "qa")
+        configure_branch(:release_branch, "Use a release branch?", "production")
+      end
+
       def configure_branch(branch, question, default)
         if Zenflow::Ask(question, :options => ["Y", "n"], :default => "Y") == "y"
           Zenflow::Config[branch] = Zenflow::Ask("What is the name of that branch?", :default => default)
         else
           Zenflow::Config[branch] = false
         end
-      end
-
-      def configure_project
-        Zenflow::Log("Project")
-        Zenflow::Config[:project] = Zenflow::Ask("What is the name of this project?", :required => true)
       end
 
     end

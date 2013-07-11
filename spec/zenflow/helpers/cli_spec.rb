@@ -121,7 +121,24 @@ describe Zenflow::CLI do
       Zenflow::Config.should_receive(:[]=).with(:project, 'zenflow')
       subject.configure_project
     end
+  end
 
+  def configure_branches
+    Zenflow::Log("Branches")
+    Zenflow::Config[:development_branch] = Zenflow::Ask("What is the name of the main development branch?", :default => "master")
+    configure_branch(:staging_branch, "Use a branch for staging releases and hotfixes?", "staging")
+    configure_branch(:qa_branch, "Use a branch for testing features?", "qa")
+    configure_branch(:release_branch, "Use a release branch?", "production")
+  end
+
+  describe "#configure_branches" do
+    it 'configures branches for the project' do
+      Zenflow.should_receive(:Ask).with("What is the name of the main development branch?", :default => "master").and_return('master')
+      Zenflow.should_receive(:Log).with("Branches")
+      Zenflow::Config.should_receive(:[]=).with(:development_branch, 'master')
+      subject.should_receive(:configure_branch).exactly(3).times
+      subject.configure_branches
+    end
   end
 
 end
