@@ -1,7 +1,10 @@
 require 'spec_helper'
 
 describe Zenflow::PullRequest do
-  before(:all){
+  before(:each){
+    Zenflow::Github.stub(:user).and_return('github-user')
+    Zenflow::Github.stub(:token).and_return('github-token')
+    Zenflow::Github.stub(:zenflow_token).and_return('zenflow-token')
     Zenflow::GithubRequest.base_uri 'https://api.github.com/repos/zencoder/zenflow-example'
   }
 

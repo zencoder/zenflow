@@ -23,13 +23,13 @@ module Zenflow
         if options[:silent]
           Zenflow::LogToFile("$ #{command}\n")
         else
-          Zenflow::Log("$ #{command}", :arrows => false, :color => :yellow)
+          Zenflow::Log("$ #{command}", arrows: false, color: :yellow)
         end
         if !failed?
-          if !options[:silent] # SETTINGS[:verbose] &&
-            run_with_output(command, options)
-          else
+          if options[:silent]
             run_without_output(command, options)
+          else
+            run_with_output(command, options)
           end
         end
       end
@@ -51,15 +51,15 @@ module Zenflow
       end
 
       def run_with_result_check(command, options={})
-        output = %x[#{command}]
+        output = `#{command}`
         Zenflow::LogToFile(output)
         if $?.to_i > 0
           if output.strip != ""
             puts "#{output.strip}\n"
           end
-          Zenflow::Log("Process aborted", :color => :red)
-          Zenflow::Log("Exit status: #{$?}", :color => :red, :indent => true)
-          Zenflow::Log("You may need to run any following commands manually...", :color => :red)
+          Zenflow::Log("Process aborted", color: :red)
+          Zenflow::Log("Exit status: #{$?}", color: :red, indent: true)
+          Zenflow::Log("You may need to run any following commands manually...", color: :red)
           failed!($?.to_i)
         end
         output
