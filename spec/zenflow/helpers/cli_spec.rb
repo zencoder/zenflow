@@ -60,16 +60,6 @@ describe Zenflow::CLI do
     end
   end
 
-  def already_configured
-    Zenflow::Log("Warning", :color => :red)
-    if Zenflow::Ask("There is an existing config file. Overwrite it?", :options => ["y", "N"], :default => "N") == "y"
-      init(true)
-    else
-      Zenflow::Log("Aborting...", :color => :red)
-      exit(1)
-    end
-  end
-
   describe "#already_configured" do
     let(:question) {['There is an existing config file. Overwrite it?', {:options => ["y", "N"], :default => "N"}]}
     before do
@@ -95,6 +85,33 @@ describe Zenflow::CLI do
       it "aborts" do
         Zenflow.should_receive(:Log).with('Aborting...', :color => :red)
         lambda{ subject.already_configured}.should raise_error(SystemExit)
+      end
+    end
+  end
+
+  describe "#configure_staging_branch" do
+    let(:question) {["Use a branch for staging releases and hotfixes?", {:options => ["Y", "n"], :default => "Y"}]}
+
+    context "when the user wants to configure a staging branch" do
+      before do
+        Zenflow.should_receive(:Ask).with(*question).and_return('y')
+      end
+
+      it 'names the staging branch whatever the user wants' do
+        Zenflow.should_receive(:Ask).with("What is the name of that branch?", :default => "staging").and_return('staging')
+        Zenflow::Config.should_receive(:[]=).with(:staging_branch, 'staging')
+        subject.configure_staging_branch
+      end
+    end
+
+    context "when the user does not want to configure a staging branch" do
+      before do
+        Zenflow.should_receive(:Ask).with(*question).and_return('n')
+      end
+
+      it 'names the staging branch whatever the user wants' do
+        Zenflow::Config.should_receive(:[]=).with(:staging_branch, false)
+        subject.configure_staging_branch
       end
     end
   end

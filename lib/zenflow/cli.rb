@@ -43,11 +43,7 @@ module Zenflow
       Zenflow::Config[:project] = Zenflow::Ask("What is the name of this project?", :required => true)
       Zenflow::Log("Branches")
       Zenflow::Config[:development_branch] = Zenflow::Ask("What is the name of the main development branch?", :default => "master")
-      if Zenflow::Ask("Use a branch for staging releases and hotfixes?", :options => ["Y", "n"], :default => "Y") == "y"
-        Zenflow::Config[:staging_branch] = Zenflow::Ask("What is the name of that branch?", :default => "staging")
-      else
-        Zenflow::Config[:staging_branch] = false
-      end
+      configure_staging_branch
       if Zenflow::Ask("Use a branch for testing features?", :options => ["Y", "n"], :default => "Y") == "y"
         Zenflow::Config[:qa_branch] = Zenflow::Ask("What is the name of that branch?", :default => "qa")
       else
@@ -96,6 +92,14 @@ module Zenflow
         else
           Zenflow::Log("Aborting...", :color => :red)
           exit(1)
+        end
+      end
+
+      def configure_staging_branch
+        if Zenflow::Ask("Use a branch for staging releases and hotfixes?", :options => ["Y", "n"], :default => "Y") == "y"
+          Zenflow::Config[:staging_branch] = Zenflow::Ask("What is the name of that branch?", :default => "staging")
+        else
+          Zenflow::Config[:staging_branch] = false
         end
       end
 
