@@ -84,26 +84,16 @@ module Zenflow
     option :offline, type: :boolean, desc: "Runs in offline mode"
     def finish
       branch_name
-      if Zenflow::Config[:confirm_staging] &&
-         Zenflow::Ask("Has this been tested in a staging environment first?", options: ["Y", "n"], default: "Y") == "n"
-        Zenflow::Log("Sorry, deploy to a staging environment first", color: :red)
-        exit(1)
-      end
-      if Zenflow::Config[:confirm_review] &&
-         Zenflow::Ask("Has this been code reviewed yet?", options: ["Y", "n"], default: "Y") == "n"
-        Zenflow::Log("Please have someone look at this first", color: :red)
-        exit(1)
-      end
+      confirm(:confirm_staging, "Has this been tested in a staging environment first?",
+                                "Sorry, deploy to a staging environment first")
+      confirm(:confirm_review, "Has this been code reviewed yet?",
+                               "Please have someone look at this first")
       destination = (branch(:destination) || branch(:source))
       Zenflow::Branch.update(destination) if !options[:offline]
       Zenflow::Branch.checkout("#{flow}/#{branch_name}")
       Zenflow::Branch.merge(destination)
-      if version
-        Zenflow::Version.update(version)
-      end
-      if changelog
-        @change = Zenflow::Changelog.update(rotate: (changelog == :rotate), name: branch_name)
-      end
+      update_version_and_changelog(version, changelog)
+
       [branch(:source), branch(:destination)].compact.each do |finish|
         Zenflow::Branch.checkout(finish)
         Zenflow::Branch.merge("#{flow}/#{branch_name}")
@@ -182,6 +172,23 @@ module Zenflow
           Zenflow::Log("* #{pull['message']}", indent: true, color: :red)
         else
           Zenflow::Log(" * unexpected failure, both 'errors' and 'message' were empty in the response")
+        end
+      end
+
+      def confirm(confirmation, question, failure_response)
+        return unless Zenflow::Config[confirmation]
+        if Zenflow::Ask(question, options: ["Y", "n"], default: "Y") == "n"
+          Zenflow::Log(failure_response, color: :red)
+          exit(1)
+        end
+      end
+
+      def update_version_and_changelog(version, changelog)
+        if version
+          Zenflow::Version.update(version)
+        end
+        if changelog
+          @change = Zenflow::Changelog.update(rotate: (changelog == :rotate), name: branch_name)
         end
       end
     end
