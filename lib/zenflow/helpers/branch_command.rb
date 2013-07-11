@@ -88,15 +88,11 @@ module Zenflow
                                 "Sorry, deploy to a staging environment first")
       confirm(:confirm_review, "Has this been code reviewed yet?",
                                "Please have someone look at this first")
-      destination = (branch(:destination) || branch(:source))
-      Zenflow::Branch.update(destination) if !options[:offline]
-      Zenflow::Branch.checkout("#{flow}/#{branch_name}")
-      Zenflow::Branch.merge(destination)
+      update_branch_from_destination
       update_version_and_changelog(version, changelog)
-      merge_branches
+      merge_branch_into_destination
       create_tag
-      Zenflow::Branch.delete_remote("#{flow}/#{branch_name}") if !options[:offline]
-      Zenflow::Branch.delete_local("#{flow}/#{branch_name}", force: true)
+      delete_branches
     end
 
 
@@ -190,12 +186,24 @@ module Zenflow
         Zenflow::Branch.push(:tags) if !options[:offline]
       end
 
-      def merge_branches
+      def update_branch_from_destination
+        destination = (branch(:destination) || branch(:source))
+        Zenflow::Branch.update(destination) if !options[:offline]
+        Zenflow::Branch.checkout("#{flow}/#{branch_name}")
+        Zenflow::Branch.merge(destination)
+      end
+
+      def merge_branch_into_destination
         [branch(:source), branch(:destination)].compact.each do |finish|
           Zenflow::Branch.checkout(finish)
           Zenflow::Branch.merge("#{flow}/#{branch_name}")
           Zenflow::Branch.push(finish) if !options[:offline]
         end
+      end
+
+      def delete_branches
+        Zenflow::Branch.delete_remote("#{flow}/#{branch_name}") if !options[:offline]
+        Zenflow::Branch.delete_local("#{flow}/#{branch_name}", force: true)
       end
     end
 
