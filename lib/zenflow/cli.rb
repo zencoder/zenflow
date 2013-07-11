@@ -45,11 +45,7 @@ module Zenflow
       Zenflow::Config[:development_branch] = Zenflow::Ask("What is the name of the main development branch?", :default => "master")
       configure_staging_branch
       configure_qa_branch
-      if Zenflow::Ask("Use a release branch?", :options => ["Y", "n"], :default => "Y") == "y"
-        Zenflow::Config[:release_branch] = Zenflow::Ask("What is the name of the release branch?", :default => "production")
-      else
-        Zenflow::Config[:release_branch] = false
-      end
+      configure_release_branch
       Zenflow::Config[:remote] = Zenflow::Ask("What is the name of your primary remote?", :default => "origin")
       if Zenflow::Ask("Use a backup remote?", :options => ["Y", "n"], :default => "n") == "y"
         Zenflow::Config[:backup_remote] = Zenflow::Ask("What is the name of your backup remote?", :default => "backup")
@@ -104,6 +100,14 @@ module Zenflow
           Zenflow::Config[:qa_branch] = Zenflow::Ask("What is the name of that branch?", :default => "qa")
         else
           Zenflow::Config[:qa_branch] = false
+        end
+      end
+
+      def configure_release_branch
+        if Zenflow::Ask("Use a release branch?", :options => ["Y", "n"], :default => "Y") == "y"
+          Zenflow::Config[:release_branch] = Zenflow::Ask("What is the name of the release branch?", :default => "production")
+        else
+          Zenflow::Config[:release_branch] = false
         end
       end
 
