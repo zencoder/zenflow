@@ -1,4 +1,4 @@
-Zenflow
+Zenflow [![Code Climate](https://codeclimate.com/repos/51bf6e3b7e00a411ad00f6c3/badges/111fbe3664cebffa8e23/gpa.png)](https://codeclimate.com/repos/51bf6e3b7e00a411ad00f6c3/feed)
 -------
 
 Zenflow is a work in progress.
