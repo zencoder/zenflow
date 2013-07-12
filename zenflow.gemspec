@@ -10,8 +10,8 @@ Gem::Specification.new do |s|
   s.name        = "zenflow"
   s.version     = Zenflow::VERSION.to_s
   s.platform    = Gem::Platform::RUBY
-  s.authors     = ["Brandon Arbini", "Chris Warren", "Adam Kittelson"]
-  s.email       = ["b@zencoder.com", "c@zencoder.com", "a@zencoder.com"]
+  s.authors     = ["Adam Kittelson", "Brandon Arbini", "Chris Warren"]
+  s.email       = ["a@zencoder.com", "b@zencoder.com", "c@zencoder.com"]
   s.homepage    = "http://github.com/zencoder/zenflow"
   s.summary     = "Branch management and deployment tool."
   s.description = "Zenflow is a development workflow management tool."
