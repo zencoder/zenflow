@@ -1,10 +1,6 @@
 module Zenflow
 
-  LOG_PATH = if File.directory?(File.join(Dir.pwd, "log"))
-    File.join(Dir.pwd, "log", "zenflow.log")
-  else
-    File.join(Dir.pwd, ".zenflow-log")
-  end
+  LOG_PATH = File.join(Dir.pwd, ".zenflow-log")
 
   def self.Log(message, options={})
     output = ""
