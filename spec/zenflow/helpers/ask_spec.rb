@@ -27,6 +27,27 @@ describe Zenflow do
       Zenflow::Query.should_receive(:print).with(">> How are you? [good/bad] ")
       Zenflow::Ask("How are you?", options: ["good", "bad"], default: "good")
     end
+
+    context "on error" do
+      before(:each) do
+        Zenflow::Query.should_receive(:ask_question).at_least(:once).and_return('foo')
+        Zenflow::Query.should_receive(:handle_response).once.and_raise('something failed')
+        $stdout.should_receive(:puts).once
+      end
+
+      it{expect{Zenflow::Ask('howdy', response: 'foo', error_message: 'something failed')}.to raise_error(/something failed/)}
+    end
+
+    context "on interrupt" do
+      before(:each) do
+        Zenflow::Query.should_receive(:ask_question).once.and_return('foo')
+        Zenflow::Query.should_receive(:handle_response).once.and_raise(Interrupt)
+        Zenflow.should_receive(:LogToFile)
+        $stdout.should_receive(:puts).at_least(:once)
+      end
+
+      it{expect{Zenflow::Ask('howdy')}.to raise_error(SystemExit)}
+    end
   end
 
   describe Zenflow::Query do
