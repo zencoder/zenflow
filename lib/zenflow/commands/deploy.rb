@@ -14,19 +14,19 @@ module Zenflow
   class Deploy < Thor
     class_option :migrations, type: :boolean, desc: "Run migrations during deployment", aliases: :m
 
-    desc "qa", "Deply to qa."
+    desc "qa", "Deploy to qa."
     def qa
-      Deploy("qa", options)
+      Zenflow::Deploy("qa", options)
     end
 
-    desc "staging", "Deply to staging."
+    desc "staging", "Deploy to staging."
     def staging
-      Deploy("staging", options)
+      Zenflow::Deploy("staging", options)
     end
 
-    desc "production", "Deply to production."
+    desc "production", "Deploy to production."
     def production
-      Deploy("production", options)
+      Zenflow::Deploy("production", options)
     end
   end
 
