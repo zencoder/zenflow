@@ -1,6 +1,16 @@
 module Zenflow
   class BranchCommand < Thor
 
+    include Zenflow::BranchCommands::Abort
+    include Zenflow::BranchCommands::Branches
+    include Zenflow::BranchCommands::Compare
+    include Zenflow::BranchCommands::Deploy
+    include Zenflow::BranchCommands::Diff
+    include Zenflow::BranchCommands::Finish
+    include Zenflow::BranchCommands::Review
+    include Zenflow::BranchCommands::Start
+    include Zenflow::BranchCommands::Update
+
     no_commands do
       def flow
         self.class.flow
