@@ -5,10 +5,6 @@ module Zenflow
       Zenflow::Shell.run('git config --get github.user', :silent => true).chomp
     end
 
-    def self.token
-      Zenflow::Shell.run('git config --get github.token', :silent => true).chomp
-    end
-
     def self.zenflow_token
       zenflow_token = Zenflow::Shell.run('git config --get zenflow.token', :silent => true).chomp
       zenflow_token = nil if zenflow_token.to_s.strip == ''

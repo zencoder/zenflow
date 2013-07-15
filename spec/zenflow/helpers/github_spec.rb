@@ -13,18 +13,6 @@ describe Zenflow::Github do
     end
   end
 
-  describe '.token' do
-    let(:token) {'github-token-for-you'}
-
-    before(:each) {
-      Zenflow::Shell.should_receive(:run).and_return(token)
-    }
-
-    it "returns the token" do
-      expect(Zenflow::Github.token).to eq(token)
-    end
-  end
-
   describe '.zenflow_token' do
     let!(:token){'zenflow-token-for-you'}
 

@@ -13,7 +13,6 @@ VCR.configure do |c|
   c.hook_into :webmock
   c.default_cassette_options = { :record => :new_episodes }
   c.filter_sensitive_data('<GITHUB-USER>'){ Zenflow::Github.user }
-  c.filter_sensitive_data('<GITHUB-TOKEN>'){ Zenflow::Github.token }
   c.filter_sensitive_data('<ZENFLOW-TOKEN>'){ Zenflow::Github.zenflow_token }
 end
 
