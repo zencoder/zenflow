@@ -43,7 +43,7 @@ module Zenflow
 
       def track(name)
         Zenflow::Log("Tracking the #{name} branch against #{Zenflow::Config[:remote] || 'origin'}/#{name}")
-        Zenflow::Shell["git branch --set-upstream #{name} #{Zenflow::Config[:remote] || 'origin'}/#{name}"]
+        Zenflow::Shell["git branch --set-upstream-to #{name} #{Zenflow::Config[:remote] || 'origin'}/#{name}"]
       end
 
       def checkout(name)
