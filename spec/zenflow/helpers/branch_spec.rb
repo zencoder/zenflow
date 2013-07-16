@@ -175,7 +175,7 @@ describe Zenflow::Branch do
 
       it "tracks the branch in that remote" do
         Zenflow.should_receive(:Log).with("Tracking the feature/test-tracking branch against some-remote/feature/test-tracking")
-        Zenflow::Shell.should_receive(:run).with("git branch --set-upstream-to feature/test-tracking some-remote/feature/test-tracking")
+        Zenflow::Shell.should_receive(:run).with("git branch --set-upstream-to=some-remote/feature/test-tracking feature/test-tracking")
         Zenflow::Branch.track('feature/test-tracking')
       end
     end
@@ -187,7 +187,7 @@ describe Zenflow::Branch do
 
       it "tracks the branch in origin" do
         Zenflow.should_receive(:Log).with("Tracking the feature/test-tracking branch against origin/feature/test-tracking")
-        Zenflow::Shell.should_receive(:run).with("git branch --set-upstream-to feature/test-tracking origin/feature/test-tracking")
+        Zenflow::Shell.should_receive(:run).with("git branch --set-upstream-to=origin/feature/test-tracking feature/test-tracking")
         Zenflow::Branch.track('feature/test-tracking')
       end
     end
