@@ -206,19 +206,23 @@ module BranchCommandSpec
     end
 
     describe "#abort" do
-      before { Zenflow::Branch.should_receive(:current).with("test").and_return("new-test-branch") }
+      let(:branch_name){"test/new-test-branch"}
+      before {
+        Zenflow::Branch.should_receive(:current).with("test").and_return("new-test-branch")
+        Zenflow::Branch.should_receive(:checkout).with("master")
+      }
 
       context "when online" do
         before do
-          Zenflow::Branch.should_receive(:delete_remote).with("test/new-test-branch")
-          Zenflow::Branch.should_receive(:delete_local).with("test/new-test-branch", force: true)
+          Zenflow::Branch.should_receive(:delete_remote).with(branch_name)
+          Zenflow::Branch.should_receive(:delete_local).with(branch_name, force: true)
         end
         it { TestCommand.new.invoke(:abort) }
       end
 
       context "when offline" do
         before do
-          Zenflow::Branch.should_receive(:delete_local).with("test/new-test-branch", force: true)
+          Zenflow::Branch.should_receive(:delete_local).with(branch_name, force: true)
         end
         it { TestCommand.new.invoke(:abort, [], offline: true) }
       end

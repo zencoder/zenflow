@@ -6,7 +6,7 @@ require 'zenflow'
 Zenflow::LogToFile("====== Zenflow #{Zenflow::VERSION}/#{Time.now.strftime('%c')} ======")
 Zenflow::LogToFile("$ zenflow #{ARGV.join(' ')}\n")
 
-if ARGV.first != "setup" && !Zenflow::Config.configured?
+if ARGV.first != "init" && !Zenflow::Config.configured?
   Zenflow::Log("This project has not been configured. Please run `zenflow init`.", :color => :red)
   exit(1)
 end

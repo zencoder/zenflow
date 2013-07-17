@@ -13,18 +13,6 @@ describe Zenflow::Github do
     end
   end
 
-  describe '.zenflow_token' do
-    let!(:token){'zenflow-token-for-you'}
-
-    before do
-      Zenflow::Shell.should_receive(:run).and_return(token)
-    end
-
-    it "sets the zenflow token" do
-      expect(Zenflow::Github.zenflow_token).to eq(token)
-    end
-  end
-
   describe '.authorize' do
     context "when authorization fails" do
       before do

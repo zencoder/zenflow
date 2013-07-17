@@ -220,6 +220,7 @@ describe Zenflow::CLI do
 
       it 'configures zenflow' do
         subject.should_not_receive(:already_configured)
+        subject.should_receive(:set_up_github)
         subject.should_receive(:authorize_github)
         subject.should_receive(:configure_project)
         subject.should_receive(:configure_branches)
@@ -239,6 +240,7 @@ describe Zenflow::CLI do
       context 'and it is forced to initialize' do
         it 'configures zenflow' do
           subject.should_not_receive(:already_configured)
+          subject.should_receive(:set_up_github)
           subject.should_receive(:authorize_github)
           subject.should_receive(:configure_project)
           subject.should_receive(:configure_branches)

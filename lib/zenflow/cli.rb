@@ -38,6 +38,7 @@ module Zenflow
     desc "init", "Write the zenflow config file."
     def init(force=false)
       already_configured if Zenflow::Config.configured? && !force
+      set_up_github
       authorize_github
       configure_project
       configure_branches
@@ -45,6 +46,17 @@ module Zenflow
       confirm_some_stuff
       set_up_changelog
       Zenflow::Config.save!
+    end
+
+    desc "set_up_github", "Set up GitHub user information"
+    def set_up_github
+      if user = Zenflow::Github.user != ''
+        if Zenflow::Ask("Your GitHub user is currently #{Zenflow::Github.user}. Do you want to use that?", :options => ["y", "N"], :default => "Y") == "n"
+          Zenflow::Github.set_user
+        end
+      else
+        Zenflow::Github.set_user
+      end
     end
 
     desc "authorize_github", "Get an auth token from GitHub"
