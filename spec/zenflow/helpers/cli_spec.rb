@@ -19,6 +19,47 @@ describe Zenflow::CLI do
     end
   end
 
+  describe "#set_up_github" do
+    context "when a github user is already saved" do
+      before do
+        Zenflow::Github.should_receive(:user).and_return('user')
+      end
+
+      context "and the user decides to set a new one" do
+        before do
+          Zenflow.should_receive(:Ask).and_return('n')
+        end
+
+        it "authorizes with Github" do
+          Zenflow::Github.should_receive(:set_user)
+          subject.set_up_github
+        end
+      end
+
+      context "and the user decides not to set a new one" do
+        before do
+          Zenflow.should_receive(:Ask).and_return('y')
+        end
+
+        it "does not authorize with Github" do
+          Zenflow::Github.should_not_receive(:set_user)
+          subject.set_up_github
+        end
+      end
+    end
+
+    context "when a zenflow_token is not already saved" do
+      before do
+        Zenflow::Github.should_receive(:user).and_return(nil)
+      end
+
+      it "authorizes with Github" do
+        Zenflow::Github.should_receive(:set_user)
+        subject.set_up_github
+      end
+    end
+  end
+
   describe "#authorize_github" do
     context "when a zenflow_token is already saved" do
       before do

@@ -50,8 +50,9 @@ module Zenflow
 
     desc "set_up_github", "Set up GitHub user information"
     def set_up_github
-      if user = Zenflow::Github.user != ''
-        if Zenflow::Ask("Your GitHub user is currently #{Zenflow::Github.user}. Do you want to use that?", :options => ["y", "N"], :default => "Y") == "n"
+      user = Zenflow::Github.user
+      if user.to_s != ''
+        if Zenflow::Ask("Your GitHub user is currently #{user}. Do you want to use that?", :options => ["y", "N"], :default => "Y") == "n"
           Zenflow::Github.set_user
         end
       else

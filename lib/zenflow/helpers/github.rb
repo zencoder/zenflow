@@ -2,12 +2,14 @@ module Zenflow
 
   module Github
     def self.user
-      Zenflow::Shell.run('git config --get github.user', silent: true).chomp
+      user = Zenflow::Shell.run('git config --get github.user', silent: true)
+      user = user.chomp unless user.nil?
+      user
     end
 
     def self.zenflow_token
-      zenflow_token = Zenflow::Shell.run('git config --get zenflow.token', silent: true).chomp
-      zenflow_token = nil if zenflow_token.to_s.strip == ''
+      zenflow_token = Zenflow::Shell.run('git config --get zenflow.token', silent: true)
+      zenflow_token = zenflow_token.chomp unless zenflow_token.nil?
       zenflow_token
     end
 
@@ -22,11 +24,11 @@ module Zenflow
         return
       end
     end
-  end
 
-  def self.set_user
-    username = Zenflow::Ask("What is your Github username?")
-    Zenflow::Shell.run("git config --global github.user #{username}", silent: true)
+    def self.set_user
+      username = Zenflow::Ask("What is your Github username?")
+      Zenflow::Shell.run("git config --global github.user #{username}", silent: true)
+    end
   end
 
   class GithubRequest

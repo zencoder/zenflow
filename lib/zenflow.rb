@@ -4,7 +4,6 @@ require 'colored'
 require 'terminal-table'
 require 'httparty'
 require 'json'
-
 require 'zenflow/helpers/version'
 require 'zenflow/version'
 require 'zenflow/helpers/log'

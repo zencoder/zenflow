@@ -3,10 +3,12 @@ $: << File.expand_path("#{File.dirname(__FILE__)}/../lib")
 require 'rubygems'
 require 'zenflow'
 
+ALLOWED_COMMANDS_BEFORE_CONFIG = ['init', '-h', '--help', '-v', '--version']
+
 Zenflow::LogToFile("====== Zenflow #{Zenflow::VERSION}/#{Time.now.strftime('%c')} ======")
 Zenflow::LogToFile("$ zenflow #{ARGV.join(' ')}\n")
 
-if ARGV.first != "init" && !Zenflow::Config.configured?
+if !ALLOWED_COMMANDS_BEFORE_CONFIG.include?(ARGV.first) && !Zenflow::Config.configured?
   Zenflow::Log("This project has not been configured. Please run `zenflow init`.", :color => :red)
   exit(1)
 end

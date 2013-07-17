@@ -53,7 +53,7 @@ module Zenflow
       def run_with_result_check(command, options={})
         output = `#{command}`
         Zenflow::LogToFile(output)
-        if last_exit_status.to_i > 0
+        if last_exit_status.to_i > 0 && !options[:silent]
           if output.strip != ""
             puts "#{output.strip}\n"
           end
