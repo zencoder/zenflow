@@ -1,4 +1,4 @@
-Zenflow
+# Zenflow
 
 [![Code Climate](https://codeclimate.com/repos/51bf6e3b7e00a411ad00f6c3/badges/111fbe3664cebffa8e23/gpa.png)](https://codeclimate.com/repos/51bf6e3b7e00a411ad00f6c3/feed)
 ![CircleCI](https://circleci.com/gh/zencoder/zenflow.png?circle-token=992f1e59d778a8f6eef0fb9f2888e80cf60d7226)
