@@ -17,7 +17,7 @@ Zenflow is a Ruby implimentation of the [GitFlow process](http://nvie.com/posts/
 
 Start off by installing the gem.
 
-  gem install zenflow
+    gem install zenflow
 
 Once you've installed the gem there are a few questions to answer so that Zenflow knows what sort of branches you want to track and what your qa/staging/production setup looks like.
 
