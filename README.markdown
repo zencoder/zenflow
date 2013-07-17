@@ -9,8 +9,11 @@ Zenflow
 [Commands Quick Reference](#commands)
 [Requirements](#requirements)
 
-### <a name="getting-started"></a> Getting Started
+### What is this?
 
+Zenflow is a Ruby implimentation of the [GitFlow process](http://nvie.com/posts/a-successful-git-branching-model/) for managing development in Git. It's been used at [Zencoder](http://zencoder.com) since 2010 and we've benefitted greatly from the structure it helps enforce, so we wanted to share it with the world.
+
+### <a name="getting-started"></a> Getting Started
 
 Start off by installing the gem.
 
@@ -18,11 +21,11 @@ Start off by installing the gem.
 
 Once you've installed the gem there are a few questions to answer so that Zenflow knows what sort of branches you want to track and what your qa/staging/production setup looks like.
 
-To get started just run
+To get started make sure you're in the root directory of the repository you want to work with, then run
 
     zenflow init
 
-and answer the questions, then you're ready to start using Zenflow
+and answer the questions, then you're ready to start using Zenflow!
 
 ### <a name="usage"></a> Usage
 
