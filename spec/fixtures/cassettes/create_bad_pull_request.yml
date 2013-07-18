@@ -9,7 +9,7 @@ http_interactions:
         not exist","body":"gonna fail"}'
     headers:
       Authorization:
-      - token 35928caa14c45337ef825180cdea8c99dd01b6fc
+      - token <ZENFLOW-TOKEN>
       User-Agent:
       - Zencoder/Zenflow-0.8.2
   response:
@@ -20,7 +20,7 @@ http_interactions:
       Server:
       - GitHub.com
       Date:
-      - Thu, 18 Jul 2013 16:42:10 GMT
+      - Thu, 18 Jul 2013 16:58:30 GMT
       Content-Type:
       - application/json; charset=utf-8
       Status:
@@ -28,9 +28,9 @@ http_interactions:
       X-Ratelimit-Limit:
       - '5000'
       X-Ratelimit-Remaining:
-      - '4930'
+      - '4986'
       X-Ratelimit-Reset:
-      - '1374166437'
+      - '1374170098'
       X-Oauth-Scopes:
       - repo
       X-Accepted-Oauth-Scopes:
@@ -53,5 +53,5 @@ http_interactions:
       string: '{"message":"Validation Failed","errors":[{"resource":"PullRequest","code":"missing_field","field":"head_sha"},{"resource":"PullRequest","code":"missing_field","field":"base_sha"},{"resource":"PullRequest","code":"custom","message":"No
         commits between zencoder:master and zencoder:feature/phoney"}]}'
     http_version: 
-  recorded_at: Thu, 18 Jul 2013 16:42:11 GMT
+  recorded_at: Thu, 18 Jul 2013 16:58:31 GMT
 recorded_with: VCR 2.5.0
