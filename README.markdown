@@ -1,15 +1,20 @@
 # Zenflow
 
+[![Gem Version](https://badge.fury.io/rb/zenflow.png)](http://badge.fury.io/rb/zenflow)
 [![Code Climate](https://codeclimate.com/repos/51bf6e3b7e00a411ad00f6c3/badges/111fbe3664cebffa8e23/gpa.png)](https://codeclimate.com/repos/51bf6e3b7e00a411ad00f6c3/feed)
+[![Dependency Status](https://gemnasium.com/a1d29c5ea446d54bead93a6878bc204b.png)](https://gemnasium.com/zencoder/zenflow)
 ![CircleCI](https://circleci.com/gh/zencoder/zenflow.png?circle-token=992f1e59d778a8f6eef0fb9f2888e80cf60d7226)
+
 -------
 
-[Getting Started](#getting-started)
-[Usage](#usage)
-[Commands Quick Reference](#commands)
-[Requirements](#requirements)
+* [Getting Started](#getting-started)
+* [Usage](#usage)
+* [Commands Quick Reference](#commands)
+* [Requirements](#requirements)
 
-### What is this?
+-------
+
+### What is Zenflow?
 
 Zenflow is a Ruby implimentation of the [GitFlow process](http://nvie.com/posts/a-successful-git-branching-model/) for managing development in Git. It's been used at [Zencoder](http://zencoder.com) since 2010 and we've benefitted greatly from the structure it helps enforce, so we wanted to share it with the world.
 
@@ -86,7 +91,7 @@ To deploy to production, type `zenflow deploy production`. Hotfixes are not auto
 
 ### <a name="requirements"></a> Requirements/Assumptions
 
-* Git > 1.8
-* Ruby > 1.9.3
+* Git >= 1.8
+* Ruby >= 1.9.3
 * Capistrano and cap-ext
 * A repository on GitHub
