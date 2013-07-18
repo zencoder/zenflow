@@ -13,9 +13,10 @@ describe Zenflow::Help do
                               :usage    => "test-help (optional please)",
                               :commands => ['test-help', 'spec-help'])}
 
-  it "has an amazing banner" do
-    expect(subject.banner).to eq("\e[36m- Summary ------------------------------\e[0m\ntests Zenflow::Help\n\n\e[36m- Usage --------------------------------\e[0m\ntest-help (optional please)\n\n\e[36m- Available Commands -------------------\e[0m\n[\"test-help\", \"spec-help\"]\n\n\e[36m- Options ------------------------------\e[0m")
-  end
+  it{expect(subject.banner).to match(/Summary/)}
+  it{expect(subject.banner).to match(/Usage/)}
+  it{expect(subject.banner).to match(/Available Commands/)}
+  it{expect(subject.banner).to match(/Options/)}
 
   context "#unknown_command" do
     describe "when the command is missing" do

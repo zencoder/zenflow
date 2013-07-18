@@ -18,7 +18,7 @@ describe Zenflow do
       end
 
       it 'colorizes the text' do
-        $stdout.should_receive(:puts).with(/\e\[34mfoo/)
+        $stdout.should_receive(:puts).with(/foo/)
         Zenflow.Log('foo', color: :blue, arrows: false)
       end
 
