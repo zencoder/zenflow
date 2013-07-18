@@ -50,7 +50,7 @@ module Zenflow
 
     desc "set_up_github", "Set up GitHub user information"
     def set_up_github
-      user = Zenflow::Github.get_config('github.user')
+      user = Zenflow::Github.user
       if user.to_s != ''
         if Zenflow::Ask("Your GitHub user is currently #{user}. Do you want to use that?", :options => ["y", "N"], :default => "Y") == "n"
           Zenflow::Github.set_user
@@ -62,7 +62,7 @@ module Zenflow
 
     desc "authorize_github", "Get an auth token from GitHub"
     def authorize_github
-      if Zenflow::Github.get_config('zenflow.token')
+      if Zenflow::Github.zenflow_token
         if Zenflow::Ask("You already have a token from GitHub. Do you want to set a new one?", :options => ["Y", "n"], :default => "Y") == "y"
           Zenflow::Github.authorize
         end

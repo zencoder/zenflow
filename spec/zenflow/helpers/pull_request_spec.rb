@@ -2,13 +2,8 @@ require 'spec_helper'
 
 describe Zenflow::PullRequest do
   before(:each){
-    Zenflow::Github.stub(:get_config) do |arg|
-      if arg == 'zenflow.token'
-        'zenflow-token'
-      elsif arg == 'github.user'
-        'github-user'
-      end
-    end
+    Zenflow::Github.stub(:zenflow_token).and_return('zenflow-token')
+    Zenflow::Github.stub(:user).and_return('github-user')
     Zenflow::GithubRequest.base_uri 'https://api.github.com/repos/zencoder/zenflow-example'
   }
 

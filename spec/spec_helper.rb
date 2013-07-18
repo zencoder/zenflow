@@ -12,8 +12,8 @@ VCR.configure do |c|
   c.cassette_library_dir = 'spec/fixtures/cassettes'
   c.hook_into :webmock
   c.default_cassette_options = { :record => :new_episodes }
-  c.filter_sensitive_data('<GITHUB-USER>'){ Zenflow::Github.get_config('github.user') }
-  c.filter_sensitive_data('<ZENFLOW-TOKEN>'){ Zenflow::Github.get_config('zenflow.token') }
+  c.filter_sensitive_data('<GITHUB-USER>'){ Zenflow::Github.user }
+  c.filter_sensitive_data('<ZENFLOW-TOKEN>'){ Zenflow::Github.zenflow_token }
 end
 
 RSpec.configure do |config|

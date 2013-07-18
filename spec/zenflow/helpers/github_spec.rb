@@ -9,7 +9,7 @@ describe Zenflow::Github do
     }
 
     it "returns the user" do
-      expect(Zenflow::Github.get_config('github.user')).to eq(user)
+      expect(Zenflow::Github.user).to eq(user)
     end
   end
 
@@ -27,7 +27,7 @@ describe Zenflow::Github do
     context "when authorization fails" do
       before do
         Zenflow.should_receive("Log").with("Authorizing with GitHub... Enter your GitHub password.")
-        Zenflow::Github.should_receive(:get_config).with('github.user').and_return('adamkittelson')
+        Zenflow::Github.should_receive(:user).and_return('adamkittelson')
         Zenflow::Shell.should_receive(:run).and_return('{"message": "failed to authorize, bummer"}')
       end
 
@@ -40,7 +40,7 @@ describe Zenflow::Github do
     context "when authorization succeeds" do
       before do
         Zenflow.should_receive("Log").with("Authorizing with GitHub... Enter your GitHub password.")
-        Zenflow::Github.should_receive(:get_config).with('github.user').and_return('adamkittelson')
+        Zenflow::Github.should_receive(:user).and_return('adamkittelson')
         Zenflow::Shell.should_receive(:run).with(%{curl -u "adamkittelson" https://api.github.com/authorizations -d '{"scopes":["repo"], "note":"Zenflow"}' --silent}, :silent => true).and_return('{"token": "super secure token"}')
       end
 

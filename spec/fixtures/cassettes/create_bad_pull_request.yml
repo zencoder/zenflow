@@ -20,7 +20,7 @@ http_interactions:
       Server:
       - GitHub.com
       Date:
-      - Thu, 18 Jul 2013 16:58:30 GMT
+      - Thu, 18 Jul 2013 17:06:44 GMT
       Content-Type:
       - application/json; charset=utf-8
       Status:
@@ -28,7 +28,7 @@ http_interactions:
       X-Ratelimit-Limit:
       - '5000'
       X-Ratelimit-Remaining:
-      - '4986'
+      - '4974'
       X-Ratelimit-Reset:
       - '1374170098'
       X-Oauth-Scopes:
@@ -53,5 +53,5 @@ http_interactions:
       string: '{"message":"Validation Failed","errors":[{"resource":"PullRequest","code":"missing_field","field":"head_sha"},{"resource":"PullRequest","code":"missing_field","field":"base_sha"},{"resource":"PullRequest","code":"custom","message":"No
         commits between zencoder:master and zencoder:feature/phoney"}]}'
     http_version: 
-  recorded_at: Thu, 18 Jul 2013 16:58:31 GMT
+  recorded_at: Thu, 18 Jul 2013 17:06:44 GMT
 recorded_with: VCR 2.5.0
