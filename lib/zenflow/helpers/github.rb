@@ -2,15 +2,17 @@ module Zenflow
 
   module Github
     def self.user
-      user = Zenflow::Shell.run('git config --get github.user', silent: true)
-      user = user.chomp unless user.nil?
-      user
+      get_config('github.user')
     end
 
     def self.zenflow_token
-      zenflow_token = Zenflow::Shell.run('git config --get zenflow.token', silent: true)
-      zenflow_token = zenflow_token.chomp unless zenflow_token.nil?
-      zenflow_token
+      get_config('zenflow.token')
+    end
+
+    def self.get_config(key)
+      config = Zenflow::Shell.run("git config --get #{key.to_s}", silent: true)
+      config = config.chomp unless config.nil?
+      config
     end
 
     def self.authorize
