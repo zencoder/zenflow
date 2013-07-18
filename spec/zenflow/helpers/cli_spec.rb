@@ -22,7 +22,7 @@ describe Zenflow::CLI do
   describe "#set_up_github" do
     context "when a github user is already saved" do
       before do
-        Zenflow::Github.should_receive(:user).and_return('user')
+        Zenflow::Github.should_receive(:get_config).with('github.user').and_return('user')
       end
 
       context "and the user decides to set a new one" do
@@ -50,7 +50,7 @@ describe Zenflow::CLI do
 
     context "when a zenflow_token is not already saved" do
       before do
-        Zenflow::Github.should_receive(:user).and_return(nil)
+        Zenflow::Github.should_receive(:get_config).with('github.user').and_return(nil)
       end
 
       it "authorizes with Github" do
@@ -63,7 +63,7 @@ describe Zenflow::CLI do
   describe "#authorize_github" do
     context "when a zenflow_token is already saved" do
       before do
-        Zenflow::Github.should_receive(:zenflow_token).and_return('super secret token')
+        Zenflow::Github.should_receive(:get_config).with('zenflow.token').and_return('super secret token')
       end
 
       context "and the user decides to set a new one" do
@@ -91,7 +91,7 @@ describe Zenflow::CLI do
 
     context "when a zenflow_token is not already saved" do
       before do
-        Zenflow::Github.should_receive(:zenflow_token).and_return(nil)
+        Zenflow::Github.should_receive(:get_config).with('zenflow.token').and_return(nil)
       end
 
       it "authorizes with Github" do

@@ -2,9 +2,7 @@ require 'spec_helper'
 
 describe Zenflow::PullRequest do
   before(:each){
-    Zenflow::Github.stub(:user).and_return('github-user')
-    Zenflow::Github.stub(:token).and_return('github-token')
-    Zenflow::Github.stub(:zenflow_token).and_return('zenflow-token')
+    Zenflow::Github.stub(:get_config).and_return({'zenflow.token' => 'zenflow-token', 'github.user' => 'github-user'})
     Zenflow::GithubRequest.base_uri 'https://api.github.com/repos/zencoder/zenflow-example'
   }
 
@@ -63,8 +61,8 @@ describe Zenflow::PullRequest do
     end
   end
 
-  describe '.create', vcr: { cassette_name: "create pull request" } do
-    let(:request_options) do
+  context "creating pull requests" do
+    let(:good_request_options) do
       {
         base: 'master',
         head: 'feature/new-branch',
@@ -72,36 +70,40 @@ describe Zenflow::PullRequest do
         body: 'making a new pull request'
       }
     end
-    it{ expect(Zenflow::PullRequest.create(request_options)).to(
-      be_a_kind_of(Zenflow::PullRequest)
-    ) }
-  end
 
-  describe '#valid?' do
-    context 'good request', vcr: { cassette_name: "create pull request" } do
-      let(:request){Zenflow::PullRequest.create({})}
-      it{expect(request.valid?).to be_true}
+    let(:bad_request_options) do
+      {
+        base: 'master',
+        head: 'feature/phoney',
+        title: 'this feature does not exist',
+        body: 'gonna fail'
+      }
     end
 
-    context 'bad request', vcr: { cassette_name: "create bad pull request" } do
-      let(:request_options) do
-        {
-          base: 'master',
-          head: 'feature/phoney',
-          title: 'this feature does not exist',
-          body: 'gonna fail'
-        }
+    describe '.create', vcr: { cassette_name: "create pull request" } do
+      it{ expect(Zenflow::PullRequest.create(good_request_options)).to(
+        be_a_kind_of(Zenflow::PullRequest)
+      ) }
+    end
+
+    describe '#valid?' do
+      context 'good request', vcr: { cassette_name: "create pull request" } do
+        let(:request){Zenflow::PullRequest.create(good_request_options)}
+        it{expect(request.valid?).to be_true}
       end
-      let(:request){Zenflow::PullRequest.create()}
-      it{expect(request.valid?).to be_false}
-    end
-  end
 
-  describe '#[]' do
-    context 'good request', vcr: { cassette_name: "create pull request" } do
-      let(:request){Zenflow::PullRequest.create({})}
-      it{expect(request["comments"]).to_not be_nil}
-      it{expect(request["fdsfa"]).to be_nil}
+      context 'bad request', vcr: { cassette_name: "create bad pull request" } do
+        let(:request){Zenflow::PullRequest.create(bad_request_options)}
+        it{expect(request.valid?).to be_false}
+      end
+    end
+
+    describe '#[]' do
+      context 'good request', vcr: { cassette_name: "create pull request" } do
+        let(:request){Zenflow::PullRequest.create(good_request_options)}
+        it{expect(request["comments"]).to_not be_nil}
+        it{expect(request["fdsfa"]).to be_nil}
+      end
     end
   end
 
