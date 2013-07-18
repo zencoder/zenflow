@@ -18,7 +18,7 @@ module Zenflow
 
       def branch(key)
         val = all_branches(key)
-        if val.size == 1
+        if val && val.size == 1
           val.first
         else
           val
