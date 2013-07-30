@@ -83,12 +83,12 @@ To deploy to production, type `zenflow deploy production`. Hotfixes are not auto
 
 #### <a name="commands"></a> Commands Quick Ref
 
-  zenflow init
-  zenflow (feature|hotfix|release) start
-  zenflow (feature|hotfix|release) deploy
-  zenflow (feature|hotfix|release) review
-  zenflow (feature|hotfix|release) finish
-  zenflow deploy (qa|staging|production)
+    zenflow init
+    zenflow (feature|hotfix|release) start
+    zenflow (feature|hotfix|release) deploy
+    zenflow (feature|hotfix|release) review
+    zenflow (feature|hotfix|release) finish
+    zenflow deploy (qa|staging|production)
 
 ### <a name="requirements"></a> Requirements/Assumptions
 
