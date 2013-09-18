@@ -45,6 +45,16 @@ module Zenflow
     end
 
     def self.valid_response?(response, options={})
+      if response == ''
+        response = options[:default].downcase if options[:default]
+      end
+
+      response.downcase!
+
+      if options[:options]
+        options[:options].map!(&:downcase)
+      end
+
       return false if options[:options] && !options[:options].include?(response)
       return false if options[:validate] && options[:validate].is_a?(Regexp) && !response[options[:validate]]
       return false if options[:required] && response == ""

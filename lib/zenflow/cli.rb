@@ -37,23 +37,26 @@ module Zenflow
 
     desc "init", "Write the zenflow config file."
     def init(force=false)
-      already_configured if Zenflow::Config.configured? && !force
-      set_up_github
-      authorize_github
-      configure_project
-      configure_branches
-      configure_merge_strategy
-      configure_remotes
-      confirm_some_stuff
-      set_up_changelog
-      Zenflow::Config.save!
+      if Zenflow::Config.configured? && !force
+        already_configured
+      else
+        set_up_github
+        authorize_github
+        configure_project
+        configure_branches
+        configure_merge_strategy
+        configure_remotes
+        confirm_some_stuff
+        set_up_changelog
+        Zenflow::Config.save!
+      end
     end
 
     desc "set_up_github", "Set up GitHub user information"
     def set_up_github
       user = Zenflow::Github.user
       if user.to_s != ''
-        if Zenflow::Ask("Your GitHub user is currently #{user}. Do you want to use that?", :options => ["y", "N"], :default => "Y") == "n"
+        if Zenflow::Ask("Your GitHub user is currently #{user}. Do you want to use that?", :options => ["Y", "n"], :default => "y") == "n"
           Zenflow::Github.set_user
         end
       else
@@ -64,7 +67,7 @@ module Zenflow
     desc "authorize_github", "Get an auth token from GitHub"
     def authorize_github
       if Zenflow::Github.zenflow_token
-        if Zenflow::Ask("You already have a token from GitHub. Do you want to set a new one?", :options => ["Y", "n"], :default => "Y") == "y"
+        if Zenflow::Ask("You already have a token from GitHub. Do you want to set a new one?", :options => ["y", "N"], :default => "n") == "y"
           Zenflow::Github.authorize
         end
       else
@@ -76,7 +79,7 @@ module Zenflow
 
       def already_configured
         Zenflow::Log("Warning", :color => :red)
-        if Zenflow::Ask("There is an existing config file. Overwrite it?", :options => ["y", "N"], :default => "N") == "y"
+        if Zenflow::Ask("There is an existing config file. Overwrite it?", :options => ["y", "N"], :default => "n") == "y"
           init(true)
         else
           Zenflow::Log("Aborting...", :color => :red)
@@ -98,7 +101,7 @@ module Zenflow
       end
 
       def configure_branch(branch, question, default)
-        if Zenflow::Ask(question, :options => ["Y", "n"], :default => "Y") == "y"
+        if Zenflow::Ask(question, :options => ["Y", "n"], :default => "y") == "y"
           Zenflow::Config[branch] = Zenflow::Ask("What is the name of that branch?", :default => default)
         else
           Zenflow::Config[branch] = false
@@ -107,7 +110,7 @@ module Zenflow
 
       def configure_remotes
         Zenflow::Config[:remote] = Zenflow::Ask("What is the name of your primary remote?", :default => "origin")
-        if Zenflow::Ask("Use a backup remote?", :options => ["Y", "n"], :default => "n") == "y"
+        if Zenflow::Ask("Use a backup remote?", :options => ["y", "N"], :default => "n") == "y"
           Zenflow::Config[:backup_remote] = Zenflow::Ask("What is the name of your backup remote?", :default => "backup")
         else
           Zenflow::Config[:backup_remote] = false
@@ -118,16 +121,16 @@ module Zenflow
         Zenflow::Config[:merge_strategy] = Zenflow::Ask("What merge strategy would you prefer?", default: "merge", options: ['merge', 'rebase'])
       end
 
+      def confirm_some_stuff
+        Zenflow::Log("Confirmations")
+        Zenflow::Config[:confirm_staging] = Zenflow::Ask("Require deployment to a staging environment?", :options => ["Y", "n"], :default => "y") == "y"
+        Zenflow::Config[:confirm_review] = Zenflow::Ask("Require code reviews?", :options => ["Y", "n"], :default => "y") == "y"
+      end
+
       def set_up_changelog
         return if File.exist?("CHANGELOG.md")
         Zenflow::Log("Changelog Management")
-        Zenflow::Changelog.create if Zenflow::Ask("Set up a changelog?", :options => ["Y", "n"], :default => "Y") == "y"
-      end
-
-      def confirm_some_stuff
-        Zenflow::Log("Confirmations")
-        Zenflow::Config[:confirm_staging] = Zenflow::Ask("Require deployment to a staging environment?", :options => ["Y", "n"], :default => "Y") == "y"
-        Zenflow::Config[:confirm_review] = Zenflow::Ask("Require code reviews?", :options => ["Y", "n"], :default => "Y") == "y"
+        Zenflow::Changelog.create if Zenflow::Ask("Set up a changelog?", :options => ["Y", "n"], :default => "y") == "y"
       end
 
     end
