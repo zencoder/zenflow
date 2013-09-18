@@ -10,8 +10,8 @@ module Zenflow
           def start(name=nil)
             @branch_name = Zenflow::Ask("Name of the #{flow}:",
                                         required:      true,
-                                        validate:      /^[-0-9a-z]+$/,
-                                        error_message: "Names can only contain dashes, 0-9, and a-z",
+                                        validate:      /^[-_0-9a-z]+$/,
+                                        error_message: "Names can only contain dashes, underscores, 0-9, and a-z",
                                         response:      name).downcase
 
             create_new_branch(options[:offline])
