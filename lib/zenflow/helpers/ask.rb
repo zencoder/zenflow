@@ -49,7 +49,7 @@ module Zenflow
         response = options[:default].downcase if options[:default]
       end
 
-      response.downcase!
+      response.downcase! unless options[:response]
 
       if options[:options]
         options[:options].map!(&:downcase)
