@@ -47,8 +47,13 @@ module Zenflow
             def update_branch_from_destination
               destination = (branch(:destination) || branch(:source))
               Zenflow::Branch.update(destination) if !options[:offline]
-              Zenflow::Branch.checkout("#{flow}/#{branch_name}")
-              Zenflow::Branch.merge(destination)
+
+              if Zenflow::Config[:merge_strategy] == 'rebase'
+                Zenflow::Branch.rebase("#{flow}/#{branch_name}", destination)
+              else
+                Zenflow::Branch.checkout("#{flow}/#{branch_name}")
+                Zenflow::Branch.merge(destination)
+              end
             end
 
             def merge_branch_into_destination

@@ -106,13 +106,26 @@ module BranchCommandSpec
     end
 
     describe "#update" do
-      before do
-        Zenflow::Branch.should_receive(:current).with("test").and_return("new-test-branch")
-        Zenflow::Branch.should_receive(:update).with("master")
-        Zenflow::Branch.should_receive(:checkout).with("test/new-test-branch")
-        Zenflow::Branch.should_receive(:merge).with("master")
+      context "merge_strategy: merge" do
+        before do
+          Zenflow::Config.should_receive(:[]).with(:merge_strategy).and_return('merge')
+          Zenflow::Branch.should_receive(:current).with("test").and_return("new-test-branch")
+          Zenflow::Branch.should_receive(:update).with("master")
+          Zenflow::Branch.should_receive(:checkout).with("test/new-test-branch")
+          Zenflow::Branch.should_receive(:merge).with("master")
+        end
+        it { TestCommand.new.invoke(:update) }
       end
-      it { TestCommand.new.invoke(:update) }
+
+      context "merge_strategy: rebase" do
+        before do
+          Zenflow::Config.should_receive(:[]).with(:merge_strategy).and_return('rebase')
+          Zenflow::Branch.should_receive(:current).with("test").and_return("new-test-branch")
+          Zenflow::Branch.should_receive(:update).with("master")
+          Zenflow::Branch.should_receive(:rebase).with("test/new-test-branch", 'master')
+        end
+        it { TestCommand.new.invoke(:update) }
+      end
     end
 
     describe "#diff" do
@@ -257,51 +270,108 @@ module BranchCommandSpec
           Zenflow::Config.should_receive(:[]).with(:confirm_review).and_return(false)
         end
 
-        context "when online" do
+        context "with a merge_strategy of 'merge'" do
           before do
-            Zenflow::Branch.should_receive(:update).with("production")
-            Zenflow::Branch.should_receive(:checkout).with("test/new-test-branch")
-            Zenflow::Branch.should_receive(:merge).with("production")
-
-            Zenflow::Version.should_receive(:update).with(:patch)
-
-            Zenflow::Changelog.should_receive(:update).with(rotate: true, name: "new-test-branch").and_return("YES")
-
-            Zenflow::Branch.should_receive(:checkout).with("master")
-            Zenflow::Branch.should_receive(:merge).with("test/new-test-branch")
-            Zenflow::Branch.should_receive(:push).with("master")
-            Zenflow::Branch.should_receive(:checkout).with("production")
-            Zenflow::Branch.should_receive(:merge).with("test/new-test-branch")
-            Zenflow::Branch.should_receive(:push).with("production")
-
-            Zenflow::Branch.should_receive(:tag).with(Zenflow::Version.current.to_s, "YES")
-            Zenflow::Branch.should_receive(:push).with(:tags)
-
-            Zenflow::Branch.should_receive(:delete_remote).with("test/new-test-branch")
-            Zenflow::Branch.should_receive(:delete_local).with("test/new-test-branch", force: true)
+            Zenflow::Config.should_receive(:[]).with(:merge_strategy).and_return('merge')
           end
-          it { TestCommand.new.invoke(:finish) }
+
+          context "when online" do
+            before do
+              Zenflow::Branch.should_receive(:update).with("production")
+              Zenflow::Branch.should_receive(:checkout).with("test/new-test-branch")
+              Zenflow::Branch.should_receive(:merge).with("production")
+
+              Zenflow::Version.should_receive(:update).with(:patch)
+
+              Zenflow::Changelog.should_receive(:update).with(rotate: true, name: "new-test-branch").and_return("YES")
+
+              Zenflow::Branch.should_receive(:checkout).with("master")
+              Zenflow::Branch.should_receive(:merge).with("test/new-test-branch")
+              Zenflow::Branch.should_receive(:push).with("master")
+              Zenflow::Branch.should_receive(:checkout).with("production")
+              Zenflow::Branch.should_receive(:merge).with("test/new-test-branch")
+              Zenflow::Branch.should_receive(:push).with("production")
+
+              Zenflow::Branch.should_receive(:tag).with(Zenflow::Version.current.to_s, "YES")
+              Zenflow::Branch.should_receive(:push).with(:tags)
+
+              Zenflow::Branch.should_receive(:delete_remote).with("test/new-test-branch")
+              Zenflow::Branch.should_receive(:delete_local).with("test/new-test-branch", force: true)
+            end
+            it { TestCommand.new.invoke(:finish) }
+          end
+
+          context "when offline" do
+            before do
+              Zenflow::Branch.should_receive(:checkout).with("test/new-test-branch")
+              Zenflow::Branch.should_receive(:merge).with("production")
+
+              Zenflow::Version.should_receive(:update).with(:patch)
+
+              Zenflow::Changelog.should_receive(:update).with(rotate: true, name: "new-test-branch").and_return("YES")
+
+              Zenflow::Branch.should_receive(:checkout).with("master")
+              Zenflow::Branch.should_receive(:merge).with("test/new-test-branch")
+              Zenflow::Branch.should_receive(:checkout).with("production")
+              Zenflow::Branch.should_receive(:merge).with("test/new-test-branch")
+
+              Zenflow::Branch.should_receive(:tag).with(Zenflow::Version.current.to_s, "YES")
+
+              Zenflow::Branch.should_receive(:delete_local).with("test/new-test-branch", force: true)
+            end
+            it { TestCommand.new.invoke(:finish, [], offline: true) }
+          end
         end
 
-        context "when offline" do
+        context "with a merge_strategy of 'rebase'" do
           before do
-            Zenflow::Branch.should_receive(:checkout).with("test/new-test-branch")
-            Zenflow::Branch.should_receive(:merge).with("production")
-
-            Zenflow::Version.should_receive(:update).with(:patch)
-
-            Zenflow::Changelog.should_receive(:update).with(rotate: true, name: "new-test-branch").and_return("YES")
-
-            Zenflow::Branch.should_receive(:checkout).with("master")
-            Zenflow::Branch.should_receive(:merge).with("test/new-test-branch")
-            Zenflow::Branch.should_receive(:checkout).with("production")
-            Zenflow::Branch.should_receive(:merge).with("test/new-test-branch")
-
-            Zenflow::Branch.should_receive(:tag).with(Zenflow::Version.current.to_s, "YES")
-
-            Zenflow::Branch.should_receive(:delete_local).with("test/new-test-branch", force: true)
+            Zenflow::Config.should_receive(:[]).with(:merge_strategy).and_return('rebase')
           end
-          it { TestCommand.new.invoke(:finish, [], offline: true) }
+
+          context "when online" do
+            before do
+              Zenflow::Branch.should_receive(:update).with("production")
+              Zenflow::Branch.should_receive(:rebase).with("test/new-test-branch", 'production')
+
+              Zenflow::Version.should_receive(:update).with(:patch)
+
+              Zenflow::Changelog.should_receive(:update).with(rotate: true, name: "new-test-branch").and_return("YES")
+
+              Zenflow::Branch.should_receive(:checkout).with("master")
+              Zenflow::Branch.should_receive(:merge).with("test/new-test-branch")
+              Zenflow::Branch.should_receive(:push).with("master")
+              Zenflow::Branch.should_receive(:checkout).with("production")
+              Zenflow::Branch.should_receive(:merge).with("test/new-test-branch")
+              Zenflow::Branch.should_receive(:push).with("production")
+
+              Zenflow::Branch.should_receive(:tag).with(Zenflow::Version.current.to_s, "YES")
+              Zenflow::Branch.should_receive(:push).with(:tags)
+
+              Zenflow::Branch.should_receive(:delete_remote).with("test/new-test-branch")
+              Zenflow::Branch.should_receive(:delete_local).with("test/new-test-branch", force: true)
+            end
+            it { TestCommand.new.invoke(:finish) }
+          end
+
+          context "when offline" do
+            before do
+              Zenflow::Branch.should_receive(:rebase).with("test/new-test-branch", 'production')
+
+              Zenflow::Version.should_receive(:update).with(:patch)
+
+              Zenflow::Changelog.should_receive(:update).with(rotate: true, name: "new-test-branch").and_return("YES")
+
+              Zenflow::Branch.should_receive(:checkout).with("master")
+              Zenflow::Branch.should_receive(:merge).with("test/new-test-branch")
+              Zenflow::Branch.should_receive(:checkout).with("production")
+              Zenflow::Branch.should_receive(:merge).with("test/new-test-branch")
+
+              Zenflow::Branch.should_receive(:tag).with(Zenflow::Version.current.to_s, "YES")
+
+              Zenflow::Branch.should_receive(:delete_local).with("test/new-test-branch", force: true)
+            end
+            it { TestCommand.new.invoke(:finish, [], offline: true) }
+          end
         end
       end
     end

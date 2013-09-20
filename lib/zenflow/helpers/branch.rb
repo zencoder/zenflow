@@ -14,8 +14,13 @@ module Zenflow
       end
 
       def update(name)
-        Zenflow::Log("Updating the #{name} branch")
-        Zenflow::Shell["git checkout #{name} && git pull"]
+        if Zenflow::Config[:merge_strategy] == 'rebase'
+          Zenflow::Log("Updating the #{name} branch using pull with --rebase")
+          Zenflow::Shell["git checkout #{name} && git pull --rebase"]
+        else
+          Zenflow::Log("Updating the #{name} branch")
+          Zenflow::Shell["git checkout #{name} && git pull"]
+        end
       end
 
       def create(name, base)
@@ -49,6 +54,11 @@ module Zenflow
       def checkout(name)
         Zenflow::Log("Switching to the #{name} branch")
         Zenflow::Shell["git checkout #{name}"]
+      end
+
+      def rebase(name, source)
+        Zenflow::Log("Rebasing #{name} on top of the #{source} branch")
+        Zenflow::Shell["git rebase #{source} #{name}"]
       end
 
       def merge(name)
