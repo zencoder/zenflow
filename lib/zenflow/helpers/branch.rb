@@ -13,13 +13,22 @@ module Zenflow
         branch.chomp.sub(/\* #{prefix}\/?/, "") unless branch.empty?
       end
 
-      def update(name)
-        if Zenflow::Config[:merge_strategy] == 'rebase'
+      def update(name, rebase_override=false)
+        if Zenflow::Config[:merge_strategy] == 'rebase' || rebase_override == true
           Zenflow::Log("Updating the #{name} branch using pull with --rebase")
           Zenflow::Shell["git checkout #{name} && git pull --rebase"]
         else
           Zenflow::Log("Updating the #{name} branch")
           Zenflow::Shell["git checkout #{name} && git pull"]
+        end
+      end
+
+      def apply_merge_strategy(flow, name, destination, rebase_override=false)
+        if Zenflow::Config[:merge_strategy] == 'rebase' || rebase_override == true
+          Zenflow::Branch.rebase("#{flow}/#{name}", destination)
+        else
+          Zenflow::Branch.checkout("#{flow}/#{name}")
+          Zenflow::Branch.merge(destination)
         end
       end
 

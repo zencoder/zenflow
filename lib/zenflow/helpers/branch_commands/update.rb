@@ -10,13 +10,8 @@ module Zenflow
           option :rebase, type: :boolean, desc: "Rebases the current branch against a source branch instead of doing a merge of that source into itself"
           def update
             branch_name
-            Zenflow::Branch.update(branch(:source)) if !options[:offline]
-            if Zenflow::Config[:merge_strategy] == 'rebase' || options[:rebase]
-              Zenflow::Branch.rebase("#{flow}/#{branch_name}", branch(:source))
-            else
-              Zenflow::Branch.checkout("#{flow}/#{branch_name}")
-              Zenflow::Branch.merge(branch(:source))
-            end
+            Zenflow::Branch.update(branch(:source), options[:rebase]) if !options[:offline]
+            Zenflow::Branch.apply_merge_strategy(flow, branch_name, branch(:source), options[:rebase])
           end
 
         end
