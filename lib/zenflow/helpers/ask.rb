@@ -49,11 +49,11 @@ module Zenflow
         response = options[:default].downcase if options[:default]
       end
 
+      # The guard in the line below is required to allow branches to be named
+      # directly on the command line and bypass the prompt for branch name
       response.downcase! unless options[:response]
 
-      if options[:options]
-        options[:options].map!(&:downcase)
-      end
+      options[:options].map!(&:downcase) if options[:options]
 
       return false if options[:options] && !options[:options].include?(response)
       return false if options[:validate] && options[:validate].is_a?(Regexp) && !response[options[:validate]]
