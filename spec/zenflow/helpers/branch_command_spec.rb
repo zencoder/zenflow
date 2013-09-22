@@ -110,18 +110,26 @@ module BranchCommandSpec
         before do
           Zenflow::Config.should_receive(:[]).with(:merge_strategy).and_return('merge')
           Zenflow::Branch.should_receive(:current).with("test").and_return("new-test-branch")
-          Zenflow::Branch.should_receive(:update).with("master")
           Zenflow::Branch.should_receive(:checkout).with("test/new-test-branch")
           Zenflow::Branch.should_receive(:merge).with("master")
+
+          context "no override for --rebase" do
+            Zenflow::Branch.should_receive(:update).with("master", nil)
+            it { TestCommand.new.invoke(:update) }
+          end
+
+          context "override for --rebase" do
+            Zenflow::Branch.should_receive(:update).with("master", true)
+            it { TestCommand.new.invoke(:update, true) }
+          end
         end
-        it { TestCommand.new.invoke(:update) }
       end
 
       context "merge_strategy: rebase" do
         before do
           Zenflow::Config.should_receive(:[]).with(:merge_strategy).and_return('rebase')
           Zenflow::Branch.should_receive(:current).with("test").and_return("new-test-branch")
-          Zenflow::Branch.should_receive(:update).with("master")
+          Zenflow::Branch.should_receive(:update).with("master", nil)
           Zenflow::Branch.should_receive(:rebase).with("test/new-test-branch", 'master')
         end
         it { TestCommand.new.invoke(:update) }
