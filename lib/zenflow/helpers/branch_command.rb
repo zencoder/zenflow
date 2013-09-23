@@ -51,12 +51,13 @@ module Zenflow
 
   protected
 
+    #TODO: move the validation regex to a single place
     def branch_name
       @branch_name ||= Zenflow::Branch.current(flow) ||
                        Zenflow::Ask("Name of the #{flow}:",
                            required:      true,
-                           validate:      /^[-0-9a-z]+$/,
-                           error_message: "Names can only contain dashes, 0-9, and a-z").downcase
+                           validate:      /^[-_0-9a-z]+$/,
+                           error_message: "Names can only contain dashes, underscores, 0-9, and a-z").downcase
     end
 
 
