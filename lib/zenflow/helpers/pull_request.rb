@@ -13,7 +13,7 @@ module Zenflow
 
       def find_by_ref(ref, options={})
         Zenflow::Log("Looking up pull request for #{ref}") unless options[:silent]
-        if list != []
+        if list.any?
           pull = list.detect do |p|
             p["head"]["ref"] == ref
           end
