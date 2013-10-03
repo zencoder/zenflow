@@ -8,3 +8,4 @@ confirm_staging: true
 remote: origin
 release_branch: production
 staging_branch: staging
+merge_strategy: merge

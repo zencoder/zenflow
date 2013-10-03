@@ -47,9 +47,41 @@ describe Zenflow::Branch do
 
   describe "self.update" do
     it "updates the branch" do
+      Zenflow::Config.should_receive(:[]).with(:merge_strategy).and_return('merge')
       Zenflow.should_receive(:Log).with("Updating the master branch")
       Zenflow::Shell.should_receive(:run).with("git checkout master && git pull")
       Zenflow::Branch.update('master')
+    end
+
+    it "updates the branch using a rebase override" do
+      Zenflow::Config.should_receive(:[]).with(:merge_strategy).and_return('merge')
+      Zenflow.should_receive(:Log).with("Updating the master branch using pull with --rebase")
+      Zenflow::Shell.should_receive(:run).with("git checkout master && git pull --rebase")
+      Zenflow::Branch.update('master', true)
+    end
+  end
+
+  describe "self.apply_merge_strategy" do
+    it "merges the branch using the merge strategy" do
+      Zenflow::Config.should_receive(:[]).with(:merge_strategy).and_return('merge')
+      Zenflow::Branch.should_receive(:checkout).with("feature/testing-123")
+      Zenflow::Branch.should_receive(:merge).with('master')
+
+      Zenflow::Branch.apply_merge_strategy('feature', 'testing-123', 'master')
+    end
+
+    it "merges the branch using the rebase strategy" do
+      Zenflow::Config.should_receive(:[]).with(:merge_strategy).and_return('rebase')
+      Zenflow::Branch.should_receive(:rebase).with("feature/testing-123", 'master')
+
+      Zenflow::Branch.apply_merge_strategy('feature', 'testing-123', 'master')
+    end
+
+    it "optionally allows the merge strategy to be overridden by a --rebase flag when doing an update" do
+      Zenflow::Config.should_receive(:[]).with(:merge_strategy).and_return('merge')
+      Zenflow::Branch.should_receive(:rebase).with("feature/testing-123", 'master')
+
+      Zenflow::Branch.apply_merge_strategy('feature', 'testing-123', 'master', true)
     end
   end
 

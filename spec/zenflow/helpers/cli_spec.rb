@@ -155,6 +155,24 @@ describe Zenflow::CLI do
     end
   end
 
+  describe "#configure_merge_strategy" do
+    context "when the user wants to keep the default merge strategy of 'merge'" do
+      it 'sets the merge strategy to merge' do
+        Zenflow.should_receive(:Ask).with("What merge strategy would you prefer?", :options => ["merge", "rebase"], :default => "merge").and_return('merge')
+        Zenflow::Config.should_receive(:[]=).with(:merge_strategy, 'merge')
+        subject.configure_merge_strategy
+      end
+    end
+
+    context "when the user wants to change the default merge strategy to 'rebase'" do
+      it 'sets the merge strategy to rebase' do
+        Zenflow.should_receive(:Ask).with("What merge strategy would you prefer?", :options => ["merge", "rebase"], :default => "merge").and_return('rebase')
+        Zenflow::Config.should_receive(:[]=).with(:merge_strategy, 'rebase')
+        subject.configure_merge_strategy
+      end
+    end
+  end
+
   describe "#configure_project" do
     it 'asks the user to name their project' do
       Zenflow.should_receive(:Ask).with("What is the name of this project?", :required => true).and_return('zenflow')
@@ -265,6 +283,7 @@ describe Zenflow::CLI do
         subject.should_receive(:authorize_github)
         subject.should_receive(:configure_project)
         subject.should_receive(:configure_branches)
+        subject.should_receive(:configure_merge_strategy)
         subject.should_receive(:configure_remotes)
         subject.should_receive(:confirm_some_stuff)
         subject.should_receive(:set_up_changelog)
@@ -285,6 +304,7 @@ describe Zenflow::CLI do
           subject.should_receive(:authorize_github)
           subject.should_receive(:configure_project)
           subject.should_receive(:configure_branches)
+          subject.should_receive(:configure_merge_strategy)
           subject.should_receive(:configure_remotes)
           subject.should_receive(:confirm_some_stuff)
           subject.should_receive(:set_up_changelog)
@@ -305,6 +325,7 @@ describe Zenflow::CLI do
           subject.should_not_receive(:authorize_github)
           subject.should_not_receive(:configure_project)
           subject.should_not_receive(:configure_branches)
+          subject.should_not_receive(:configure_merge_strategy)
           subject.should_not_receive(:configure_remotes)
           subject.should_not_receive(:confirm_some_stuff)
           subject.should_not_receive(:set_up_changelog)

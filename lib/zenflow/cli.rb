@@ -42,6 +42,7 @@ module Zenflow
       authorize_github
       configure_project
       configure_branches
+      configure_merge_strategy
       configure_remotes
       confirm_some_stuff
       set_up_changelog
@@ -111,6 +112,10 @@ module Zenflow
         else
           Zenflow::Config[:backup_remote] = false
         end
+      end
+
+      def configure_merge_strategy
+        Zenflow::Config[:merge_strategy] = Zenflow::Ask("What merge strategy would you prefer?", default: "merge", options: ['merge', 'rebase'])
       end
 
       def set_up_changelog
