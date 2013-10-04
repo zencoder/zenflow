@@ -67,7 +67,7 @@ describe Zenflow::Changelog do
         file_handler.should_receive(:write).with('some other text I suppose')
         File.should_receive(:open).with("CHANGELOG.md", "w").and_yield(file_handler)
         Zenflow::Changelog.should_not_receive(:rotate)
-        Zenflow::Shell.should_receive(:run).with("git add . && git commit -a -m 'Adding line to CHANGELOG: changed the world'")
+        Zenflow::Shell.should_receive(:run).with("git add CHANGELOG.md && git commit -a -m 'Adding line to CHANGELOG: changed the world'")
         Zenflow::Changelog.prepend_change_to_changelog('changed the world')
       end
     end
@@ -76,7 +76,7 @@ describe Zenflow::Changelog do
       it "prepends changes to the changelog" do
         File.should_receive(:open).with("CHANGELOG.md", "w")
         Zenflow::Changelog.should_receive(:rotate)
-        Zenflow::Shell.should_receive(:run).with("git add . && git commit -a -m 'Adding line to CHANGELOG: changed the world'")
+        Zenflow::Shell.should_receive(:run).with("git add CHANGELOG.md && git commit -a -m 'Adding line to CHANGELOG: changed the world'")
         Zenflow::Changelog.prepend_change_to_changelog('changed the world', :rotate => true)
       end
     end
