@@ -257,7 +257,7 @@ module BranchCommandSpec
       context "with confirmations" do
         it "without deployment to staging" do
           Zenflow::Config.should_receive(:[]).with(:confirm_staging).and_return(true)
-          Zenflow.should_receive(:Ask).with("Has this been tested in a staging environment first?", options: ["Y", "n"], default: "Y").and_return("n")
+          Zenflow.should_receive(:Ask).with("Has this been tested in a staging environment first?", options: ["Y", "n"], default: "y").and_return("n")
           Zenflow.should_receive(:Log).with("Sorry, deploy to a staging environment first", color: :red)
           expect{TestCommand.new.invoke(:finish)}.to raise_error(SystemExit)
         end
@@ -265,8 +265,8 @@ module BranchCommandSpec
         it "without review" do
           Zenflow::Config.should_receive(:[]).with(:confirm_staging).and_return(true)
           Zenflow::Config.should_receive(:[]).with(:confirm_review).and_return(true)
-          Zenflow.should_receive(:Ask).with("Has this been tested in a staging environment first?", options: ["Y", "n"], default: "Y").and_return("y")
-          Zenflow.should_receive(:Ask).with("Has this been code reviewed yet?", options: ["Y", "n"], default: "Y").and_return("n")
+          Zenflow.should_receive(:Ask).with("Has this been tested in a staging environment first?", options: ["Y", "n"], default: "y").and_return("y")
+          Zenflow.should_receive(:Ask).with("Has this been code reviewed yet?", options: ["Y", "n"], default: "y").and_return("n")
           Zenflow.should_receive(:Log).with("Please have someone look at this first", color: :red)
           expect{TestCommand.new.invoke(:finish)}.to raise_error(SystemExit)
         end

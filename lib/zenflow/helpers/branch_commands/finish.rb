@@ -23,7 +23,7 @@ module Zenflow
           no_commands do
             def confirm(confirmation, question, failure_response)
               return unless Zenflow::Config[confirmation]
-              if Zenflow::Ask(question, options: ["Y", "n"], default: "Y") == "n"
+              if Zenflow::Ask(question, options: ["Y", "n"], default: "y") == "n"
                 Zenflow::Log(failure_response, color: :red)
                 exit(1)
               end
