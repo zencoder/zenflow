@@ -29,7 +29,7 @@ module Zenflow
           f.write prepended_changelog(new_changes)
         end
         rotate(:name => options[:name]) if options[:rotate]
-        Zenflow::Shell["git add . && git commit -a -m 'Adding line to CHANGELOG: #{new_changes}'"]
+        Zenflow::Shell["git add CHANGELOG.md && git commit -a -m 'Adding line to CHANGELOG: #{new_changes}'"]
       end
 
       def prepended_changelog(new_changes)
