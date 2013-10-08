@@ -45,14 +45,7 @@ module Zenflow
     end
 
     def self.valid_response?(response, options={})
-      if response == ''
-        response = options[:default].downcase if options[:default]
-      end
-
-      # The guard in the line below is required to allow branches to be named
-      # directly on the command line and bypass the prompt for branch name
-      response.downcase! unless options[:response]
-
+      response = normalize_response(response, options[:default])
       options[:options].map!(&:downcase) if options[:options]
 
       return false if options[:options] && !options[:options].include?(response)
@@ -70,6 +63,13 @@ module Zenflow
         message = %{"#{response}" is not a valid response.}
       end
       "-----> #{message} Try again.".red
+    end
+
+    protected
+
+    def self.normalize_response(primary_response, secondary_response)
+      return secondary_response.downcase if primary_response.to_s == '' && !secondary_response.nil?
+      primary_response.downcase
     end
   end
 
