@@ -9,7 +9,7 @@ module Zenflow
           def branches
             Zenflow::Log("Available #{flow} branches:")
             Zenflow::Branch.list(flow).each do |branch|
-              Zenflow::Log("* #{branch}", indent: true, color: false)
+              Zenflow::Log("* #{branch}", :indent => true, :color => false)
             end
           end
 

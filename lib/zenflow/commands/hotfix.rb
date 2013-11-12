@@ -3,9 +3,9 @@ module Zenflow
 
     flow "hotfix"
 
-    branch source: Zenflow::Config[:release_branch]
-    branch deploy: Zenflow::Config[:staging_branch]
-    branch deploy: Zenflow::Config[:qa_branch]
+    branch :source => Zenflow::Config[:release_branch]
+    branch :deploy => Zenflow::Config[:staging_branch]
+    branch :deploy => Zenflow::Config[:qa_branch]
 
     changelog :rotate
     version :patch

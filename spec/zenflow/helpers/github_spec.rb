@@ -18,7 +18,7 @@ describe Zenflow::Github do
 
     it 'asks for the user name and sets it to github.user' do
       Zenflow.should_receive(:Ask).and_return(user)
-      Zenflow::Shell.should_receive(:run).with(/github\.user #{user}/, silent: true)
+      Zenflow::Shell.should_receive(:run).with(/github\.user #{user}/, :silent => true)
       Zenflow::Github.set_user
     end
   end

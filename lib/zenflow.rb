@@ -3,7 +3,13 @@ require 'yaml'
 require 'colored'
 require 'terminal-table'
 require 'httparty'
-require 'json'
+require 'multi_json'
+begin
+  require 'json'
+  MultiJson.adapter = :json_gem
+rescue ::LoadError
+  MultiJson.adapter = :ok_json
+end
 require 'zenflow/helpers/version'
 require 'zenflow/version'
 require 'zenflow/helpers/log'

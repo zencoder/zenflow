@@ -12,7 +12,7 @@ module Zenflow
   end
 
   class Deploy < Thor
-    class_option :migrations, type: :boolean, desc: "Run migrations during deployment", aliases: :m
+    class_option :migrations, :type => :boolean, :desc => "Run migrations during deployment", :aliases => :m
 
     desc "qa", "Deploy to qa."
     def qa

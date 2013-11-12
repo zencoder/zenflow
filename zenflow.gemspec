@@ -21,9 +21,9 @@ Gem::Specification.new do |s|
   s.add_dependency "colored", "~> 1.2"
   s.add_dependency "terminal-table", "~> 1.4.5"
   s.add_dependency "httparty", "~> 0.11.0"
+  s.add_dependency "multi_json"
   s.add_development_dependency('rspec', '~> 2.14')
   s.add_development_dependency('simplecov', '~> 0.7.1')
-  s.add_development_dependency('debugger', '~> 1.6.1')
   s.add_development_dependency('fuubar', '~> 1.1.1')
   s.add_development_dependency('guard-rspec', '~> 3.0.2')
   s.add_development_dependency('vcr', '~> 2.5.0')

@@ -27,7 +27,7 @@ module Zenflow
         if pull = find_by_ref(ref)
           new(pull)
         else
-          Zenflow::Log("No open pull request was found for #{ref}", color: :red)
+          Zenflow::Log("No open pull request was found for #{ref}", :color => :red)
           exit(1)
         end
       end
@@ -37,14 +37,13 @@ module Zenflow
       end
 
       def create(options={})
-        response = Zenflow::GithubRequest.post("/pulls",
-          body: {
-            "base"  => options[:base],
-            "head"  => options[:head],
-            "title" => options[:title],
-            "body"  => options[:body]
-          }.to_json
-        )
+        body = MultiJson.dump({
+          "base"  => options[:base],
+          "head"  => options[:head],
+          "title" => options[:title],
+          "body"  => options[:body]
+        })
+        response = Zenflow::GithubRequest.post("/pulls", :body => body)
         new(response.parsed_response)
       end
     end

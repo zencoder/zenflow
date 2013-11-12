@@ -43,7 +43,7 @@ module Zenflow
 
       def delete_branches
         Zenflow::Branch.delete_remote("#{flow}/#{branch_name}") if !options[:offline]
-        Zenflow::Branch.delete_local("#{flow}/#{branch_name}", force: true)
+        Zenflow::Branch.delete_local("#{flow}/#{branch_name}", :force => true)
       end
 
     end
@@ -55,9 +55,9 @@ module Zenflow
     def branch_name
       @branch_name ||= Zenflow::Branch.current(flow) ||
                        Zenflow::Ask("Name of the #{flow}:",
-                           required:      true,
-                           validate:      /^[-_0-9a-z]+$/,
-                           error_message: "Names can only contain dashes, underscores, 0-9, and a-z").downcase
+                           :required => true,
+                           :validate => /^[-_0-9a-z]+$/,
+                           :error_message => "Names can only contain dashes, underscores, 0-9, and a-z").downcase
     end
 
 
