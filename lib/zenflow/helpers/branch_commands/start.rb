@@ -6,13 +6,13 @@ module Zenflow
         thor.class_eval do
 
           desc "start [NAME]", "Start a branch"
-          option :offline, type: :boolean, desc: "Runs in offline mode"
+          option :offline, :type => :boolean, :desc => "Runs in offline mode"
           def start(name=nil)
             @branch_name = Zenflow::Ask("Name of the #{flow}:",
-                                        required:      true,
-                                        validate:      /^[-_0-9a-z]+$/,
-                                        error_message: "Names can only contain dashes, underscores, 0-9, and a-z",
-                                        response:      name).downcase
+                                        :required =>      true,
+                                        :validate =>      /^[-_0-9a-z]+$/,
+                                        :error_message => "Names can only contain dashes, underscores, 0-9, and a-z",
+                                        :response =>      name).downcase
 
             create_new_branch(options[:offline])
           end

@@ -47,14 +47,14 @@ describe Zenflow::Shell do
       let(:command){'ls'}
 
       it 'runs the command' do
-        Zenflow::Shell.should_receive(:run_without_output).with(command, {silent: true})
-        Zenflow::Shell.run(command, silent: true)
+        Zenflow::Shell.should_receive(:run_without_output).with(command, {:silent => true})
+        Zenflow::Shell.run(command, :silent => true)
       end
 
       it 'logs the command' do
         allow(Zenflow::Shell).to receive(:run_without_output).and_return(true)
         Zenflow.should_receive(:LogToFile).once.with("$ #{command}\n")
-        Zenflow::Shell.run(command, silent: true)
+        Zenflow::Shell.run(command, :silent => true)
       end
     end
 
@@ -70,7 +70,7 @@ describe Zenflow::Shell do
       it 'logs the command' do
         allow(Zenflow::Shell).to receive(:run_with_output).and_return(true)
         Zenflow.should_receive(:Log).once.with(
-          "$ #{command}", arrows: false, color: :yellow
+          "$ #{command}", :arrows => false, :color => :yellow
         )
         Zenflow::Shell.run(command)
       end
@@ -122,9 +122,9 @@ describe Zenflow::Shell do
         allow(Zenflow::Shell).to receive(:last_exit_status).and_return(response)
         Zenflow::Shell.should_receive(:`).with(command).and_return(response)
         Zenflow::Shell.should_receive(:puts).with(Regexp.new(response))
-        Zenflow.should_receive(:Log).with(/aborted/, color: :red)
-        Zenflow.should_receive(:Log).with(/exit status: #{response}/i, color: :red, indent: true)
-        Zenflow.should_receive(:Log).with(/following commands manually/, color: :red)
+        Zenflow.should_receive(:Log).with(/aborted/, :color => :red)
+        Zenflow.should_receive(:Log).with(/exit status: #{response}/i, :color => :red, :indent => true)
+        Zenflow.should_receive(:Log).with(/following commands manually/, :color => :red)
       }
 
       subject{Zenflow::Shell.run_with_result_check(command)}

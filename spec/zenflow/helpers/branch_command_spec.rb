@@ -4,10 +4,10 @@ module BranchCommandSpec
 
   class TestCommand < Zenflow::BranchCommand
     flow "test"
-    branch source: "master"
-    branch destination: "production"
-    branch deploy: "deploy1"
-    branch deploy: "deploy2"
+    branch :source => "master"
+    branch :destination => "production"
+    branch :deploy => "deploy1"
+    branch :deploy => "deploy2"
     version :patch
     changelog :rotate
     tag true
@@ -18,7 +18,7 @@ module BranchCommandSpec
       before do
         Zenflow.should_receive(:Log).with("Available test branches:")
         Zenflow::Branch.should_receive(:list).with("test").and_return(["YES"])
-        Zenflow.should_receive(:Log).with("* YES", indent: true, color: false)
+        Zenflow.should_receive(:Log).with("* YES", :indent => true, :color => false)
       end
       it { TestCommand.new.invoke(:branches) }
     end
@@ -41,7 +41,7 @@ module BranchCommandSpec
           Zenflow::Branch.should_receive(:checkout).with("master")
           Zenflow::Branch.should_receive(:create).with("test/new-test-branch", "master")
         end
-        it { TestCommand.new.invoke(:start, nil, offline: true) }
+        it { TestCommand.new.invoke(:start, nil, :offline => true) }
       end
 
       context "when supplying a name" do
@@ -71,7 +71,7 @@ module BranchCommandSpec
         before do
           Zenflow::Branch.should_receive(:current).with("test").and_return("new-test-branch")
           Zenflow::Config.should_receive(:[]).with(:deployable).and_return(false)
-          Zenflow.should_receive(:Log).with("This project is not deployable right now", color: :red)
+          Zenflow.should_receive(:Log).with("This project is not deployable right now", :color => :red)
         end
         it { expect{TestCommand.new.invoke(:deploy)}.to raise_error(SystemExit) }
       end
@@ -158,9 +158,9 @@ module BranchCommandSpec
       context "when pull request is found" do
         before do
           Zenflow::Branch.should_receive(:current).with("test").and_return("new-test-branch")
-          Zenflow::PullRequest.should_receive(:find_by_ref).with("test/new-test-branch").and_return({ html_url: "URL"})
-          Zenflow.should_receive(:Log).with("A pull request for test/new-test-branch already exists", color: :red)
-          Zenflow.should_receive(:Log).with("URL", indent: true, color: false)
+          Zenflow::PullRequest.should_receive(:find_by_ref).with("test/new-test-branch").and_return({ :html_url => "URL"})
+          Zenflow.should_receive(:Log).with("A pull request for test/new-test-branch already exists", :color => :red)
+          Zenflow.should_receive(:Log).with("URL", :indent => true, :color => false)
         end
         it { expect{TestCommand.new.invoke(:review)}.to raise_error(SystemExit) }
       end
@@ -173,46 +173,46 @@ module BranchCommandSpec
 
         context "with valid request" do
           before do
-            Zenflow.should_receive(:Ask).with("Describe this test:", required: true).and_return("A great test")
-            pull = double(valid?: true)
+            Zenflow.should_receive(:Ask).with("Describe this test:", :required => true).and_return("A great test")
+            pull = double(:valid? => true)
             pull.stub(:[]).with("html_url").and_return("URL")
             Zenflow::PullRequest.should_receive(:create).with(
-              base:  "master",
-              head:  "test/new-test-branch",
-              title: "test: new-test-branch",
-              body:  "A great test"
+              :base =>  "master",
+              :head =>  "test/new-test-branch",
+              :title => "test: new-test-branch",
+              :body =>  "A great test"
             ).and_return(pull)
             Zenflow.should_receive(:Log).with("Pull request was created!")
-            Zenflow.should_receive(:Log).with("URL", indent: true, color: false)
+            Zenflow.should_receive(:Log).with("URL", :indent => true, :color => false)
             Zenflow::Shell.should_receive(:[]).with("open URL")
           end
           it { TestCommand.new.invoke(:review) }
         end
 
         context "with invalid request" do
-          let(:pull){ double(valid?: false) }
+          let(:pull){ double(:valid? => false) }
 
           before do
-            Zenflow.should_receive(:Ask).with("Describe this test:", required: true).and_return("A great test")
+            Zenflow.should_receive(:Ask).with("Describe this test:", :required => true).and_return("A great test")
             Zenflow::PullRequest.should_receive(:create).with(
-              base:  "master",
-              head:  "test/new-test-branch",
-              title: "test: new-test-branch",
-              body:  "A great test"
+              :base =>  "master",
+              :head =>  "test/new-test-branch",
+              :title => "test: new-test-branch",
+              :body =>  "A great test"
             ).and_return(pull)
-            Zenflow.should_receive(:Log).with("There was a problem creating the pull request:", color: :red)
+            Zenflow.should_receive(:Log).with("There was a problem creating the pull request:", :color => :red)
           end
 
           it "displays errors" do
             pull.stub(:[]).with("errors").and_return([{"message" => "ERROR"},{"message" => "ERROR"}])
-            Zenflow.should_receive(:Log).with("* ERROR", indent: true, color: :red).twice
+            Zenflow.should_receive(:Log).with("* ERROR", :indent => true, :color => :red).twice
             TestCommand.new.invoke(:review)
           end
 
           it "displays an error message" do
             pull.stub(:[]).with("errors")
             pull.stub(:[]).with("message").and_return("ERROR")
-            Zenflow.should_receive(:Log).with("* ERROR", indent: true, color: :red)
+            Zenflow.should_receive(:Log).with("* ERROR", :indent => true, :color => :red)
             TestCommand.new.invoke(:review)
           end
 
@@ -236,16 +236,16 @@ module BranchCommandSpec
       context "when online" do
         before do
           Zenflow::Branch.should_receive(:delete_remote).with(branch_name)
-          Zenflow::Branch.should_receive(:delete_local).with(branch_name, force: true)
+          Zenflow::Branch.should_receive(:delete_local).with(branch_name, :force => true)
         end
         it { TestCommand.new.invoke(:abort) }
       end
 
       context "when offline" do
         before do
-          Zenflow::Branch.should_receive(:delete_local).with(branch_name, force: true)
+          Zenflow::Branch.should_receive(:delete_local).with(branch_name, :force => true)
         end
-        it { TestCommand.new.invoke(:abort, [], offline: true) }
+        it { TestCommand.new.invoke(:abort, [], :offline => true) }
       end
     end
 
@@ -257,17 +257,17 @@ module BranchCommandSpec
       context "with confirmations" do
         it "without deployment to staging" do
           Zenflow::Config.should_receive(:[]).with(:confirm_staging).and_return(true)
-          Zenflow.should_receive(:Ask).with("Has this been tested in a staging environment first?", options: ["Y", "n"], default: "y").and_return("n")
-          Zenflow.should_receive(:Log).with("Sorry, deploy to a staging environment first", color: :red)
+          Zenflow.should_receive(:Ask).with("Has this been tested in a staging environment first?", :options => ["Y", "n"], :default => "y").and_return("n")
+          Zenflow.should_receive(:Log).with("Sorry, deploy to a staging environment first", :color => :red)
           expect{TestCommand.new.invoke(:finish)}.to raise_error(SystemExit)
         end
 
         it "without review" do
           Zenflow::Config.should_receive(:[]).with(:confirm_staging).and_return(true)
           Zenflow::Config.should_receive(:[]).with(:confirm_review).and_return(true)
-          Zenflow.should_receive(:Ask).with("Has this been tested in a staging environment first?", options: ["Y", "n"], default: "y").and_return("y")
-          Zenflow.should_receive(:Ask).with("Has this been code reviewed yet?", options: ["Y", "n"], default: "y").and_return("n")
-          Zenflow.should_receive(:Log).with("Please have someone look at this first", color: :red)
+          Zenflow.should_receive(:Ask).with("Has this been tested in a staging environment first?", :options => ["Y", "n"], :default => "y").and_return("y")
+          Zenflow.should_receive(:Ask).with("Has this been code reviewed yet?", :options => ["Y", "n"], :default => "y").and_return("n")
+          Zenflow.should_receive(:Log).with("Please have someone look at this first", :color => :red)
           expect{TestCommand.new.invoke(:finish)}.to raise_error(SystemExit)
         end
       end
@@ -291,7 +291,7 @@ module BranchCommandSpec
 
               Zenflow::Version.should_receive(:update).with(:patch)
 
-              Zenflow::Changelog.should_receive(:update).with(rotate: true, name: "new-test-branch").and_return("YES")
+              Zenflow::Changelog.should_receive(:update).with(:rotate => true, :name => "new-test-branch").and_return("YES")
 
               Zenflow::Branch.should_receive(:checkout).with("master")
               Zenflow::Branch.should_receive(:merge).with("test/new-test-branch")
@@ -304,7 +304,7 @@ module BranchCommandSpec
               Zenflow::Branch.should_receive(:push).with(:tags)
 
               Zenflow::Branch.should_receive(:delete_remote).with("test/new-test-branch")
-              Zenflow::Branch.should_receive(:delete_local).with("test/new-test-branch", force: true)
+              Zenflow::Branch.should_receive(:delete_local).with("test/new-test-branch", :force => true)
             end
             it { TestCommand.new.invoke(:finish) }
           end
@@ -316,7 +316,7 @@ module BranchCommandSpec
 
               Zenflow::Version.should_receive(:update).with(:patch)
 
-              Zenflow::Changelog.should_receive(:update).with(rotate: true, name: "new-test-branch").and_return("YES")
+              Zenflow::Changelog.should_receive(:update).with(:rotate => true, :name => "new-test-branch").and_return("YES")
 
               Zenflow::Branch.should_receive(:checkout).with("master")
               Zenflow::Branch.should_receive(:merge).with("test/new-test-branch")
@@ -325,9 +325,9 @@ module BranchCommandSpec
 
               Zenflow::Branch.should_receive(:tag).with(Zenflow::Version.current.to_s, "YES")
 
-              Zenflow::Branch.should_receive(:delete_local).with("test/new-test-branch", force: true)
+              Zenflow::Branch.should_receive(:delete_local).with("test/new-test-branch", :force => true)
             end
-            it { TestCommand.new.invoke(:finish, [], offline: true) }
+            it { TestCommand.new.invoke(:finish, [], :offline => true) }
           end
         end
 
@@ -343,7 +343,7 @@ module BranchCommandSpec
 
               Zenflow::Version.should_receive(:update).with(:patch)
 
-              Zenflow::Changelog.should_receive(:update).with(rotate: true, name: "new-test-branch").and_return("YES")
+              Zenflow::Changelog.should_receive(:update).with(:rotate => true, :name => "new-test-branch").and_return("YES")
 
               Zenflow::Branch.should_receive(:checkout).with("master")
               Zenflow::Branch.should_receive(:merge).with("test/new-test-branch")
@@ -356,7 +356,7 @@ module BranchCommandSpec
               Zenflow::Branch.should_receive(:push).with(:tags)
 
               Zenflow::Branch.should_receive(:delete_remote).with("test/new-test-branch")
-              Zenflow::Branch.should_receive(:delete_local).with("test/new-test-branch", force: true)
+              Zenflow::Branch.should_receive(:delete_local).with("test/new-test-branch", :force => true)
             end
             it { TestCommand.new.invoke(:finish) }
           end
@@ -367,7 +367,7 @@ module BranchCommandSpec
 
               Zenflow::Version.should_receive(:update).with(:patch)
 
-              Zenflow::Changelog.should_receive(:update).with(rotate: true, name: "new-test-branch").and_return("YES")
+              Zenflow::Changelog.should_receive(:update).with(:rotate => true, :name => "new-test-branch").and_return("YES")
 
               Zenflow::Branch.should_receive(:checkout).with("master")
               Zenflow::Branch.should_receive(:merge).with("test/new-test-branch")
@@ -376,9 +376,9 @@ module BranchCommandSpec
 
               Zenflow::Branch.should_receive(:tag).with(Zenflow::Version.current.to_s, "YES")
 
-              Zenflow::Branch.should_receive(:delete_local).with("test/new-test-branch", force: true)
+              Zenflow::Branch.should_receive(:delete_local).with("test/new-test-branch", :force => true)
             end
-            it { TestCommand.new.invoke(:finish, [], offline: true) }
+            it { TestCommand.new.invoke(:finish, [], :offline => true) }
           end
         end
       end

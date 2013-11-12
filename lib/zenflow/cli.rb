@@ -118,7 +118,7 @@ module Zenflow
       end
 
       def configure_merge_strategy
-        Zenflow::Config[:merge_strategy] = Zenflow::Ask("What merge strategy would you prefer?", default: "merge", options: ['merge', 'rebase'])
+        Zenflow::Config[:merge_strategy] = Zenflow::Ask("What merge strategy would you prefer?", :default => "merge", :options => ['merge', 'rebase'])
       end
 
       def confirm_some_stuff

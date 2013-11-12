@@ -6,7 +6,7 @@ module Zenflow
         thor.class_eval do
 
           desc "finish", "Finish the branch and close the code review"
-          option :offline, type: :boolean, desc: "Runs in offline mode"
+          option :offline, :type => :boolean, :desc => "Runs in offline mode"
           def finish
             branch_name
             confirm(:confirm_staging, "Has this been tested in a staging environment first?",
@@ -23,8 +23,8 @@ module Zenflow
           no_commands do
             def confirm(confirmation, question, failure_response)
               return unless Zenflow::Config[confirmation]
-              if Zenflow::Ask(question, options: ["Y", "n"], default: "y") == "n"
-                Zenflow::Log(failure_response, color: :red)
+              if Zenflow::Ask(question, :options => ["Y", "n"], :default => "y") == "n"
+                Zenflow::Log(failure_response, :color => :red)
                 exit(1)
               end
             end
@@ -34,7 +34,7 @@ module Zenflow
                 Zenflow::Version.update(version)
               end
               if changelog
-                @change = Zenflow::Changelog.update(rotate: (changelog == :rotate), name: branch_name)
+                @change = Zenflow::Changelog.update(:rotate => (changelog == :rotate), :name => branch_name)
               end
             end
 

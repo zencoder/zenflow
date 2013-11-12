@@ -3,8 +3,8 @@ module Zenflow
 
     flow "feature"
 
-    branch source: Zenflow::Config[:development_branch]
-    branch deploy: Zenflow::Config[:qa_branch]
+    branch :source => Zenflow::Config[:development_branch]
+    branch :deploy => Zenflow::Config[:qa_branch]
 
   end
 end

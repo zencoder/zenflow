@@ -23,7 +23,7 @@ module Zenflow
         if options[:silent]
           Zenflow::LogToFile("$ #{command}\n")
         else
-          Zenflow::Log("$ #{command}", arrows: false, color: :yellow)
+          Zenflow::Log("$ #{command}", :arrows => false, :color => :yellow)
         end
         if !failed?
           if options[:silent]
@@ -57,9 +57,9 @@ module Zenflow
           if output.strip != ""
             puts "#{output.strip}\n"
           end
-          Zenflow::Log("Process aborted", color: :red)
-          Zenflow::Log("Exit status: #{last_exit_status}", color: :red, indent: true)
-          Zenflow::Log("You may need to run any following commands manually...", color: :red)
+          Zenflow::Log("Process aborted", :color => :red)
+          Zenflow::Log("Exit status: #{last_exit_status}", :color => :red, :indent => true)
+          Zenflow::Log("You may need to run any following commands manually...", :color => :red)
           failed!($?.to_i)
         end
         output
