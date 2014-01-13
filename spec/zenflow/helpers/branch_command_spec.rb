@@ -301,7 +301,7 @@ module BranchCommandSpec
               Zenflow::Branch.should_receive(:push).with("production")
 
               Zenflow::Branch.should_receive(:tag).with(Zenflow::Version.current.to_s, "YES")
-              Zenflow::Branch.should_receive(:push).with(:tags)
+              Zenflow::Branch.should_receive(:push_tags)
 
               Zenflow::Branch.should_receive(:delete_remote).with("test/new-test-branch")
               Zenflow::Branch.should_receive(:delete_local).with("test/new-test-branch", force: true)
@@ -353,7 +353,7 @@ module BranchCommandSpec
               Zenflow::Branch.should_receive(:push).with("production")
 
               Zenflow::Branch.should_receive(:tag).with(Zenflow::Version.current.to_s, "YES")
-              Zenflow::Branch.should_receive(:push).with(:tags)
+              Zenflow::Branch.should_receive(:push_tags)
 
               Zenflow::Branch.should_receive(:delete_remote).with("test/new-test-branch")
               Zenflow::Branch.should_receive(:delete_local).with("test/new-test-branch", force: true)

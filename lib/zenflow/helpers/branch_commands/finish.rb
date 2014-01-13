@@ -41,7 +41,7 @@ module Zenflow
             def create_tag
               return unless tag
               Zenflow::Branch.tag(Zenflow::Version.current.to_s, @change)
-              Zenflow::Branch.push(:tags) if !options[:offline]
+              Zenflow::Branch.push_tags if !options[:offline]
             end
 
             def update_branch_from_destination
