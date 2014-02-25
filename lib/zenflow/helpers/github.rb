@@ -5,8 +5,18 @@ module Zenflow
       get_config('github.user')
     end
 
+    def self.api_base_uri
+      api_base_url = get_config('api.base.url')
+      api_base_url.to_s != '' ? api_base_url : nil
+    end
+
     def self.zenflow_token
       get_config('zenflow.token')
+    end
+
+    def self.user_agent_base
+      user_agent_base = get_config('user.agent.base')
+      user_agent_base.to_s != '' ? user_agent_base : nil
     end
 
     def self.get_config(key)
@@ -35,10 +45,10 @@ module Zenflow
 
   class GithubRequest
     include HTTParty
-    base_uri "https://api.github.com/repos/#{Zenflow::Repo.slug}"
+    base_uri "#{Zenflow::Github.api_base_uri || 'https://api.github.com/repos'}/#{Zenflow::Repo.slug}"
     format :json
     headers "Authorization" => "token #{Zenflow::Github.zenflow_token}"
-    headers "User-Agent" => "Zencoder/Zenflow-#{VERSION}"
+    headers "User-Agent" => "#{Zenflow::Github.user_agent_base || 'Zencoder'}/Zenflow-#{VERSION}"
   end
 
 end
