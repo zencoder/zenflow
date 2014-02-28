@@ -272,9 +272,33 @@ describe Zenflow::CLI do
   end
 
   describe "#init" do
+    context "when in a project that doesn't belong to the system default hub" do
+      context "when zenflow has not been configured" do
+        before do
+          Zenflow::Config.should_receive(:configured?).and_return(false)
+          Zenflow::Repo.should_receive(:is_system_default_hub).and_return(false)
+        end
+
+        it 'configures zenflow' do
+          subject.should_not_receive(:already_configured)
+          Zenflow::Hubs.should_receive(:config)
+          Zenflow::Hubs.should_receive(:authorize)
+          subject.should_receive(:configure_project)
+          subject.should_receive(:configure_branches)
+          subject.should_receive(:configure_merge_strategy)
+          subject.should_receive(:configure_remotes)
+          subject.should_receive(:confirm_some_stuff)
+          subject.should_receive(:set_up_changelog)
+          Zenflow::Config.should_receive(:save!)
+          subject.init
+        end
+      end
+    end
+
     context "when zenflow has not been configured" do
       before do
         Zenflow::Config.should_receive(:configured?).and_return(false)
+        Zenflow::Repo.should_receive(:is_system_default_hub).and_return(true)
       end
 
       it 'configures zenflow' do
@@ -298,6 +322,10 @@ describe Zenflow::CLI do
       end
 
       context 'and it is forced to initialize' do
+        before do
+          Zenflow::Repo.should_receive(:is_system_default_hub).and_return(true)
+        end
+
         it 'configures zenflow' do
           subject.should_not_receive(:already_configured)
           subject.should_receive(:set_up_github)
