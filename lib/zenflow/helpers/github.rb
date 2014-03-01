@@ -88,8 +88,8 @@ module Zenflow
 
     # If this repo is not hosted on the default github, construct a key prefix containing the hub information
     def self.key_for_hub(hub, key)
-      system_default_key_prefix = key == @@user_key ? "" : "zenflow."  # preserves backwards compatibility
-      hub == @@system_default_hub ? "#{system_default_key_prefix}#{key}" : "zenflow.hub.#{hub}.#{key}"
+      default_hub_key_prefix = key == @@user_key ? "" : "zenflow."  # preserves backwards compatibility
+      Zenflow::Repo.is_default_hub(hub) ? "#{default_hub_key_prefix}#{key}" : "zenflow.hub.#{hub}.#{key}"
     end
 
     def self.get_hub_config(hub, key)

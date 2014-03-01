@@ -21,9 +21,5 @@ module Zenflow
       (check ? check : hub) == Zenflow::Github.default_hub
     end
 
-    def self.is_system_default_hub(check=nil)
-      (check ? check : hub) == Zenflow::Github.system_default_hub
-    end
-
   end
 end

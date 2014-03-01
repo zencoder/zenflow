@@ -80,42 +80,4 @@ describe Zenflow::Repo do
       end
     end
   end
-
-  describe '.is_system_default_hub' do
-    context 'when check is not supplied' do
-      context 'and current hub matches system default hub' do
-        before(:each){  
-          Zenflow::Repo.should_receive(:url).twice.and_return("git@github.com:zencoder/zenflow.git")
-        }
-
-        it 'returns true' do
-          expect(Zenflow::Repo.is_system_default_hub).to eq(true)
-        end
-      end
-
-      context 'and current hub does not match system default hub' do
-        before(:each){  
-          Zenflow::Repo.should_receive(:url).twice.and_return("git@my-hub:zencoder/zenflow.git")
-        }
-
-        it 'returns false' do
-          expect(Zenflow::Repo.is_system_default_hub).to eq(false)
-        end
-      end
-    end
-
-    context 'when check is supplied' do
-      context 'and check matches system default hub' do
-        it 'returns true' do
-          expect(Zenflow::Repo.is_system_default_hub("github.com")).to eq(true)
-        end
-      end
-
-      context 'and check does not match system default hub' do
-        it 'returns false' do
-          expect(Zenflow::Repo.is_system_default_hub("my-hub")).to eq(false)
-        end
-      end
-    end
-  end
 end
