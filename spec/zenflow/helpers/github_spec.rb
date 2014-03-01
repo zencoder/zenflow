@@ -41,12 +41,6 @@ describe Zenflow::Github do
     end
   end
 
-  describe '.system_default_api_base_url' do
-    it 'is the expected value' do
-      expect(Zenflow::Github.system_default_api_base_url).to eq('https://api.github.com')
-    end
-  end
-
   describe '.api_base_url' do
     context 'when the value is present' do
       before(:each){
@@ -73,7 +67,7 @@ describe Zenflow::Github do
 
       context 'and default is true' do
         it 'returns the expected value' do
-          expect(Zenflow::Github.api_base_url('test-hub', true)).to eq(Zenflow::Github.system_default_api_base_url)
+          expect(Zenflow::Github.api_base_url('test-hub', true)).to eq("https://api.github.com")
         end
       end
 
@@ -149,12 +143,6 @@ describe Zenflow::Github do
 
   end
 
-  describe '.system_default_user_agent_base' do
-    it 'is the expected value' do
-      expect(Zenflow::Github.system_default_user_agent_base).to eq('Zencoder')
-    end
-  end
-
   describe '.user_agent_base' do
     context 'when the value is present' do
       before(:each){
@@ -181,7 +169,7 @@ describe Zenflow::Github do
 
       context 'and default is true' do
         it 'returns the expected value' do
-          expect(Zenflow::Github.user_agent_base('test-hub', true)).to eq(Zenflow::Github.system_default_user_agent_base)
+          expect(Zenflow::Github.user_agent_base('test-hub', true)).to eq("Zencoder")
         end
       end
 

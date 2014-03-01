@@ -16,7 +16,6 @@ module Zenflow
     end
 
     @@system_default_api_base_url = 'https://api.github.com'
-    def self.system_default_api_base_url; @@system_default_api_base_url; end
 
     @@api_base_url_key = 'api.base.url'
 
@@ -60,7 +59,6 @@ module Zenflow
     end
 
     @@system_default_user_agent_base = 'Zencoder'
-    def self.system_default_user_agent_base; @@system_default_user_agent_base; end
 
     @@user_agent_base_key = 'user.agent.base'
 
