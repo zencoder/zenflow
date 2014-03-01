@@ -2,7 +2,7 @@ module Zenflow
   class Hubs < Thor
 
     desc "show_default", "Show the default hub"
-    def show_default(hub=nil)
+    def show_default
       Zenflow::Log("Default hub: #{default_hub_label(Zenflow::Github.default_hub)}")
     end
 
