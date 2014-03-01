@@ -125,7 +125,7 @@ module Zenflow
 
     def self.describe_hub(hub)
       [
-        describe_hub_parameter("API base URL",    hub, @@api_base_url_key,    api_base_url(hub)),
+        describe_hub_parameter("API Base URL",    hub, @@api_base_url_key,    api_base_url(hub)),
         describe_hub_parameter("User",            hub, @@user_key,            user(hub)),
         describe_hub_parameter("Token",           hub, @@token_key,           zenflow_token(hub)),
         describe_hub_parameter("User Agent Base", hub, @@user_agent_base_key, user_agent_base(hub))
