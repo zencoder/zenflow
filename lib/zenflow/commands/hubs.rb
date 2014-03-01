@@ -49,41 +49,18 @@ module Zenflow
 
     desc "config [HUB]", "Configure the specified HUB (current project hub if none specified, or default hub if no current project)."
     def config(hub=nil)
-      hub = Zenflow::github.select_hub(hub)
+      hub = Zenflow::Github.select_hub(hub)
 
       Zenflow::Log("Configuring #{hub_label(hub)}")
 
-      api_base_url = Zenflow::Github.api_base_url(hub,false)
-      if api_base_url.to_s != ''
-        if Zenflow::Ask("The GitHub API base URL for this hub is currently #{api_base_url}. Do you want to use that?", :options => ["Y", "n"], :default => "y") == "n"
-          Zenflow::Github.set_api_base_url(hub)
-        end
-      else
-        Zenflow::Github.set_api_base_url(hub)
-      end
-
-      user = Zenflow::Github.user(hub)
-      if user.to_s != ''
-        if Zenflow::Ask("The GitHub user for this hub is currently #{user}. Do you want to use that?", :options => ["Y", "n"], :default => "y") == "n"
-          Zenflow::Github.set_user(hub)
-        end
-      else
-        Zenflow::Github.set_user(hub)
-      end
-
-      user_agent_base = Zenflow::Github.user_agent_base(hub,false)
-      if user_agent_base.to_s != ''
-        if Zenflow::Ask("The GitHub User Agent base for this hub is currently #{user_agent_base}. Do you want to use that?", :options => ["Y", "n"], :default => "y") == "n"
-          Zenflow::Github.set_user_agent_base(hub)
-        end
-      else
-        Zenflow::Github.set_user_agent_base(hub)
-      end
+      config_api_base_url(hub)
+      config_user(hub)
+      config_user_agent_base(hub)
     end
 
     desc "authorize [HUB]", "Grab an auth token for HUB (current project hub if none specified, or default hub if no current project)."
     def authorize(hub=nil)
-      hub = Zenflow::github.select_hub(hub)
+      hub = Zenflow::Github.select_hub(hub)
 
       if Zenflow::Github.zenflow_token(hub)
         if Zenflow::Ask("You already have a token from GitHub. Do you want to set a new one?", :options => ["y", "N"], :default => "n") == "y"
@@ -113,6 +90,39 @@ module Zenflow
 
       def config_keys_regex
         "(?:#{Zenflow::Github.config_keys.map { |s| s.gsub('.','\\.') }.join('|')})"
+      end
+
+      def config_api_base_url(hub)
+        api_base_url = Zenflow::Github.api_base_url(hub,false)
+        if api_base_url.to_s != ''
+          if Zenflow::Ask("The GitHub API base URL for this hub is currently #{api_base_url}. Do you want to use that?", :options => ["Y", "n"], :default => "y") == "n"
+            Zenflow::Github.set_api_base_url(hub)
+          end
+        else
+          Zenflow::Github.set_api_base_url(hub)
+        end
+      end
+
+      def config_user(hub)
+        user = Zenflow::Github.user(hub)
+        if user.to_s != ''
+          if Zenflow::Ask("The GitHub user for this hub is currently #{user}. Do you want to use that?", :options => ["Y", "n"], :default => "y") == "n"
+            Zenflow::Github.set_user(hub)
+          end
+        else
+          Zenflow::Github.set_user(hub)
+        end
+      end
+
+      def config_user_agent_base(hub)
+        user_agent_base = Zenflow::Github.user_agent_base(hub,false)
+        if user_agent_base.to_s != ''
+          if Zenflow::Ask("The GitHub User Agent base for this hub is currently #{user_agent_base}. Do you want to use that?", :options => ["Y", "n"], :default => "y") == "n"
+            Zenflow::Github.set_user_agent_base(hub)
+          end
+        else
+          Zenflow::Github.set_user_agent_base(hub)
+        end
       end
     }
   end
