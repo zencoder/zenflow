@@ -19,7 +19,6 @@ module Zenflow
     def self.system_default_api_base_url; @@system_default_api_base_url; end
 
     @@api_base_url_key = 'api.base.url'
-    def self.api_base_url_key(); @@api_base_url_key; end
 
     def self.api_base_url(hub=nil,default=true)
       api_base_url = get_hub_config(hub, @@api_base_url_key)
@@ -32,7 +31,6 @@ module Zenflow
     end
 
     @@user_key = 'github.user'
-    def self.user_key(); @@user_key; end
 
     def self.user(hub=nil)
       get_hub_config(hub, @@user_key)
@@ -44,7 +42,6 @@ module Zenflow
     end
 
     @@token_key = 'token'
-    def self.token_key(); @@token_key; end
 
     def self.zenflow_token(hub=nil)
       get_hub_config(hub, @@token_key)
@@ -66,7 +63,6 @@ module Zenflow
     def self.system_default_user_agent_base; @@system_default_user_agent_base; end
 
     @@user_agent_base_key = 'user.agent.base'
-    def self.user_agent_base_key(); @@user_agent_base_key; end
 
     def self.user_agent_base(hub=nil,default=true)
       user_agent_base = get_hub_config(hub, @@user_agent_base_key)
