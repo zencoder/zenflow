@@ -116,6 +116,27 @@ module Zenflow
       Zenflow::Shell.run("git config --global #{key} #{value}", silent: true)
     end
 
+    def self.config_keys
+      [
+        @@api_base_url_key,
+        @@user_key,
+        @@token_key,
+        @@user_agent_base_key
+      ]
+    end
+
+    def self.describe_hub_parameter(name, hub, key, value)
+        [name, key_for_hub(hub, key), get_hub_config(hub, key), value]
+    end
+
+    def self.describe_hub(hub)
+      [
+        describe_hub_parameter("API base URL",    hub, @@api_base_url_key,    api_base_url(hub)),
+        describe_hub_parameter("User",            hub, @@user_key,            user(hub)),
+        describe_hub_parameter("Token",           hub, @@token_key,           zenflow_token(hub)),
+        describe_hub_parameter("User Agent Base", hub, @@user_agent_base_key, user_agent_base(hub))
+      ]
+    end
   end
 
   class GithubRequest

@@ -36,14 +36,14 @@ module Zenflow
 
     desc "describe [HUB]", "Show configuration details for HUB (current project hub if none specified, or default hub if no current project)."
     def describe(hub=nil)
-      hub = Zenflow::github.select_hub(hub)
+      hub = Zenflow::Github.select_hub(hub)
 
       Zenflow::Log("Configuration details for hub #{hub_label(hub)}")
 
       Zenflow::Log(Terminal::Table.new(rows: [
         ["Parameter", "Github Config Key", "Github Config Value", "Value (with system defaults)"],
         ["---------", "-----------------", "-------------------", "----------------------------"]
-      ] + describe_hub_parameters(hub)
+      ] + Zenflow::Github.describe_hub(hub)
       ).to_s, indent: false, arrows: false, color: false)
     end
 
@@ -111,35 +111,8 @@ module Zenflow
         Zenflow::Repo.is_current_hub(hub) ? " [current]" : ""
       end
 
-      def describe_hub_parameter_record(name, hub, key, value)
-        [name, config_key(hub, key), config_value(hub, key), value]
-      end
-
-      def config_key(hub, key)
-        Zenflow::Github.key_for_hub(hub, key)
-      end
-
-      def config_value(hub, key)
-        Zenflow::Github.get_hub_config(hub, key)
-      end
-
       def config_keys_regex
-        config_keys = [
-            Zenflow::Github.api_base_url_key,
-            Zenflow::Github.user_key,
-            Zenflow::Github.token_key,
-            Zenflow::Github.user_agent_base_key
-        ]
-        "(?:#{config_keys.map { |s| s.gsub('.','\\.') }.join('|')})"
-      end
-
-      def describe_hub_parameters(hub)
-        [
-          describe_hub_parameter_record("API base URL",    hub, Zenflow::Github.api_base_url_key,    Zenflow::Github.api_base_url(hub)),
-          describe_hub_parameter_record("User",            hub, Zenflow::Github.user_key,            Zenflow::Github.user(hub)),
-          describe_hub_parameter_record("Token",           hub, Zenflow::Github.token_key,           Zenflow::Github.zenflow_token(hub)),
-          describe_hub_parameter_record("User Agent Base", hub, Zenflow::Github.user_agent_base_key, Zenflow::Github.user_agent_base(hub))
-        ]
+        "(?:#{Zenflow::Github.config_keys.map { |s| s.gsub('.','\\.') }.join('|')})"
       end
     }
   end
