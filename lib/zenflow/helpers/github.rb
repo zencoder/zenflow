@@ -1,18 +1,10 @@
 module Zenflow
 
   module Github
-    @@system_default_hub = 'github.com'
-    def self.system_default_hub; @@system_default_hub; end
-
-    @@default_hub_key = 'zenflow.default.hub'
+    @@default_hub = 'github.com'
 
     def self.default_hub
-      get_global_config(@@default_hub_key) || @@system_default_hub
-    end
-
-    def self.set_default_hub
-      hub = Zenflow::Ask("What is the default Github host used in remote paths?", {:default => @@system_default_hub})
-      set_global_config(@@default_hub_key, hub)
+      @@default_hub
     end
 
     @@system_default_api_base_url = 'https://api.github.com'

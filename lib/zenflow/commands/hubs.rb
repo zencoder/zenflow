@@ -1,18 +1,6 @@
 module Zenflow
   class Hubs < Thor
 
-    desc "show_default", "Show the default hub"
-    def show_default
-      Zenflow::Log("Default hub: #{default_hub_label(Zenflow::Github.default_hub)}")
-    end
-
-    desc "set_default", "Set the default hub"
-    def set_default
-      if Zenflow::Ask("The default hub is currently #{default_hub_label(Zenflow::Github.default_hub)}.  Do you want to change that?", :options => ["y", "N"], :default => "N") == "y"
-        Zenflow::Github.set_default_hub
-      end
-    end
-
     desc "list", "Show all configured hubs."
     def list
       config = Zenflow::Shell.run("git config -l", silent: true).split("\n")
@@ -62,6 +50,8 @@ module Zenflow
     def authorize(hub=nil)
       hub = Zenflow::Github.select_hub(hub)
 
+      Zenflow::Log("Authorizing #{hub_label(hub)}")
+
       if Zenflow::Github.zenflow_token(hub)
         if Zenflow::Ask("You already have a token from GitHub. Do you want to set a new one?", :options => ["y", "N"], :default => "n") == "y"
           Zenflow::Github.authorize(hub)
@@ -72,10 +62,6 @@ module Zenflow
     end
 
     no_commands {
-      def default_hub_label(hub)
-        "#{hub}#{hub == Zenflow::Github.system_default_hub ? ' [system default]' : ''}"
-      end
-
       def hub_label(hub)
         "#{hub}#{default_hub_tag(hub)}#{current_hub_tag(hub)}"
       end

@@ -1,43 +1,9 @@
 require 'spec_helper'
 
 describe Zenflow::Github do
-  describe '.system_default_hub' do
-    it 'is the expected value' do
-      expect(Zenflow::Github.system_default_hub).to eq('github.com')
-    end
-  end
-
   describe '.default_hub' do
-    context 'when no default github has been specified' do
-      before(:each){
-        Zenflow::Shell.should_receive(:run).with("git config --get zenflow.default.hub", silent: true).and_return("")
-      }
-
-      it "returns the system default github" do
-        expect(Zenflow::Github.default_hub).to eq('github.com')
-      end
-    end
-
-    context 'when a default github has been specified' do
-      let(:default_hub){'default-github'}
-
-      before(:each){
-        Zenflow::Shell.should_receive(:run).with("git config --get zenflow.default.hub", silent: true).and_return(default_hub)
-      }
-
-      it "returns the default github" do
-        expect(Zenflow::Github.default_hub).to eq(default_hub)
-      end
-    end
-  end
-
-  describe '.set_default_hub' do
-    let(:default_hub){'default-github'}
-
-    it 'asks for the default github and sets it to zenflow.default.hub' do
-      Zenflow.should_receive(:Ask).and_return(default_hub)
-      Zenflow::Shell.should_receive(:run).with("git config --global zenflow.default.hub #{default_hub}", silent: true)
-      Zenflow::Github.set_default_hub
+    it 'is the expected value' do
+      expect(Zenflow::Github.default_hub).to eq('github.com')
     end
   end
 

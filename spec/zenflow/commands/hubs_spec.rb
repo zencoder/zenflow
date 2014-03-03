@@ -3,43 +3,6 @@ require 'spec_helper'
 describe Zenflow::Hubs do
   let(:hubs) { Zenflow::Hubs.new }
 
-  describe '.show_default' do
-    context 'when the default is the system default' do
-      it 'logs the expected record' do
-        Zenflow::Github.should_receive(:default_hub).and_return("github.com")
-        Zenflow.should_receive(:Log).with("Default hub: github.com [system default]")
-        hubs.show_default
-      end
-    end
-
-    context 'when the default is not the system default' do
-      it 'logs the expected record' do
-        Zenflow::Github.should_receive(:default_hub).and_return("my-hub")
-        Zenflow.should_receive(:Log).with("Default hub: my-hub")
-        hubs.show_default
-      end
-    end
-  end
-
-  describe '.set_default' do
-    it 'asks if you to change the default' do
-      Zenflow.should_receive(:Ask).and_return("N")
-      hubs.set_default
-    end
-
-    context 'the user wants to chagne the default' do
-      before(:each){
-        Zenflow.should_receive(:Ask).and_return("y")
-      }
-
-      it 'asks for a new default' do
-        Zenflow.should_receive(:Ask).and_return('my-hub')
-        Zenflow::Github.should_receive(:set_global_config).with('zenflow.default.hub', 'my-hub')
-        hubs.set_default
-      end
-    end
-  end
-
   describe '.list' do
     it 'lists recognized hubs in git config' do
       Zenflow::Shell.should_receive(:run).with("git config -l", silent: true).and_return(
@@ -154,6 +117,12 @@ EOS
   end
 
   describe '.authorize' do
+    before do
+      Zenflow::Github.should_receive(:select_hub).with('my-hub').and_return('my-hub')
+      hubs.should_receive(:hub_label).with('my-hub').and_return('my-hub')
+      Zenflow.should_receive(:Log).with("Authorizing my-hub")
+    end
+
     context 'when a zenflow_token is already saved' do
       before do
         Zenflow::Github.should_receive(:zenflow_token).and_return('super secret token')
@@ -190,20 +159,6 @@ EOS
       it 'authorizes with Github' do
         Zenflow::Github.should_receive(:authorize).with('my-hub')
         hubs.authorize('my-hub')
-      end
-    end
-  end
-
-  describe '.default_hub_label' do
-    context 'hub is system default' do
-      it 'returns the expected data' do
-        expect(hubs.default_hub_label('github.com')).to eq('github.com [system default]')
-      end
-    end
-
-    context 'hub is not system default' do
-      it 'returns the expected data' do
-        expect(hubs.default_hub_label('not-system-default-hub')).to eq('not-system-default-hub')
       end
     end
   end
