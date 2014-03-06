@@ -65,17 +65,8 @@ module Zenflow
     end
 
     def self.select_hub(hub)
-      if hub == 'default'
-        hub = default_hub
-      end
-      if !hub
-        hub = Zenflow::Repo.hub
-      end
-      if !hub
-        hub = default_hub
-      end
-
-      hub
+      hub = default_hub if hub == "default"
+      hub || Zenflow::Repo.hub || default_hub
     end
 
     # If this repo is not hosted on the default github, construct a key prefix containing the hub information
