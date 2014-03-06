@@ -20,15 +20,16 @@ EOS
       Zenflow::Repo.should_receive(:is_current_hub).at_least(:once).with(anything()).and_return(false)
       Zenflow::Github.should_receive(:default_hub).and_return('github.com')
       Zenflow.should_receive(:Log).with("Recogized hubs")
-      Terminal::Table.should_receive(:new).with(rows: [
-        ["Hub"],
-        ["----"],
-        ["github.com"],
-        ["hub.1"],
-        ["my-hub"],
-        ["one.more.hub"],
-        ["yet.another.hub"]
-      ]).and_return("log-data")
+      Terminal::Table.should_receive(:new).with(
+        headings: ["Hub"],
+        rows: [
+          ["github.com"],
+          ["hub.1"],
+          ["my-hub"],
+          ["one.more.hub"],
+          ["yet.another.hub"]
+        ]
+      ).and_return("log-data")
       Zenflow.should_receive(:Log).with("log-data", indent: false, arrows: false, color: false)
       hubs.list
     end
@@ -51,13 +52,14 @@ EOS
         ["Parameter 2", "Github Config Key 2", "Github Conifg Value 2", "Value 2"],
         ["Parameter 3", "Github Config Key 3", "Github Conifg Value 3", "Value 3"]
       ])
-      Terminal::Table.should_receive(:new).with(rows: [
-        ["Parameter",   "Github Config Key",   "Github Config Value",   "Value (with system defaults)"],
-        ["---------",   "-----------------",   "-------------------",   "----------------------------"],
-        ["Parameter 1", "Github Config Key 1", "Github Conifg Value 1", "Value 1"],
-        ["Parameter 2", "Github Config Key 2", "Github Conifg Value 2", "Value 2"],
-        ["Parameter 3", "Github Config Key 3", "Github Conifg Value 3", "Value 3"]
-      ]).and_return("log-data")
+      Terminal::Table.should_receive(:new).with(
+        headings: ["Parameter", "Github Config Key", "Github Config Value", "Value (with system defaults)"],
+        rows: [
+          ["Parameter 1", "Github Config Key 1", "Github Conifg Value 1", "Value 1"],
+          ["Parameter 2", "Github Config Key 2", "Github Conifg Value 2", "Value 2"],
+          ["Parameter 3", "Github Config Key 3", "Github Conifg Value 3", "Value 3"]
+        ]
+      ).and_return("log-data")
       Zenflow.should_receive(:Log).with("log-data", {:indent=>false, :arrows=>false, :color=>false})
       hubs.describe('my-hub')
     end

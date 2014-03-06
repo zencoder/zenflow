@@ -8,13 +8,12 @@ module Zenflow
       hub_parameter_records = hub_parameter_records.map { |entry| entry =~ /^zenflow\.hub\.(.*)\.#{config_keys_regex}=.*$/; hub_label($1) }
       hub_parameter_records = hub_parameter_records.sort.uniq
       rows = hub_parameter_records.map { |record| [record] }
-      rows = [
-        ["Hub"],
-        ["----"],
-        ["#{hub_label(Zenflow::Github.default_hub)}"]
-      ] + rows
       Zenflow::Log("Recogized hubs")
-      Zenflow::Log(Terminal::Table.new(rows: rows).to_s, indent: false, arrows: false, color: false)
+      Zenflow::Log(Terminal::Table.new(
+        headings: ['Hub'],
+        rows: [
+          ["#{hub_label(Zenflow::Github.default_hub)}"]
+        ] + rows).to_s, indent: false, arrows: false, color: false)
     end
 
     desc "current", "Show the current project's hub."
@@ -28,10 +27,9 @@ module Zenflow
 
       Zenflow::Log("Configuration details for hub #{hub_label(hub)}")
 
-      Zenflow::Log(Terminal::Table.new(rows: [
-        ["Parameter", "Github Config Key", "Github Config Value", "Value (with system defaults)"],
-        ["---------", "-----------------", "-------------------", "----------------------------"]
-      ] + Zenflow::Github.describe_hub(hub)
+      Zenflow::Log(Terminal::Table.new(
+        headings: ["Parameter", "Github Config Key", "Github Config Value", "Value (with system defaults)"],
+        rows: Zenflow::Github.describe_hub(hub)
       ).to_s, indent: false, arrows: false, color: false)
     end
 
