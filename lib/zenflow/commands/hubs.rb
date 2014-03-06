@@ -3,17 +3,11 @@ module Zenflow
 
     desc "list", "Show all configured hubs."
     def list
-      config = Zenflow::Shell.run("git config -l", silent: true).split("\n")
-      hub_parameter_records = config.select { |entry| entry =~ /^zenflow\.hub\.(.*)\.#{config_keys_regex}=.*$/ }
-      hub_parameter_records = hub_parameter_records.map { |entry| entry =~ /^zenflow\.hub\.(.*)\.#{config_keys_regex}=.*$/; hub_label($1) }
-      hub_parameter_records = hub_parameter_records.sort.uniq
-      rows = hub_parameter_records.map { |record| [record] }
       Zenflow::Log("Recogized hubs")
       Zenflow::Log(Terminal::Table.new(
         headings: ['Hub'],
-        rows: [
-          ["#{hub_label(Zenflow::Github.default_hub)}"]
-        ] + rows).to_s, indent: false, arrows: false, color: false)
+        rows: get_list_of_hubs()
+      ).to_s, indent: false, arrows: false, color: false)
     end
 
     desc "current", "Show the current project's hub."
@@ -60,6 +54,23 @@ module Zenflow
     end
 
     no_commands {
+      def get_list_of_hubs
+        hub_config_parameters = Zenflow::Shell.run("git config --get-regexp zenflow\.hub\..*", silent: true).split("\n")
+
+        # unique, sorted, list of hubs with at least one valid config key
+        configured_hubs = hub_config_parameters.inject([]) { |hubs, parameter|
+          if parameter =~ /^zenflow\.hub\.(.*)\.#{config_keys_regex}\s.*$/
+            hubs << [hub_label($1)]
+          end
+
+          hubs
+        }.sort.uniq
+
+        [
+          ["#{hub_label(Zenflow::Github.default_hub)}"]
+        ] + configured_hubs
+      end
+
       def hub_label(hub)
         "#{hub}#{default_hub_tag(hub)}#{current_hub_tag(hub)}"
       end

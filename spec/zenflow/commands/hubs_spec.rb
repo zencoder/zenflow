@@ -5,15 +5,14 @@ describe Zenflow::Hubs do
 
   describe '.list' do
     it 'lists recognized hubs in git config' do
-      Zenflow::Shell.should_receive(:run).with("git config -l", silent: true).and_return(
+      Zenflow::Shell.should_receive(:run).with("git config --get-regexp zenflow\.hub\..*", silent: true).and_return(
 <<EOS
-zenflow.hub.hub.1.api.base.url=api_base_url
-zenflow.hub.yet.another.hub.github.user=github_user
-zenflow.hub.hub.1.token=token
-zenflow.hub.my-hub.token=token
-zenflow.hub.one.more.hub.user.agent.base=user_agent_base
-zenflow.hub.bad.token.hub.goobers=user_agent_base
-super.zenflow.hub.bad.prefix.hub.user.agent.base=user_agent_base
+zenflow.hub.hub.1.api.base.url api_base_url
+zenflow.hub.yet.another.hub.github.user github_user
+zenflow.hub.hub.1.token token
+zenflow.hub.my-hub.token token
+zenflow.hub.one.more.hub.user.agent.base user_agent_base
+zenflow.hub.bad.token.hub.goobers user_agent_base
 EOS
       )
       Zenflow::Repo.should_receive(:is_default_hub).at_least(:once).with(anything()).and_return(false)
