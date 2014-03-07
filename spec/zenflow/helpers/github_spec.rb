@@ -4,7 +4,7 @@ describe Zenflow::Github do
   describe '.api_base_url' do
     context 'when the value is present' do
       before(:each){
-        Zenflow::Github.should_receive(:get_hub_config).with('test-hub', 'api.base.url').and_return("api-base-url")
+        Zenflow::Github.should_receive(:get_config_for_hub).with('test-hub', 'api.base.url').and_return("api-base-url")
       }
 
       context 'and default is true' do
@@ -22,7 +22,7 @@ describe Zenflow::Github do
 
     context 'when the value is absent' do
       before(:each){
-        Zenflow::Github.should_receive(:get_hub_config).with('test-hub', 'api.base.url').and_return(nil)
+        Zenflow::Github.should_receive(:get_config_for_hub).with('test-hub', 'api.base.url').and_return(nil)
       }
 
       context 'and default is true' do
@@ -44,7 +44,7 @@ describe Zenflow::Github do
 
     it 'asks for the API base URL and sets it to zenflow.api.base.url' do
       Zenflow.should_receive(:Ask).and_return(api_base_url)
-      Zenflow::Github.should_receive(:set_hub_config).with(nil, 'api.base.url', api_base_url)
+      Zenflow::Github.should_receive(:set_config_for_hub).with(nil, 'api.base.url', api_base_url)
       Zenflow::Github.set_api_base_url
     end
   end
@@ -53,7 +53,7 @@ describe Zenflow::Github do
     let(:user){'github-user'}
 
     before(:each){
-      Zenflow::Github.should_receive(:get_hub_config).with('test-hub', 'github.user').and_return(user)
+      Zenflow::Github.should_receive(:get_config_for_hub).with('test-hub', 'github.user').and_return(user)
     }
 
     it "returns the user" do
@@ -66,7 +66,7 @@ describe Zenflow::Github do
 
     it 'asks for the user name and sets it to github.user' do
       Zenflow.should_receive(:Ask).and_return(user)
-      Zenflow::Github.should_receive(:set_hub_config).with(nil, 'github.user', user)
+      Zenflow::Github.should_receive(:set_config_for_hub).with(nil, 'github.user', user)
       Zenflow::Github.set_user
     end
   end
@@ -95,7 +95,7 @@ describe Zenflow::Github do
       end
 
       it "adds the token to git config and logs a happy message of success" do
-        Zenflow::Github.should_receive(:set_hub_config).with(nil, 'token', "super secure token")
+        Zenflow::Github.should_receive(:set_config_for_hub).with(nil, 'token', "super secure token")
         Zenflow.should_receive("Log").with("Authorized!")
         Zenflow::Github.authorize
       end
@@ -106,7 +106,7 @@ describe Zenflow::Github do
   describe '.user_agent_base' do
     context 'when the value is present' do
       before(:each){
-        Zenflow::Github.should_receive(:get_hub_config).with('test-hub', 'user.agent.base').and_return("user-agent-base")
+        Zenflow::Github.should_receive(:get_config_for_hub).with('test-hub', 'user.agent.base').and_return("user-agent-base")
       }
 
       context 'and default is true' do
@@ -124,7 +124,7 @@ describe Zenflow::Github do
 
     context 'when the value is absent' do
       before(:each){
-        Zenflow::Github.should_receive(:get_hub_config).with('test-hub', 'user.agent.base').and_return(nil)
+        Zenflow::Github.should_receive(:get_config_for_hub).with('test-hub', 'user.agent.base').and_return(nil)
       }
 
       context 'and default is true' do
@@ -146,7 +146,7 @@ describe Zenflow::Github do
 
     it 'asks for the User-Agent base string and sets it to zenflow.user.agent.base' do
       Zenflow.should_receive(:Ask).and_return(user_agent_base)
-      Zenflow::Github.should_receive(:set_hub_config).with(nil, 'user.agent.base', user_agent_base)
+      Zenflow::Github.should_receive(:set_config_for_hub).with(nil, 'user.agent.base', user_agent_base)
       Zenflow::Github.set_user_agent_base
     end
   end
@@ -235,17 +235,17 @@ describe Zenflow::Github do
     end
   end
 
-  describe '.get_hub_config' do
+  describe '.get_config_for_hub' do
     it 'gets the correct global config parameter' do
       Zenflow::Github.should_receive(:get_global_config).with("zenflow.hub.test-hub.test-key")
-      Zenflow::Github.get_hub_config('test-hub', 'test-key')
+      Zenflow::Github.get_config_for_hub('test-hub', 'test-key')
     end
   end
 
-  describe '.set_hub_config' do
+  describe '.set_config_for_hub' do
     it 'sets the correct global config parameter' do
       Zenflow::Github.should_receive(:set_global_config).with("zenflow.hub.test-hub.test-key", "test-value")
-      Zenflow::Github.set_hub_config('test-hub', 'test-key', 'test-value')
+      Zenflow::Github.set_config_for_hub('test-hub', 'test-key', 'test-value')
     end
   end
 
@@ -294,7 +294,7 @@ describe Zenflow::Github do
 
   describe '.describe_hub_parameter' do
     it 'returns the expected array' do
-      Zenflow::Github.should_receive(:get_hub_config).with('my-hub', 'key').and_return('config-value')
+      Zenflow::Github.should_receive(:get_config_for_hub).with('my-hub', 'key').and_return('config-value')
       expect(Zenflow::Github.describe_hub_parameter('name', 'my-hub', 'key', 'value')).to eq(
         ['name', 'zenflow.hub.my-hub.key', 'config-value', 'value']
       )
@@ -304,10 +304,10 @@ describe Zenflow::Github do
   describe '.describe_hub' do
     context 'all parameters configured' do
       it 'returns the expected data' do
-        Zenflow::Github.should_receive(:get_hub_config).twice.with('my-hub', 'api.base.url').and_return('api-base-url-config-value')
-        Zenflow::Github.should_receive(:get_hub_config).twice.with('my-hub', 'github.user').and_return('github-user-config-value')
-        Zenflow::Github.should_receive(:get_hub_config).twice.with('my-hub', 'token').and_return('token-config-value')
-        Zenflow::Github.should_receive(:get_hub_config).twice.with('my-hub', 'user.agent.base').and_return('user-agent-base-config-value')
+        Zenflow::Github.should_receive(:get_config_for_hub).twice.with('my-hub', 'api.base.url').and_return('api-base-url-config-value')
+        Zenflow::Github.should_receive(:get_config_for_hub).twice.with('my-hub', 'github.user').and_return('github-user-config-value')
+        Zenflow::Github.should_receive(:get_config_for_hub).twice.with('my-hub', 'token').and_return('token-config-value')
+        Zenflow::Github.should_receive(:get_config_for_hub).twice.with('my-hub', 'user.agent.base').and_return('user-agent-base-config-value')
 
         expect(Zenflow::Github.describe_hub('my-hub')).to eq([
           ['API Base URL',    'zenflow.hub.my-hub.api.base.url',    'api-base-url-config-value',    'api-base-url-config-value'],
@@ -320,10 +320,10 @@ describe Zenflow::Github do
 
     context 'no parameters configured' do
       it 'returns the expected data' do
-        Zenflow::Github.should_receive(:get_hub_config).twice.with('my-hub', 'api.base.url').and_return(nil)
-        Zenflow::Github.should_receive(:get_hub_config).twice.with('my-hub', 'github.user').and_return(nil)
-        Zenflow::Github.should_receive(:get_hub_config).twice.with('my-hub', 'token').and_return(nil)
-        Zenflow::Github.should_receive(:get_hub_config).twice.with('my-hub', 'user.agent.base').and_return(nil)
+        Zenflow::Github.should_receive(:get_config_for_hub).twice.with('my-hub', 'api.base.url').and_return(nil)
+        Zenflow::Github.should_receive(:get_config_for_hub).twice.with('my-hub', 'github.user').and_return(nil)
+        Zenflow::Github.should_receive(:get_config_for_hub).twice.with('my-hub', 'token').and_return(nil)
+        Zenflow::Github.should_receive(:get_config_for_hub).twice.with('my-hub', 'user.agent.base').and_return(nil)
 
         expect(Zenflow::Github.describe_hub('my-hub')).to eq([
           ['API Base URL',    'zenflow.hub.my-hub.api.base.url',    nil, 'https://api.github.com'],
@@ -336,10 +336,10 @@ describe Zenflow::Github do
 
     context 'hub is default' do
       it 'returns the expected data' do
-        Zenflow::Github.should_receive(:get_hub_config).twice.with('github.com', 'api.base.url').and_return(nil)
-        Zenflow::Github.should_receive(:get_hub_config).twice.with('github.com', 'github.user').and_return(nil)
-        Zenflow::Github.should_receive(:get_hub_config).twice.with('github.com', 'token').and_return(nil)
-        Zenflow::Github.should_receive(:get_hub_config).twice.with('github.com', 'user.agent.base').and_return(nil)
+        Zenflow::Github.should_receive(:get_config_for_hub).twice.with('github.com', 'api.base.url').and_return(nil)
+        Zenflow::Github.should_receive(:get_config_for_hub).twice.with('github.com', 'github.user').and_return(nil)
+        Zenflow::Github.should_receive(:get_config_for_hub).twice.with('github.com', 'token').and_return(nil)
+        Zenflow::Github.should_receive(:get_config_for_hub).twice.with('github.com', 'user.agent.base').and_return(nil)
 
         expect(Zenflow::Github.describe_hub('github.com')).to eq([
           ['API Base URL',    'zenflow.api.base.url',    nil, 'https://api.github.com'],
