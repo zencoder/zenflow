@@ -1,12 +1,6 @@
 require 'spec_helper'
 
 describe Zenflow::Github do
-  describe '.default_hub' do
-    it 'is the expected value' do
-      expect(Zenflow::Github.default_hub).to eq('github.com')
-    end
-  end
-
   describe '.api_base_url' do
     context 'when the value is present' do
       before(:each){
@@ -165,12 +159,8 @@ describe Zenflow::Github do
     end
 
     context 'when argument is \'default\'' do
-      before(:each){
-        Zenflow::Github.should_receive(:default_hub).and_return('default-hub')
-      }
-
       it 'returns the default hub' do
-        expect(Zenflow::Github.select_hub('default')).to eq 'default-hub'
+        expect(Zenflow::Github.select_hub('default')).to eq Zenflow::Github::DEFAULT_HUB
       end    
     end
 
@@ -188,11 +178,10 @@ describe Zenflow::Github do
       context 'and the repo hub is nil' do
         before(:each){
           Zenflow::Repo.should_receive(:hub).and_return(nil)
-          Zenflow::Github.should_receive(:default_hub).and_return('default-hub')
         }
 
         it 'returns the default hub' do
-          expect(Zenflow::Github.select_hub(nil)).to eq 'default-hub'
+          expect(Zenflow::Github.select_hub(nil)).to eq Zenflow::Github::DEFAULT_HUB
         end    
       end
     end
@@ -200,10 +189,6 @@ describe Zenflow::Github do
 
   describe '.key_for_hub' do
     context 'when hub is the default hub' do
-      before(:each){
-        Zenflow::Github.should_receive(:default_hub).and_return('github.com')
-      }
-
       context 'and key is the api url base key' do
         it 'prepends \'zenflow\' as a prefix' do
           expect(Zenflow::Github.key_for_hub('github.com', 'api.base.url')).to eq("zenflow.api.base.url")
@@ -230,10 +215,6 @@ describe Zenflow::Github do
     end
 
     context 'hub is not the default hub' do
-      before(:each){
-        Zenflow::Github.should_receive(:default_hub).and_return('github.com')
-      }
-
       context 'and key is the api url base key' do
         it 'prepends a hub-specific prefix' do
           expect(Zenflow::Github.key_for_hub('my-hub', 'api.base.url')).to eq("zenflow.hub.my-hub.api.base.url")
@@ -262,7 +243,6 @@ describe Zenflow::Github do
 
   describe '.get_hub_config' do
     it 'gets the correct global config parameter' do
-      Zenflow::Github.should_receive(:default_hub).and_return('github.com')
       Zenflow::Github.should_receive(:get_global_config).with("zenflow.hub.test-hub.test-key")
       Zenflow::Github.get_hub_config('test-hub', 'test-key')
     end
@@ -309,7 +289,7 @@ describe Zenflow::Github do
 
   describe '.config_keys' do
     it 'returns the expected array of keys' do
-      expect(Zenflow::Github.config_keys).to eq([
+      expect(Zenflow::Github::CONFIG_KEYS).to eq([
         'api.base.url',
         'github.user',
         'token',
@@ -328,10 +308,6 @@ describe Zenflow::Github do
   end
 
   describe '.describe_hub' do
-    before(:each){
-      Zenflow::Github.should_receive(:default_hub).exactly(4).times.and_return('github.com')
-    }
-
     context 'all parameters configured' do
       it 'returns the expected data' do
         Zenflow::Github.should_receive(:get_hub_config).twice.with('my-hub', 'api.base.url').and_return('api-base-url-config-value')

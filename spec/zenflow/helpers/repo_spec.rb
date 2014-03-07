@@ -40,10 +40,6 @@ describe Zenflow::Repo do
   end
 
   describe '.is_default_hub?' do
-    before(:each){  
-      Zenflow::Github.should_receive(:default_hub).and_return("github.com")
-    }
-
     context 'when check is not supplied' do
       context 'and current hub matches default hub' do
         before(:each){  

@@ -67,7 +67,7 @@ module Zenflow
         }.sort.uniq
 
         [
-          ["#{hub_label(Zenflow::Github.default_hub)}"]
+          ["#{hub_label(Zenflow::Github::DEFAULT_HUB)}"]
         ] + configured_hubs
       end
 
@@ -84,7 +84,7 @@ module Zenflow
       end
 
       def config_keys_regex
-        "(?:#{Zenflow::Github.config_keys.map { |s| s.gsub('.','\\.') }.join('|')})"
+        "(?:#{Zenflow::Github::CONFIG_KEYS.map { |s| s.gsub('.','\\.') }.join('|')})"
       end
 
       def config_api_base_url(hub)

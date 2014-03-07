@@ -17,7 +17,6 @@ EOS
       )
       Zenflow::Repo.should_receive(:is_default_hub?).at_least(:once).with(anything()).and_return(false)
       Zenflow::Repo.should_receive(:is_current_hub?).at_least(:once).with(anything()).and_return(false)
-      Zenflow::Github.should_receive(:default_hub).and_return('github.com')
       Zenflow.should_receive(:Log).with("Recogized hubs")
       Terminal::Table.should_receive(:new).with(
         headings: ["Hub"],
@@ -165,18 +164,14 @@ EOS
   end
 
   describe '.hub_label' do
-    before(:each){
-      Zenflow::Github.should_receive(:default_hub).and_return('default-hub')
-    }
-
     context 'hub is default hub' do
       context 'hub is current hub' do
         before(:each){
-          Zenflow::Repo.should_receive(:hub).and_return('default-hub')
+          Zenflow::Repo.should_receive(:hub).and_return(Zenflow::Github::DEFAULT_HUB)
         }
 
         it 'returns the expected label' do
-          expect(hubs.hub_label('default-hub')).to eq('default-hub [default] [current]')
+          expect(hubs.hub_label(Zenflow::Github::DEFAULT_HUB)).to eq("#{Zenflow::Github::DEFAULT_HUB} [default] [current]")
         end
       end
 
@@ -186,7 +181,7 @@ EOS
         }
 
         it 'returns the expected label' do
-          expect(hubs.hub_label('default-hub')).to eq('default-hub [default]')
+          expect(hubs.hub_label(Zenflow::Github::DEFAULT_HUB)).to eq("#{Zenflow::Github::DEFAULT_HUB} [default]")
         end
       end
     end
@@ -215,13 +210,9 @@ EOS
   end
 
   describe '.default_hub_tag' do
-    before(:each){
-      Zenflow::Github.should_receive(:default_hub).and_return('default-hub')
-    }
-
     context 'hub is default hub' do
       it 'returns the expected tag' do
-        expect(hubs.default_hub_tag('default-hub')).to eq(' [default]')
+        expect(hubs.default_hub_tag(Zenflow::Github::DEFAULT_HUB)).to eq(' [default]')
       end
     end
 

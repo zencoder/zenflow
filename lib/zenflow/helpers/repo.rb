@@ -18,7 +18,7 @@ module Zenflow
     end
 
     def self.is_default_hub?(check=nil)
-      (check ? check : hub) == Zenflow::Github.default_hub
+      (check ? check : hub) == Zenflow::Github::DEFAULT_HUB
     end
 
   end
