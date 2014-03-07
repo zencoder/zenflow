@@ -70,17 +70,21 @@ module Zenflow
     end
 
     # If this repo is not hosted on the default github, construct a key prefix containing the hub information
-    def self.key_for_hub(hub, key)
+    def self.construct_key_for_hub(hub, key)
       default_hub_key_prefix = key == USER_KEY ? "" : "zenflow."  # preserves backwards compatibility
       Zenflow::Repo.is_default_hub?(hub) ? "#{default_hub_key_prefix}#{key}" : "zenflow.hub.#{hub}.#{key}"
     end
 
     def self.get_config_for_hub(hub, key)
-      get_global_config(key_for_hub(resolve_hub(hub), key))
+      resolved_hub = resolve_hub(hub)
+      key_for_hub = construct_key_for_hub(resolved_hub, key)
+      get_global_config(key_for_hub)
     end
 
     def self.set_config_for_hub(hub, key, value)
-      set_global_config(key_for_hub(resolve_hub(hub), key), value)
+      resolved_hub = resolve_hub(hub)
+      key_for_hub = construct_key_for_hub(resolved_hub, key)
+      set_global_config(key_for_hub, value)
     end
 
     def self.get_global_config(key)
@@ -94,7 +98,7 @@ module Zenflow
     end
 
     def self.describe_hub_parameter(name, hub, key, value)
-      [name, key_for_hub(hub, key), get_config_for_hub(hub, key), value]
+      [name, construct_key_for_hub(hub, key), get_config_for_hub(hub, key), value]
     end
 
     def self.describe_hub(hub)

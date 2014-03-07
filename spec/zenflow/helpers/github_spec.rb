@@ -181,29 +181,29 @@ describe Zenflow::Github do
     end
   end
 
-  describe '.key_for_hub' do
+  describe '.construct_key_for_hub' do
     context 'when hub is the default hub' do
       context 'and key is the api url base key' do
         it 'prepends \'zenflow\' as a prefix' do
-          expect(Zenflow::Github.key_for_hub('github.com', 'api.base.url')).to eq("zenflow.api.base.url")
+          expect(Zenflow::Github.construct_key_for_hub('github.com', 'api.base.url')).to eq("zenflow.api.base.url")
         end
       end
 
       context 'and key is the user key' do
         it 'does not prepend a prefix' do
-          expect(Zenflow::Github.key_for_hub('github.com', 'github.user')).to eq('github.user')
+          expect(Zenflow::Github.construct_key_for_hub('github.com', 'github.user')).to eq('github.user')
         end
       end
 
       context 'and key is the zenflow token key' do
         it 'prepends \'zenflow\' as a prefix' do
-          expect(Zenflow::Github.key_for_hub('github.com', 'token')).to eq("zenflow.token")
+          expect(Zenflow::Github.construct_key_for_hub('github.com', 'token')).to eq("zenflow.token")
         end
       end
 
       context 'and key is the user agent base key' do
         it 'prepends \'zenflow\' as a prefix' do
-          expect(Zenflow::Github.key_for_hub('github.com', 'user.agent.base')).to eq("zenflow.user.agent.base")
+          expect(Zenflow::Github.construct_key_for_hub('github.com', 'user.agent.base')).to eq("zenflow.user.agent.base")
         end
       end
     end
@@ -211,25 +211,25 @@ describe Zenflow::Github do
     context 'hub is not the default hub' do
       context 'and key is the api url base key' do
         it 'prepends a hub-specific prefix' do
-          expect(Zenflow::Github.key_for_hub('my-hub', 'api.base.url')).to eq("zenflow.hub.my-hub.api.base.url")
+          expect(Zenflow::Github.construct_key_for_hub('my-hub', 'api.base.url')).to eq("zenflow.hub.my-hub.api.base.url")
         end
       end
 
       context 'and key is the user key' do
         it 'prepends a hub-specific prefix' do
-          expect(Zenflow::Github.key_for_hub('my-hub', 'github.user')).to eq("zenflow.hub.my-hub.github.user")
+          expect(Zenflow::Github.construct_key_for_hub('my-hub', 'github.user')).to eq("zenflow.hub.my-hub.github.user")
         end
       end
 
       context 'and key is the zenflow token key' do
         it 'prepends a hub-specific prefix' do
-          expect(Zenflow::Github.key_for_hub('my-hub', 'token')).to eq("zenflow.hub.my-hub.token")
+          expect(Zenflow::Github.construct_key_for_hub('my-hub', 'token')).to eq("zenflow.hub.my-hub.token")
         end
       end
 
       context 'and key is the user agent base key' do
         it 'prepends a hub-specific prefix' do
-          expect(Zenflow::Github.key_for_hub('my-hub', 'user.agent.base')).to eq("zenflow.hub.my-hub.user.agent.base")
+          expect(Zenflow::Github.construct_key_for_hub('my-hub', 'user.agent.base')).to eq("zenflow.hub.my-hub.user.agent.base")
         end
       end
     end
