@@ -91,7 +91,7 @@ module Zenflow
 
       def configure_github
         #TODO: consolidate these two paths
-        if Zenflow::Repo.is_default_hub
+        if Zenflow::Repo.is_default_hub?
           set_up_github
           authorize_github
         else

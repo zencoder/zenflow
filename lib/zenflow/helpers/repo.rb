@@ -13,11 +13,11 @@ module Zenflow
       (url && url[/:(.*?)\.git/, 1]) || nil
     end
 
-    def self.is_current_hub(check)
+    def self.is_current_hub?(check)
       hub == check
     end
 
-    def self.is_default_hub(check=nil)
+    def self.is_default_hub?(check=nil)
       (check ? check : hub) == Zenflow::Github.default_hub
     end
 

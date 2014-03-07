@@ -76,11 +76,11 @@ module Zenflow
       end
 
       def default_hub_tag(hub)
-        Zenflow::Repo.is_default_hub(hub) ? " [default]" : ""
+        Zenflow::Repo.is_default_hub?(hub) ? " [default]" : ""
       end
 
       def current_hub_tag(hub)
-        Zenflow::Repo.is_current_hub(hub) ? " [current]" : ""
+        Zenflow::Repo.is_current_hub?(hub) ? " [current]" : ""
       end
 
       def config_keys_regex

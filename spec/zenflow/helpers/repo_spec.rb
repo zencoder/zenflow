@@ -21,25 +21,25 @@ describe Zenflow::Repo do
     end
   end
 
-  describe '.is_current_hub' do
+  describe '.is_current_hub?' do
     before(:each){  
       Zenflow::Repo.should_receive(:url).twice.and_return("git@github.com:zencoder/zenflow.git")
     }
 
     context 'when check matches hub' do
       it 'returns true' do
-        expect(Zenflow::Repo.is_current_hub("github.com")).to eq(true)
+        expect(Zenflow::Repo.is_current_hub?("github.com")).to eq(true)
       end
     end
 
     context 'when check does not match hub' do
       it 'returns false' do
-        expect(Zenflow::Repo.is_current_hub("my-hub")).to eq(false)
+        expect(Zenflow::Repo.is_current_hub?("my-hub")).to eq(false)
       end
     end
   end
 
-  describe '.is_default_hub' do
+  describe '.is_default_hub?' do
     before(:each){  
       Zenflow::Github.should_receive(:default_hub).and_return("github.com")
     }
@@ -51,7 +51,7 @@ describe Zenflow::Repo do
         }
 
         it 'returns true' do
-          expect(Zenflow::Repo.is_default_hub).to eq(true)
+          expect(Zenflow::Repo.is_default_hub?).to eq(true)
         end
       end
 
@@ -61,7 +61,7 @@ describe Zenflow::Repo do
         }
 
         it 'returns true' do
-          expect(Zenflow::Repo.is_default_hub).to eq(false)
+          expect(Zenflow::Repo.is_default_hub?).to eq(false)
         end
       end
     end
@@ -69,13 +69,13 @@ describe Zenflow::Repo do
     context 'when check is supplied' do
       context 'and check matches default hub' do
         it 'returns true' do
-          expect(Zenflow::Repo.is_default_hub("github.com")).to eq(true)
+          expect(Zenflow::Repo.is_default_hub?("github.com")).to eq(true)
         end
       end
 
       context 'and check does not match default hub' do
         it 'returns false' do
-          expect(Zenflow::Repo.is_default_hub("my-hub")).to eq(false)
+          expect(Zenflow::Repo.is_default_hub?("my-hub")).to eq(false)
         end
       end
     end

@@ -15,8 +15,8 @@ zenflow.hub.one.more.hub.user.agent.base user_agent_base
 zenflow.hub.bad.token.hub.goobers user_agent_base
 EOS
       )
-      Zenflow::Repo.should_receive(:is_default_hub).at_least(:once).with(anything()).and_return(false)
-      Zenflow::Repo.should_receive(:is_current_hub).at_least(:once).with(anything()).and_return(false)
+      Zenflow::Repo.should_receive(:is_default_hub?).at_least(:once).with(anything()).and_return(false)
+      Zenflow::Repo.should_receive(:is_current_hub?).at_least(:once).with(anything()).and_return(false)
       Zenflow::Github.should_receive(:default_hub).and_return('github.com')
       Zenflow.should_receive(:Log).with("Recogized hubs")
       Terminal::Table.should_receive(:new).with(

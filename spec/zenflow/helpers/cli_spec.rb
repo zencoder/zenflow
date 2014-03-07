@@ -276,7 +276,7 @@ describe Zenflow::CLI do
       context "when zenflow has not been configured" do
         before do
           Zenflow::Config.should_receive(:configured?).and_return(false)
-          Zenflow::Repo.should_receive(:is_default_hub).and_return(false)
+          Zenflow::Repo.should_receive(:is_default_hub?).and_return(false)
         end
 
         it 'configures zenflow' do
@@ -298,7 +298,7 @@ describe Zenflow::CLI do
     context "when zenflow has not been configured" do
       before do
         Zenflow::Config.should_receive(:configured?).and_return(false)
-        Zenflow::Repo.should_receive(:is_default_hub).and_return(true)
+        Zenflow::Repo.should_receive(:is_default_hub?).and_return(true)
       end
 
       it 'configures zenflow' do
@@ -323,7 +323,7 @@ describe Zenflow::CLI do
 
       context 'and it is forced to initialize' do
         before do
-          Zenflow::Repo.should_receive(:is_default_hub).and_return(true)
+          Zenflow::Repo.should_receive(:is_default_hub?).and_return(true)
         end
 
         it 'configures zenflow' do
