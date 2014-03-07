@@ -65,7 +65,7 @@ EOS
 
   describe '.config' do
     it 'calls the individual parameter config methods' do
-      Zenflow::Github.should_receive(:select_hub).with('my-hub').and_return('my-hub')
+      Zenflow::Github.should_receive(:resolve_hub).with('my-hub').and_return('my-hub')
       hubs.should_receive(:hub_label).with('my-hub').and_return('my-hub')
       Zenflow.should_receive(:Log).with("Configuring my-hub")
       hubs.should_receive(:config_api_base_url).with('my-hub')
@@ -118,7 +118,7 @@ EOS
 
   describe '.authorize' do
     before do
-      Zenflow::Github.should_receive(:select_hub).with('my-hub').and_return('my-hub')
+      Zenflow::Github.should_receive(:resolve_hub).with('my-hub').and_return('my-hub')
       hubs.should_receive(:hub_label).with('my-hub').and_return('my-hub')
       Zenflow.should_receive(:Log).with("Authorizing my-hub")
     end

@@ -151,16 +151,10 @@ describe Zenflow::Github do
     end
   end
 
-  describe '.select_hub' do
+  describe '.resolve_hub' do
     context 'when supplied as argument' do
       it 'returns the hub provided' do
-        expect(Zenflow::Github.select_hub('test-hub')).to eq 'test-hub'
-      end    
-    end
-
-    context 'when argument is \'default\'' do
-      it 'returns the default hub' do
-        expect(Zenflow::Github.select_hub('default')).to eq Zenflow::Github::DEFAULT_HUB
+        expect(Zenflow::Github.resolve_hub('test-hub')).to eq 'test-hub'
       end    
     end
 
@@ -171,7 +165,7 @@ describe Zenflow::Github do
         }
 
         it 'returns the repo hub' do
-          expect(Zenflow::Github.select_hub(nil)).to eq 'repo-hub'
+          expect(Zenflow::Github.resolve_hub(nil)).to eq 'repo-hub'
         end    
       end
 
@@ -181,7 +175,7 @@ describe Zenflow::Github do
         }
 
         it 'returns the default hub' do
-          expect(Zenflow::Github.select_hub(nil)).to eq Zenflow::Github::DEFAULT_HUB
+          expect(Zenflow::Github.resolve_hub(nil)).to eq Zenflow::Github::DEFAULT_HUB
         end    
       end
     end

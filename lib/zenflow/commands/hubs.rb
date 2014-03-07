@@ -17,7 +17,7 @@ module Zenflow
 
     desc "describe [HUB]", "Show configuration details for HUB (current project hub if none specified, or default hub if no current project)."
     def describe(hub=nil)
-      hub = Zenflow::Github.select_hub(hub)
+      hub = Zenflow::Github.resolve_hub(hub)
 
       Zenflow::Log("Configuration details for hub #{hub_label(hub)}")
 
@@ -29,7 +29,7 @@ module Zenflow
 
     desc "config [HUB]", "Configure the specified HUB (current project hub if none specified, or default hub if no current project)."
     def config(hub=nil)
-      hub = Zenflow::Github.select_hub(hub)
+      hub = Zenflow::Github.resolve_hub(hub)
 
       Zenflow::Log("Configuring #{hub_label(hub)}")
 
@@ -40,7 +40,7 @@ module Zenflow
 
     desc "authorize [HUB]", "Grab an auth token for HUB (current project hub if none specified, or default hub if no current project)."
     def authorize(hub=nil)
-      hub = Zenflow::Github.select_hub(hub)
+      hub = Zenflow::Github.resolve_hub(hub)
 
       Zenflow::Log("Authorizing #{hub_label(hub)}")
 

@@ -42,7 +42,7 @@ module Zenflow
     end
 
     def self.authorize(hub=nil)
-      Zenflow::Log("Authorizing with GitHub (#{user(hub)}@#{select_hub(hub)})... Enter your GitHub password.")
+      Zenflow::Log("Authorizing with GitHub (#{user(hub)}@#{resolve_hub(hub)})... Enter your GitHub password.")
       oauth_response = JSON.parse(Zenflow::Shell.run(%{curl -u "#{Zenflow::Github.user(hub)}" #{Zenflow::Github.api_base_url(hub)}/authorizations -d '{"scopes":["repo"], "note":"Zenflow"}' --silent}, silent: true))
       if oauth_response['token']
         set_hub_config(hub, TOKEN_KEY, oauth_response['token'])
@@ -63,8 +63,7 @@ module Zenflow
       set_hub_config(hub, USER_AGENT_BASE_KEY, user_agent_base)
     end
 
-    def self.select_hub(hub)
-      hub = DEFAULT_HUB if hub == "default"
+    def self.resolve_hub(hub)
       hub || Zenflow::Repo.hub || DEFAULT_HUB
     end
 
@@ -75,11 +74,11 @@ module Zenflow
     end
 
     def self.get_hub_config(hub, key)
-      get_global_config(key_for_hub(select_hub(hub), key))
+      get_global_config(key_for_hub(resolve_hub(hub), key))
     end
 
     def self.set_hub_config(hub, key, value)
-      set_global_config(key_for_hub(select_hub(hub), key), value)
+      set_global_config(key_for_hub(resolve_hub(hub), key), value)
     end
 
     def self.get_global_config(key)
