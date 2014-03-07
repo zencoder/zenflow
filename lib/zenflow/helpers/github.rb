@@ -18,9 +18,10 @@ module Zenflow
       USER_AGENT_BASE_KEY
     ]
 
-    def self.api_base_url(hub=nil,default=true)
+    def self.api_base_url(hub=nil,useDefaultValue=true)
       api_base_url = get_hub_config(hub, API_BASE_URL_KEY)
-      !api_base_url && default ? DEFAULT_API_BASE_URL : api_base_url
+      api_base_url ||= DEFAULT_API_BASE_URL if useDefaultValue
+      api_base_url
     end
 
     def self.set_api_base_url(hub=nil)
@@ -53,9 +54,10 @@ module Zenflow
       end
     end
 
-    def self.user_agent_base(hub=nil,default=true)
+    def self.user_agent_base(hub=nil,useDefaultValue=true)
       user_agent_base = get_hub_config(hub, USER_AGENT_BASE_KEY)
-      !user_agent_base && default ? DEFAULT_USER_AGENT_BASE : user_agent_base
+      user_agent_base ||= DEFAULT_USER_AGENT_BASE if useDefaultValue
+      user_agent_base
     end
 
     def self.set_user_agent_base(hub=nil)
