@@ -12,14 +12,5 @@ module Zenflow
     def self.slug
       (url && url[/:(.*?)\.git/, 1]) || nil
     end
-
-    def self.is_current_hub?(check)
-      hub == check
-    end
-
-    def self.is_default_hub?(check=nil)
-      (check ? check : hub) == Zenflow::Github::DEFAULT_HUB
-    end
-
   end
 end

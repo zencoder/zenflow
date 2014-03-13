@@ -43,8 +43,7 @@ module Zenflow
       if Zenflow::Config.configured? && !force
         already_configured
       else
-        Zenflow::Github::CURRENT.config
-        Zenflow::Github::CURRENT.authorize
+        configure_github
         configure_project
         configure_branches
         configure_merge_strategy
@@ -64,6 +63,16 @@ module Zenflow
         else
           Zenflow::Log("Aborting...", :color => :red)
           exit(1)
+        end
+      end
+
+      def configure_github
+        if Zenflow::Github::CURRENT.is_default_hub?
+          Zenflow::Github::CURRENT.set_user
+          Zenflow::Github::CURRENT.authorize
+        else
+          Zenflow::Github::CURRENT.config
+          Zenflow::Github::CURRENT.authorize
         end
       end
 

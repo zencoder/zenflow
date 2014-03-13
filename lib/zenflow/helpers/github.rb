@@ -34,7 +34,6 @@ module Zenflow
     CURRENT = current
 
     def config
-      #only do set_user for zenflow init calls on the default hub?
       set_api_base_url
       set_user
       set_user_agent_base
@@ -114,7 +113,7 @@ module Zenflow
     # If this repo is not hosted on the default github, construct a key prefix containing the hub information
     def parameter_key_for_hub(key)
       default_hub_key_prefix = key == USER_KEY ? "" : "zenflow."  # preserves backwards compatibility
-      Zenflow::Repo.is_default_hub?(@hub) ? "#{default_hub_key_prefix}#{key}" : "zenflow.hub.#{@hub}.#{key}"
+      is_default_hub? ? "#{default_hub_key_prefix}#{key}" : "zenflow.hub.#{@hub}.#{key}"
     end
 
     def get_config(base_parameter_key)
@@ -135,6 +134,10 @@ module Zenflow
 
     def set_global_config(key, value)
       Zenflow::Shell.run("git config --global #{key} #{value}", silent: true)
+    end
+
+    def is_default_hub?
+      @hub == DEFAULT_HUB
     end
 
     def describe_parameter(name, parameter_key, value)

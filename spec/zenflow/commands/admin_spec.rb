@@ -15,13 +15,11 @@ zenflow.hub.one.more.hub.user.agent.base user_agent_base
 zenflow.hub.bad.token.hub.goobers user_agent_base
 EOS
       )
-      Zenflow::Repo.should_receive(:is_default_hub?).at_least(:once).with(anything()).and_return(false)
-      Zenflow::Repo.should_receive(:is_current_hub?).at_least(:once).with(anything()).and_return(false)
       Zenflow.should_receive(:Log).with("Recogized hubs")
       Terminal::Table.should_receive(:new).with(
         headings: ["Hub"],
         rows: [
-          ["github.com"],
+          ["github.com [default] [current]"],
           ["hub.1"],
           ["my-hub"],
           ["one.more.hub"],
@@ -126,7 +124,7 @@ EOS
     context 'hub is default hub' do
       context 'hub is current hub' do
         before(:each){
-          Zenflow::Repo.should_receive(:hub).and_return(Zenflow::Github::DEFAULT_HUB)
+          stub_const("Zenflow::Github::CURRENT", Zenflow::Github.new(Zenflow::Github::DEFAULT_HUB))
         }
 
         it 'returns the expected label' do
@@ -136,7 +134,7 @@ EOS
 
       context 'hub is not current hub' do
         before(:each){
-          Zenflow::Repo.should_receive(:hub).and_return('current-hub')
+          stub_const("Zenflow::Github::CURRENT", Zenflow::Github.new('current-hub'))
         }
 
         it 'returns the expected label' do
@@ -146,21 +144,17 @@ EOS
     end
 
     context 'hub is not default hub' do
-      context 'hub is current hub' do
-        before(:each){
-          Zenflow::Repo.should_receive(:hub).and_return('current-hub')
-        }
+      before(:each){
+        stub_const("Zenflow::Github::CURRENT", Zenflow::Github.new('current-hub'))
+      }
 
+      context 'hub is current hub' do
         it 'returns the expected label' do
           expect(admin.hub_label('current-hub')).to eq('current-hub [current]')
         end
       end
 
       context 'hub is not current hub' do
-        before(:each){
-          Zenflow::Repo.should_receive(:hub).and_return('default-hub')
-        }
-
         it 'returns the expected label' do
           expect(admin.hub_label('not-current-hub')).to eq('not-current-hub')
         end
@@ -184,7 +178,7 @@ EOS
 
   describe '.current_hub_tag' do
     before(:each){
-      Zenflow::Repo.should_receive(:hub).and_return('current-hub')
+      stub_const("Zenflow::Github::CURRENT", Zenflow::Github.new('current-hub'))
     }
 
     context 'hub is current hub' do

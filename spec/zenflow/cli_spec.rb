@@ -190,7 +190,17 @@ describe Zenflow::CLI do
   end
 
   describe "#init" do
+    let(:current){Zenflow::Github.new('current')}
+
+    before do
+      stub_const("Zenflow::Github::CURRENT", current)
+    end
+
     context "when in a project that doesn't belong to the default hub" do
+      before do
+        current.should_receive(:is_default_hub?).and_return(false)
+      end
+
       context "when zenflow has not been configured" do
         before do
           Zenflow::Config.should_receive(:configured?).and_return(false)
@@ -198,8 +208,8 @@ describe Zenflow::CLI do
 
         it 'configures zenflow' do
           subject.should_not_receive(:already_configured)
-          Zenflow::Github::CURRENT.should_receive(:config)
-          Zenflow::Github::CURRENT.should_receive(:authorize)
+          current.should_receive(:config)
+          current.should_receive(:authorize)
           subject.should_receive(:configure_project)
           subject.should_receive(:configure_branches)
           subject.should_receive(:configure_merge_strategy)
@@ -215,12 +225,13 @@ describe Zenflow::CLI do
     context "when zenflow has not been configured" do
       before do
         Zenflow::Config.should_receive(:configured?).and_return(false)
+        current.should_receive(:is_default_hub?).and_return(true)
       end
 
       it 'configures zenflow' do
         subject.should_not_receive(:already_configured)
-        Zenflow::Github::CURRENT.should_receive(:config)
-        Zenflow::Github::CURRENT.should_receive(:authorize)
+        current.should_receive(:set_user)
+        current.should_receive(:authorize)
         subject.should_receive(:configure_project)
         subject.should_receive(:configure_branches)
         subject.should_receive(:configure_merge_strategy)
@@ -238,10 +249,14 @@ describe Zenflow::CLI do
       end
 
       context 'and it is forced to initialize' do
+        before do
+          current.should_receive(:is_default_hub?).and_return(true)
+        end
+
         it 'configures zenflow' do
           subject.should_not_receive(:already_configured)
-          Zenflow::Github::CURRENT.should_receive(:config)
-          Zenflow::Github::CURRENT.should_receive(:authorize)
+          current.should_receive(:set_user)
+          current.should_receive(:authorize)
           subject.should_receive(:configure_project)
           subject.should_receive(:configure_branches)
           subject.should_receive(:configure_merge_strategy)
@@ -262,8 +277,8 @@ describe Zenflow::CLI do
 
         it 'calls already_configured' do
           subject.should_receive(:already_configured).and_call_original
-          Zenflow::Github::CURRENT.should_not_receive(:config)
-          Zenflow::Github::CURRENT.should_not_receive(:authorize)
+          current.should_not_receive(:set_user)
+          current.should_not_receive(:authorize)
           subject.should_not_receive(:configure_branches)
           subject.should_not_receive(:configure_merge_strategy)
           subject.should_not_receive(:configure_remotes)
