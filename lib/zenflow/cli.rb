@@ -20,8 +20,8 @@ module Zenflow
       super
     end
 
-    desc "hubs SUBCOMMAND", "Manage Github server configurations."
-    subcommand "hubs", Zenflow::Hubs
+    desc "admin SUBCOMMAND", "Manage Github server configurations."
+    subcommand "admin", Zenflow::Admin
 
     desc "feature SUBCOMMAND", "Manage feature branches."
     subcommand "feature", Zenflow::Feature
@@ -43,7 +43,8 @@ module Zenflow
       if Zenflow::Config.configured? && !force
         already_configured
       else
-        configure_github
+        Zenflow::Github::CURRENT.config
+        Zenflow::Github::CURRENT.authorize
         configure_project
         configure_branches
         configure_merge_strategy
@@ -51,29 +52,6 @@ module Zenflow
         confirm_some_stuff
         set_up_changelog
         Zenflow::Config.save!
-      end
-    end
-
-    desc "set_up_github", "Set up GitHub user information"
-    def set_up_github
-      user = Zenflow::Github.user(Zenflow::Github::DEFAULT_HUB)
-      if user.to_s != ''
-        if Zenflow::Ask("Your GitHub user is currently #{user}. Do you want to use that?", :options => ["Y", "n"], :default => "y") == "n"
-          Zenflow::Github.set_user(Zenflow::Github::DEFAULT_HUB)
-        end
-      else
-        Zenflow::Github.set_user(Zenflow::Github::DEFAULT_HUB)
-      end
-    end
-
-    desc "authorize_github", "Get an auth token from GitHub"
-    def authorize_github
-      if Zenflow::Github.zenflow_token(Zenflow::Github::DEFAULT_HUB)
-        if Zenflow::Ask("You already have a token from GitHub. Do you want to set a new one?", :options => ["y", "N"], :default => "n") == "y"
-          Zenflow::Github.authorize(Zenflow::Github::DEFAULT_HUB)
-        end
-      else
-        Zenflow::Github.authorize(Zenflow::Github::DEFAULT_HUB)
       end
     end
 
@@ -86,17 +64,6 @@ module Zenflow
         else
           Zenflow::Log("Aborting...", :color => :red)
           exit(1)
-        end
-      end
-
-      def configure_github
-        #TODO: consolidate these two paths
-        if Zenflow::Repo.is_default_hub?
-          set_up_github
-          authorize_github
-        else
-          Zenflow::Hubs.config
-          Zenflow::Hubs.authorize
         end
       end
 

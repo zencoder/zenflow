@@ -19,88 +19,6 @@ describe Zenflow::CLI do
     end
   end
 
-  describe "#set_up_github" do
-    context "when a github user is already saved" do
-      before do
-        Zenflow::Github.should_receive(:user).and_return('user')
-      end
-
-      context "and the user decides to set a new one" do
-        before do
-          Zenflow.should_receive(:Ask).and_return('n')
-        end
-
-        it "authorizes with Github" do
-          Zenflow::Github.should_receive(:set_user)
-          subject.set_up_github
-        end
-      end
-
-      context "and the user decides not to set a new one" do
-        before do
-          Zenflow.should_receive(:Ask).and_return('y')
-        end
-
-        it "does not authorize with Github" do
-          Zenflow::Github.should_not_receive(:set_user)
-          subject.set_up_github
-        end
-      end
-    end
-
-    context "when a zenflow_token is not already saved" do
-      before do
-        Zenflow::Github.should_receive(:user).and_return(nil)
-      end
-
-      it "authorizes with Github" do
-        Zenflow::Github.should_receive(:set_user)
-        subject.set_up_github
-      end
-    end
-  end
-
-  describe "#authorize_github" do
-    context "when a zenflow_token is already saved" do
-      before do
-        Zenflow::Github.should_receive(:zenflow_token).and_return('super secret token')
-      end
-
-      context "and the user decides to set a new one" do
-        before do
-          Zenflow.should_receive(:Ask).and_return('y')
-        end
-
-        it "authorizes with Github" do
-          Zenflow::Github.should_receive(:authorize)
-          subject.authorize_github
-        end
-      end
-
-      context "and the user decides not to set a new one" do
-        before do
-          Zenflow.should_receive(:Ask).and_return('n')
-        end
-
-        it "does not authorize with Github" do
-          Zenflow::Github.should_not_receive(:authorize)
-          subject.authorize_github
-        end
-      end
-    end
-
-    context "when a zenflow_token is not already saved" do
-      before do
-        Zenflow::Github.should_receive(:zenflow_token).and_return(nil)
-      end
-
-      it "authorizes with Github" do
-        Zenflow::Github.should_receive(:authorize)
-        subject.authorize_github
-      end
-    end
-  end
-
   describe "#already_configured" do
     let(:question) {['There is an existing config file. Overwrite it?', {:options => ["y", "N"], :default => "n"}]}
     before do
@@ -276,13 +194,12 @@ describe Zenflow::CLI do
       context "when zenflow has not been configured" do
         before do
           Zenflow::Config.should_receive(:configured?).and_return(false)
-          Zenflow::Repo.should_receive(:is_default_hub?).and_return(false)
         end
 
         it 'configures zenflow' do
           subject.should_not_receive(:already_configured)
-          Zenflow::Hubs.should_receive(:config)
-          Zenflow::Hubs.should_receive(:authorize)
+          Zenflow::Github::CURRENT.should_receive(:config)
+          Zenflow::Github::CURRENT.should_receive(:authorize)
           subject.should_receive(:configure_project)
           subject.should_receive(:configure_branches)
           subject.should_receive(:configure_merge_strategy)
@@ -298,13 +215,12 @@ describe Zenflow::CLI do
     context "when zenflow has not been configured" do
       before do
         Zenflow::Config.should_receive(:configured?).and_return(false)
-        Zenflow::Repo.should_receive(:is_default_hub?).and_return(true)
       end
 
       it 'configures zenflow' do
         subject.should_not_receive(:already_configured)
-        subject.should_receive(:set_up_github)
-        subject.should_receive(:authorize_github)
+        Zenflow::Github::CURRENT.should_receive(:config)
+        Zenflow::Github::CURRENT.should_receive(:authorize)
         subject.should_receive(:configure_project)
         subject.should_receive(:configure_branches)
         subject.should_receive(:configure_merge_strategy)
@@ -322,14 +238,10 @@ describe Zenflow::CLI do
       end
 
       context 'and it is forced to initialize' do
-        before do
-          Zenflow::Repo.should_receive(:is_default_hub?).and_return(true)
-        end
-
         it 'configures zenflow' do
           subject.should_not_receive(:already_configured)
-          subject.should_receive(:set_up_github)
-          subject.should_receive(:authorize_github)
+          Zenflow::Github::CURRENT.should_receive(:config)
+          Zenflow::Github::CURRENT.should_receive(:authorize)
           subject.should_receive(:configure_project)
           subject.should_receive(:configure_branches)
           subject.should_receive(:configure_merge_strategy)
@@ -350,8 +262,8 @@ describe Zenflow::CLI do
 
         it 'calls already_configured' do
           subject.should_receive(:already_configured).and_call_original
-          subject.should_not_receive(:authorize_github)
-          subject.should_not_receive(:configure_project)
+          Zenflow::Github::CURRENT.should_not_receive(:config)
+          Zenflow::Github::CURRENT.should_not_receive(:authorize)
           subject.should_not_receive(:configure_branches)
           subject.should_not_receive(:configure_merge_strategy)
           subject.should_not_receive(:configure_remotes)
