@@ -69,11 +69,10 @@ module Zenflow
       def configure_github
         if Zenflow::Github::CURRENT.is_default_hub?
           Zenflow::Github::CURRENT.set_user
-          Zenflow::Github::CURRENT.authorize
         else
           Zenflow::Github::CURRENT.config
-          Zenflow::Github::CURRENT.authorize
         end
+        Zenflow::Github::CURRENT.authorize
       end
 
       def configure_project
