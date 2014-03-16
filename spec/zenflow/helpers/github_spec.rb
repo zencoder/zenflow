@@ -9,13 +9,19 @@ describe Zenflow::Github do
         hub.should_receive(:get_config).with('api.base.url').and_return("api-base-url")
       }
 
-      context 'and default is true' do
+      context 'and use_default_when_value_is_nil is not specified' do
+        it 'returns the expected value' do
+          expect(hub.api_base_url).to eq("api-base-url")
+        end
+      end
+
+      context 'and use_default_when_value_is_nil is true' do
         it 'returns the expected value' do
           expect(hub.api_base_url(true)).to eq("api-base-url")
         end
       end
 
-      context 'and default is false' do
+      context 'and use_default_when_value_is_nil is false' do
         it 'returns the expected value' do
           expect(hub.api_base_url(false)).to eq("api-base-url")
         end
@@ -29,13 +35,19 @@ describe Zenflow::Github do
         hub.should_receive(:get_config).with('api.base.url').and_return(nil)
       }
 
-      context 'and default is true' do
+      context 'and use_default_when_value_is_nil is not specified' do
+        it 'returns the expected value' do
+          expect(hub.api_base_url).to eq("https://api.github.com")
+        end
+      end
+
+      context 'and use_default_when_value_is_nil is true' do
         it 'returns the expected value' do
           expect(hub.api_base_url(true)).to eq("https://api.github.com")
         end
       end
 
-      context 'and default is false' do
+      context 'and use_default_when_value_is_nil is false' do
         it 'returns the expected value' do
           expect(hub.api_base_url(false)).to eq(nil)
         end
@@ -254,13 +266,19 @@ describe Zenflow::Github do
         hub.should_receive(:get_config).with('user.agent.base').and_return("user-agent-base")
       }
 
-      context 'and default is true' do
+      context 'and use_default_when_value_is_nil is not specified' do
+        it 'returns the expected value' do
+          expect(hub.user_agent_base).to eq("user-agent-base")
+        end
+      end
+
+      context 'and use_default_when_value_is_nil is true' do
         it 'returns the expected value' do
           expect(hub.user_agent_base(true)).to eq("user-agent-base")
         end
       end
 
-      context 'and default is false' do
+      context 'and use_default_when_value_is_nil is false' do
         it 'returns the expected value' do
           expect(hub.user_agent_base(false)).to eq("user-agent-base")
         end
@@ -272,13 +290,19 @@ describe Zenflow::Github do
         hub.should_receive(:get_config).with('user.agent.base').and_return(nil)
       }
 
-      context 'and default is true' do
+      context 'and use_default_when_value_is_nil is not specified' do
+        it 'returns the expected value' do
+          expect(hub.user_agent_base).to eq("Zencoder")
+        end
+      end
+
+      context 'and use_default_when_value_is_nil is true' do
         it 'returns the expected value' do
           expect(hub.user_agent_base(true)).to eq("Zencoder")
         end
       end
 
-      context 'and default is false' do
+      context 'and use_default_when_value_is_nil is false' do
         it 'returns the expected value' do
           expect(hub.user_agent_base(false)).to eq(nil)
         end
