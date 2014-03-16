@@ -101,6 +101,6 @@ To deploy to production, type `zenflow deploy production`. Hotfixes are not auto
 
 ### <a name="enterprise"></a> Enterpise Configuration
 
-Zenflow now supports repositories hosted on enterprise github servers.  `zenflow init` will automatically detect which server is hosting your repository by examining the remote string returned by `git remove -v`.  If it is an enterprise server, Zenflow will ask for additional configuration parameters including the API base URL of the enterprise server and an optional over-ride for the User-Agent header that Zenflow submits to the server.  All configuration parameters are stored in git config.
+Zenflow now supports repositories hosted on enterprise github servers.  `zenflow init` will automatically detect which server is hosting your repository by examining the remote string returned by `git remote -v`.  If it is an enterprise server, Zenflow will ask for additional configuration parameters including the API base URL of the enterprise server and an optional over-ride for the User-Agent header that Zenflow submits to the server.  All configuration parameters are stored in git config.
 
-Zenflow can handle any number of enterprise github servers in addition to working with the primary github server at github.com.  To examine the github server configurations of your Zenflow install use `zenflow admin ...` commands.
+Zenflow can handle any number of enterprise github servers in addition to working with the primary github server at github.com.  To examine the github server configurations of your Zenflow install use the `zenflow admin ...` set of commands.
