@@ -16,7 +16,7 @@ module Zenflow
               already_created?(Zenflow::PullRequest.find_by_ref("#{flow}/#{branch_name}"))
 
               pull = Zenflow::PullRequest.create(
-                base:  branch(:source),
+                base:  branch(:destination) || branch(:source),
                 head:  "#{flow}/#{branch_name}",
                 title: "#{flow}: #{branch_name}",
                 body:  Zenflow::Ask("Describe this #{flow}:", required: true)
