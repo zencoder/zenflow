@@ -177,7 +177,7 @@ module BranchCommandSpec
             pull = double(valid?: true)
             pull.stub(:[]).with("html_url").and_return("URL")
             Zenflow::PullRequest.should_receive(:create).with(
-              base:  "master",
+              base:  "production",
               head:  "test/new-test-branch",
               title: "test: new-test-branch",
               body:  "A great test"
@@ -195,7 +195,7 @@ module BranchCommandSpec
           before do
             Zenflow.should_receive(:Ask).with("Describe this test:", required: true).and_return("A great test")
             Zenflow::PullRequest.should_receive(:create).with(
-              base:  "master",
+              base:  "production",
               head:  "test/new-test-branch",
               title: "test: new-test-branch",
               body:  "A great test"
