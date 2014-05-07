@@ -17,10 +17,10 @@ Gem::Specification.new do |s|
   s.description = "Zenflow is a development workflow management tool."
   s.license     = 'MIT'
   s.executables << "zenflow"
-  s.add_dependency "thor", "~> 0.18.1"
+  s.add_dependency "thor", "~> 0.19.0"
   s.add_dependency "colored", "~> 1.2"
   s.add_dependency "terminal-table", "~> 1.4.5"
-  s.add_dependency "httparty", "~> 0.12.0"
+  s.add_dependency "httparty", "~> 0.13.0"
   s.add_development_dependency('rspec', '~> 2.14')
   s.add_development_dependency('simplecov', '~> 0.7.1')
   s.add_development_dependency('debugger', '~> 1.6.1')
