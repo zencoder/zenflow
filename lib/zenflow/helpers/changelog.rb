@@ -10,7 +10,7 @@ module Zenflow
         return unless exist?
         change = prompt_for_change(options)
         if change
-          prepend_change_to_changelog(change, options)
+          prepend_change_to_changelog("* #{change}", options)
         else
           rotate(:commit => true) if options[:rotate]
         end
@@ -25,8 +25,9 @@ module Zenflow
       def prepend_change_to_changelog(change, options={})
         return unless exist?
         new_changes = Zenflow::Shell.shell_escape_for_single_quoting(change)
+        prepended_changelog = prepended_changelog(new_changes)
         File.open("CHANGELOG.md", "w") do |f|
-          f.write prepended_changelog(new_changes)
+          f.write prepended_changelog
         end
         rotate(:name => options[:name]) if options[:rotate]
         Zenflow::Shell["git add CHANGELOG.md && git commit -a -m 'Adding line to CHANGELOG: #{new_changes}'"]
@@ -38,7 +39,6 @@ module Zenflow
         <<-EOS
 #{new_changes}
 #{existing_changes}
---------------------------------------------------------------------------------
 #{changelog}
         EOS
       end
@@ -68,9 +68,8 @@ module Zenflow
         return unless exist?
         changelog = File.read("CHANGELOG.md").strip
         changes = changelog.split("--------------------------------------------------------------------------------")[0]
-        return if changes.strip.empty?
-        changelog = changelog.sub(changes, "")
-        return changes.strip, changelog
+        changelog = changelog.sub(changes, "") if changes
+        return changes.to_s.strip, changelog
       end
 
       def row_name(name=nil)
