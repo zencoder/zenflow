@@ -154,12 +154,12 @@ describe Zenflow::Changelog do
 
       context "but there are no changes" do
         before do
-          file = "\n--------------------------------------------------------------------------------\nold changes"
-          File.should_receive(:read).with('CHANGELOG.md').and_return(file)
+          @file = "\n--------------------------------------------------------------------------------\nold changes"
+          File.should_receive(:read).with('CHANGELOG.md').and_return(@file)
         end
 
-        it 'returns nil' do
-          expect(Zenflow::Changelog.get_changes).to be_nil
+        it 'returns the no new changes, but include old changes' do
+          expect(Zenflow::Changelog.get_changes).to eq(["", @file.strip])
         end
       end
 

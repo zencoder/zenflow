@@ -68,9 +68,8 @@ module Zenflow
         return unless exist?
         changelog = File.read("CHANGELOG.md").strip
         changes = changelog.split("--------------------------------------------------------------------------------")[0]
-        return if changes.strip.empty?
         changelog = changelog.sub(changes, "")
-        return changes.strip, changelog
+        return changes.to_s.strip, changelog
       end
 
       def row_name(name=nil)
