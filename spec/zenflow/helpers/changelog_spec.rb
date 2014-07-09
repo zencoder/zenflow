@@ -18,7 +18,7 @@ describe Zenflow::Changelog do
         before { Zenflow::Changelog.should_receive(:prompt_for_change).and_return('wrote tests for updating the changelog') }
 
         it "prepends the change to the changelog and returns the change" do
-          Zenflow::Changelog.should_receive(:prepend_change_to_changelog).with('wrote tests for updating the changelog', {})
+          Zenflow::Changelog.should_receive(:prepend_change_to_changelog).with('* wrote tests for updating the changelog', {})
           expect(Zenflow::Changelog.update).to eq('wrote tests for updating the changelog')
         end
       end
@@ -85,7 +85,7 @@ describe Zenflow::Changelog do
   describe '.prepended_changelog' do
     it "returns the new changes prepended to the existing changelog" do
       Zenflow::Changelog.should_receive(:get_changes).and_return(['test branching', 'amongst other things'])
-      expect(Zenflow::Changelog.prepended_changelog('test prepended changelog')).to eq("test prepended changelog\ntest branching\n--------------------------------------------------------------------------------\namongst other things\n")
+      expect(Zenflow::Changelog.prepended_changelog('test prepended changelog')).to eq("test prepended changelog\ntest branching\namongst other things\n")
     end
   end
 
