@@ -51,7 +51,7 @@ module Zenflow
             end
 
             def merge_branch_into_destination
-              [branch(:source), branch(:destination)].compact.each do |finish|
+              [branch(:source), branch(:destination), branch(:secondary_destination)].compact.each do |finish|
                 Zenflow::Branch.checkout(finish)
                 Zenflow::Branch.merge("#{flow}/#{branch_name}")
                 Zenflow::Branch.push(finish) if !options[:offline]
