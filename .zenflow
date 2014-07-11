@@ -6,6 +6,6 @@ backup_remote: false
 confirm_review: true
 confirm_staging: true
 remote: origin
-release_branch: production
+release_branch: false
 staging_branch: staging
 merge_strategy: merge
