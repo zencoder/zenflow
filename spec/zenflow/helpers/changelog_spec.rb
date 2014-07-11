@@ -131,7 +131,7 @@ describe Zenflow::Changelog do
   describe '.rotated_changelog' do
     it "returns the changelog with changes rotated to the bottom" do
       Zenflow::Changelog.should_receive(:get_changes).and_return(['test branching', 'amongst other things'])
-      expect(Zenflow::Changelog.rotated_changelog).to eq("amongst other things\n\n---- #{Zenflow::Version.current.to_s} / #{Time.now.strftime('%Y-%m-%d')} --------------------------------------------------------\ntest branching\n")
+      expect(Zenflow::Changelog.rotated_changelog).to match(/amongst other things\n\n---- #{Zenflow::Version.current.to_s} \/ #{Time.now.strftime('%Y-%m-%d')} [-]+\ntest branching\n/)
     end
   end
 
