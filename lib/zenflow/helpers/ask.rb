@@ -45,6 +45,9 @@ module Zenflow
     end
 
     def self.valid_response?(response, options={})
+      response = normalize_response(response, options[:default])
+      options[:options].map!(&:downcase) if options[:options]
+
       return false if options[:options] && !options[:options].include?(response)
       return false if options[:validate] && options[:validate].is_a?(Regexp) && !response[options[:validate]]
       return false if options[:required] && response == ""
@@ -60,6 +63,13 @@ module Zenflow
         message = %{"#{response}" is not a valid response.}
       end
       "-----> #{message} Try again.".red
+    end
+
+    protected
+
+    def self.normalize_response(primary_response, secondary_response)
+      return secondary_response.downcase if primary_response.to_s == '' && !secondary_response.nil?
+      primary_response.downcase
     end
   end
 

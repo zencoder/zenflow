@@ -233,6 +233,14 @@ describe Zenflow::Branch do
     end
   end
 
+  describe "self.rebase" do
+    it "checks out the branch" do
+      Zenflow.should_receive(:Log).with("Rebasing feature/test-checkout on top of the master branch")
+      Zenflow::Shell.should_receive(:run).with("git rebase master feature/test-checkout")
+      Zenflow::Branch.rebase('feature/test-checkout', 'master')
+    end
+  end
+
   describe "self.merge" do
     it "merges in the specified branch" do
       Zenflow.should_receive(:Log).with("Merging in the feature/test-merging branch")

@@ -1,25 +1,52 @@
 module Zenflow
 
   module Github
-    def self.user
-      get_config('github.user')
+    DEFAULT_HUB = 'github.com'
+
+    DEFAULT_API_BASE_URL = 'https://api.github.com'
+    DEFAULT_USER_AGENT_BASE = 'Zencoder'
+
+    API_BASE_URL_KEY = 'api.base.url'
+    USER_KEY = 'github.user'
+    TOKEN_KEY = 'token'
+    USER_AGENT_BASE_KEY = 'user.agent.base'
+
+    CONFIG_KEYS = [
+      API_BASE_URL_KEY,
+      USER_KEY,
+      TOKEN_KEY,
+      USER_AGENT_BASE_KEY
+    ]
+
+    def self.api_base_url(hub=nil,useDefaultValue=true)
+      api_base_url = get_config_for_hub(hub, API_BASE_URL_KEY)
+      api_base_url ||= DEFAULT_API_BASE_URL if useDefaultValue
+      api_base_url
     end
 
-    def self.zenflow_token
-      get_config('zenflow.token')
+    def self.set_api_base_url(hub=nil)
+      api_base_url = Zenflow::Ask("What is the base URL of your Github API?", {:default => DEFAULT_API_BASE_URL})
+      set_config_for_hub(hub, API_BASE_URL_KEY, api_base_url)
     end
 
-    def self.get_config(key)
-      config = Zenflow::Shell.run("git config --get #{key.to_s}", silent: true)
-      config = config.chomp unless config.nil?
-      config
+    def self.user(hub=nil)
+      get_config_for_hub(hub, USER_KEY)
     end
 
-    def self.authorize
-      Zenflow::Log("Authorizing with GitHub... Enter your GitHub password.")
-      oauth_response = JSON.parse(Zenflow::Shell.run(%{curl -u "#{Zenflow::Github.user}" https://api.github.com/authorizations -d '{"scopes":["repo"], "note":"Zenflow"}' --silent}, silent: true))
+    def self.set_user(hub=nil)
+      username = Zenflow::Ask("What is your Github username?")
+      set_config_for_hub(hub, USER_KEY, username)
+    end
+
+    def self.zenflow_token(hub=nil)
+      get_config_for_hub(hub, TOKEN_KEY)
+    end
+
+    def self.authorize(hub=nil)
+      Zenflow::Log("Authorizing with GitHub (#{user(hub)}@#{resolve_hub(hub)})... Enter your GitHub password.")
+      oauth_response = JSON.parse(Zenflow::Shell.run(%{curl -u "#{Zenflow::Github.user(hub)}" #{Zenflow::Github.api_base_url(hub)}/authorizations -d '{"scopes":["repo"], "note":"Zenflow"}' --silent}, silent: true))
       if oauth_response['token']
-        Zenflow::Shell.run("git config --global zenflow.token #{oauth_response['token']}", silent: true)
+        set_config_for_hub(hub, TOKEN_KEY, oauth_response['token'])
         Zenflow::Log("Authorized!")
       else
         Zenflow::Log("Something went wrong. Error from GitHub was: #{oauth_response['message']}")
@@ -27,18 +54,69 @@ module Zenflow
       end
     end
 
-    def self.set_user
-      username = Zenflow::Ask("What is your Github username?")
-      Zenflow::Shell.run("git config --global github.user #{username}", silent: true)
+    def self.user_agent_base(hub=nil,useDefaultValue=true)
+      user_agent_base = get_config_for_hub(hub, USER_AGENT_BASE_KEY)
+      user_agent_base ||= DEFAULT_USER_AGENT_BASE if useDefaultValue
+      user_agent_base
+    end
+
+    def self.set_user_agent_base(hub=nil)
+      user_agent_base = Zenflow::Ask("What base string would you like to use for the User Agent header, 'User-Agent: [user-agent-base]/Zenflow-#{VERSION}?", {:default => DEFAULT_USER_AGENT_BASE})
+      set_config_for_hub(hub, USER_AGENT_BASE_KEY, user_agent_base)
+    end
+
+    def self.resolve_hub(hub)
+      hub || Zenflow::Repo.hub || DEFAULT_HUB
+    end
+
+    # If this repo is not hosted on the default github, construct a key prefix containing the hub information
+    def self.construct_key_for_hub(hub, key)
+      default_hub_key_prefix = key == USER_KEY ? "" : "zenflow."  # preserves backwards compatibility
+      Zenflow::Repo.is_default_hub?(hub) ? "#{default_hub_key_prefix}#{key}" : "zenflow.hub.#{hub}.#{key}"
+    end
+
+    def self.get_config_for_hub(hub, key)
+      resolved_hub = resolve_hub(hub)
+      key_for_hub = construct_key_for_hub(resolved_hub, key)
+      get_global_config(key_for_hub)
+    end
+
+    def self.set_config_for_hub(hub, key, value)
+      resolved_hub = resolve_hub(hub)
+      key_for_hub = construct_key_for_hub(resolved_hub, key)
+      set_global_config(key_for_hub, value)
+    end
+
+    def self.get_global_config(key)
+      config = Zenflow::Shell.run("git config --get #{key.to_s}", silent: true)
+      config = config.chomp unless config.nil?
+      config.to_s == '' ? nil : config
+    end
+
+    def self.set_global_config(key, value)
+      Zenflow::Shell.run("git config --global #{key} #{value}", silent: true)
+    end
+
+    def self.describe_hub_parameter(name, hub, key, value)
+      [name, construct_key_for_hub(hub, key), get_config_for_hub(hub, key), value]
+    end
+
+    def self.describe_hub(hub)
+      [
+        describe_hub_parameter("API Base URL",    hub, API_BASE_URL_KEY,    api_base_url(hub)),
+        describe_hub_parameter("User",            hub, USER_KEY,            user(hub)),
+        describe_hub_parameter("Token",           hub, TOKEN_KEY,           zenflow_token(hub)),
+        describe_hub_parameter("User Agent Base", hub, USER_AGENT_BASE_KEY, user_agent_base(hub))
+      ]
     end
   end
 
   class GithubRequest
     include HTTParty
-    base_uri "https://api.github.com/repos/#{Zenflow::Repo.slug}"
+    base_uri "#{Zenflow::Github.api_base_url}/repos/#{Zenflow::Repo.slug}"
     format :json
     headers "Authorization" => "token #{Zenflow::Github.zenflow_token}"
-    headers "User-Agent" => "Zencoder/Zenflow-#{VERSION}"
+    headers "User-Agent" => "#{Zenflow::Github.user_agent_base}/Zenflow-#{VERSION}"
   end
 
 end

@@ -92,6 +92,7 @@ describe Zenflow do
         it{expect(Zenflow::Query.handle_response('Y')).to eq('y')}
         it{expect(Zenflow::Query.handle_response('N')).to eq('n')}
         it{expect(Zenflow::Query.handle_response('', default: 'foo')).to eq('foo')}
+        it{expect(Zenflow::Query.handle_response('', default: 'FOO')).to eq('foo')}
       end
     end
 
@@ -104,6 +105,9 @@ describe Zenflow do
       it{expect(Zenflow::Query.valid_response?('foo', required: true)).to eq(true)}
       it{expect(Zenflow::Query.valid_response?('foo', required: false)).to eq(true)}
       it{expect(Zenflow::Query.valid_response?('', required: false)).to eq(true)}
+      it{expect(Zenflow::Query.valid_response?('', default: 'MERGE', options: ['merge', 'rebase'])).to eq(true)}
+      it{expect(Zenflow::Query.valid_response?('MERGE', options: ['merge', 'rebase'])).to eq(true)}
+      it{expect(Zenflow::Query.valid_response?('rebase', options: ['MERGE', 'REBASE'])).to eq(true)}
     end
 
     describe '.build_error_message' do

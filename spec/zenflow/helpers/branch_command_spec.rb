@@ -177,7 +177,7 @@ module BranchCommandSpec
             pull = double(valid?: true)
             pull.stub(:[]).with("html_url").and_return("URL")
             Zenflow::PullRequest.should_receive(:create).with(
-              base:  "master",
+              base:  "production",
               head:  "test/new-test-branch",
               title: "test: new-test-branch",
               body:  "A great test"
@@ -195,7 +195,7 @@ module BranchCommandSpec
           before do
             Zenflow.should_receive(:Ask).with("Describe this test:", required: true).and_return("A great test")
             Zenflow::PullRequest.should_receive(:create).with(
-              base:  "master",
+              base:  "production",
               head:  "test/new-test-branch",
               title: "test: new-test-branch",
               body:  "A great test"
@@ -257,7 +257,7 @@ module BranchCommandSpec
       context "with confirmations" do
         it "without deployment to staging" do
           Zenflow::Config.should_receive(:[]).with(:confirm_staging).and_return(true)
-          Zenflow.should_receive(:Ask).with("Has this been tested in a staging environment first?", options: ["Y", "n"], default: "Y").and_return("n")
+          Zenflow.should_receive(:Ask).with("Has this been tested in a staging environment first?", options: ["Y", "n"], default: "y").and_return("n")
           Zenflow.should_receive(:Log).with("Sorry, deploy to a staging environment first", color: :red)
           expect{TestCommand.new.invoke(:finish)}.to raise_error(SystemExit)
         end
@@ -265,8 +265,8 @@ module BranchCommandSpec
         it "without review" do
           Zenflow::Config.should_receive(:[]).with(:confirm_staging).and_return(true)
           Zenflow::Config.should_receive(:[]).with(:confirm_review).and_return(true)
-          Zenflow.should_receive(:Ask).with("Has this been tested in a staging environment first?", options: ["Y", "n"], default: "Y").and_return("y")
-          Zenflow.should_receive(:Ask).with("Has this been code reviewed yet?", options: ["Y", "n"], default: "Y").and_return("n")
+          Zenflow.should_receive(:Ask).with("Has this been tested in a staging environment first?", options: ["Y", "n"], default: "y").and_return("y")
+          Zenflow.should_receive(:Ask).with("Has this been code reviewed yet?", options: ["Y", "n"], default: "y").and_return("n")
           Zenflow.should_receive(:Log).with("Please have someone look at this first", color: :red)
           expect{TestCommand.new.invoke(:finish)}.to raise_error(SystemExit)
         end
@@ -301,7 +301,7 @@ module BranchCommandSpec
               Zenflow::Branch.should_receive(:push).with("production")
 
               Zenflow::Branch.should_receive(:tag).with(Zenflow::Version.current.to_s, "YES")
-              Zenflow::Branch.should_receive(:push).with(:tags)
+              Zenflow::Branch.should_receive(:push_tags)
 
               Zenflow::Branch.should_receive(:delete_remote).with("test/new-test-branch")
               Zenflow::Branch.should_receive(:delete_local).with("test/new-test-branch", force: true)
@@ -353,7 +353,7 @@ module BranchCommandSpec
               Zenflow::Branch.should_receive(:push).with("production")
 
               Zenflow::Branch.should_receive(:tag).with(Zenflow::Version.current.to_s, "YES")
-              Zenflow::Branch.should_receive(:push).with(:tags)
+              Zenflow::Branch.should_receive(:push_tags)
 
               Zenflow::Branch.should_receive(:delete_remote).with("test/new-test-branch")
               Zenflow::Branch.should_receive(:delete_local).with("test/new-test-branch", force: true)
