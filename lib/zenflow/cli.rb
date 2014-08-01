@@ -29,6 +29,9 @@ module Zenflow
     desc "chore SUBCOMMAND", "Manage chore branches."
     subcommand "chore", Zenflow::Chore
 
+    desc "bugfix SUBCOMMAND", "Manage bugfix branches."
+    subcommand "bugfix", Zenflow::Bugfix
+
     desc "hotfix SUBCOMMAND", "Manage hotfix branches."
     subcommand "hotfix", Zenflow::Hotfix
 
