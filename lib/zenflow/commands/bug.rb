@@ -1,7 +1,7 @@
 module Zenflow
-  class Bugfix < BranchCommand
+  class Bug < BranchCommand
 
-    flow "bugfix"
+    flow "bug"
 
     branch source: Zenflow::Config[:development_branch]
     branch deploy: Zenflow::Config[:qa_branch]
