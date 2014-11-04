@@ -4,7 +4,7 @@
 [![Code Climate](https://codeclimate.com/repos/51bf6e3b7e00a411ad00f6c3/badges/111fbe3664cebffa8e23/gpa.png)](https://codeclimate.com/repos/51bf6e3b7e00a411ad00f6c3/feed)
 [![Coverage Status](https://coveralls.io/repos/zencoder/zenflow/badge.png)](https://coveralls.io/r/zencoder/zenflow)
 [![Dependency Status](https://gemnasium.com/zencoder/zenflow.png)](https://gemnasium.com/zencoder/zenflow)
-![CircleCI Tests](https://circleci.com/gh/zencoder/zenflow.png?circle-token=13273409fe8b7c62faddf26980040cf502b0348a)
+[![Circle CI](https://circleci.com/gh/zencoder/zenflow.png?style=badge)](https://circleci.com/gh/zencoder/zenflow)
 
 -------
 
