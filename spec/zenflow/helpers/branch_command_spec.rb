@@ -25,14 +25,28 @@ module BranchCommandSpec
 
     describe "#start" do
       context "when online" do
-        before do
-          Zenflow.should_receive(:Ask).and_return("new-test-branch")
-          Zenflow::Branch.should_receive(:update).with("master")
-          Zenflow::Branch.should_receive(:create).with("test/new-test-branch", "master")
-          Zenflow::Branch.should_receive(:push).with("test/new-test-branch")
-          Zenflow::Branch.should_receive(:track).with("test/new-test-branch")
+        context 'merge_strategy: merge' do
+          before do
+            Zenflow.should_receive(:Ask).and_return("new-test-branch")
+            Zenflow::Branch.should_receive(:update).with("master")
+            Zenflow::Branch.should_receive(:create).with("test/new-test-branch", "master")
+            Zenflow::Branch.should_receive(:push).with("test/new-test-branch")
+            Zenflow::Branch.should_receive(:track).with("test/new-test-branch")
+          end
+          it { TestCommand.new.invoke(:start) }
         end
-        it { TestCommand.new.invoke(:start) }
+
+        context 'merge_strategy: rebase' do
+          before do
+            Zenflow::Config.should_receive(:[]).with(:merge_strategy).and_return('rebase')
+            Zenflow.should_receive(:Ask).and_return("new-test-branch")
+            Zenflow::Branch.should_receive(:update).with("master")
+            Zenflow::Branch.should_receive(:create).with("test/new-test-branch", "master")
+            Zenflow::Branch.should_not_receive(:push).with("test/new-test-branch")
+            Zenflow::Branch.should_not_receive(:track).with("test/new-test-branch")
+          end
+          it { TestCommand.new.invoke(:start) }
+        end
       end
 
       context "when offline" do
