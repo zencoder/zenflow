@@ -77,7 +77,7 @@ module Zenflow
       # Stolen from ActiveSupport
       def log_stream(stream)
         old_stream = stream.dup
-        stream.reopen(Zenflow::LOG_PATH, "a")
+        stream.reopen(Zenflow::LOG_PATH)
         stream.sync = true
         yield
       ensure
