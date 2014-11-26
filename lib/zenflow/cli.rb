@@ -26,6 +26,12 @@ module Zenflow
     desc "feature SUBCOMMAND", "Manage feature branches."
     subcommand "feature", Zenflow::Feature
 
+    desc "chore SUBCOMMAND", "Manage chore branches."
+    subcommand "chore", Zenflow::Chore
+
+    desc "bug SUBCOMMAND", "Manage bug branches."
+    subcommand "bug", Zenflow::Bug
+
     desc "hotfix SUBCOMMAND", "Manage hotfix branches."
     subcommand "hotfix", Zenflow::Hotfix
 
