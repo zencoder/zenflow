@@ -5,7 +5,7 @@ module Zenflow
       def self.included(thor)
         thor.class_eval do
 
-          desc "publish [NAME]", "Publish a branch"
+          desc "publish", "Publish a branch (push to remote and setup tracking)"
           def publish
             publish_branch
           end
