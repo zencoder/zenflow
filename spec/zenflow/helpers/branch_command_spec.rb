@@ -383,6 +383,15 @@ module BranchCommandSpec
         end
       end
     end
+
+    describe "#publish" do
+      before do
+        Zenflow::Branch.should_receive(:current).with("test").and_return("new-test-branch")
+        Zenflow::Branch.should_receive(:push).with("test/new-test-branch")
+        Zenflow::Branch.should_receive(:track).with("test/new-test-branch")
+      end
+      it { TestCommand.new.invoke(:publish) }
+    end
   end
 
 end

@@ -7,6 +7,7 @@ module Zenflow
     include Zenflow::BranchCommands::Deploy
     include Zenflow::BranchCommands::Diff
     include Zenflow::BranchCommands::Finish
+    include Zenflow::BranchCommands::Publish
     include Zenflow::BranchCommands::Review
     include Zenflow::BranchCommands::Start
     include Zenflow::BranchCommands::Update
