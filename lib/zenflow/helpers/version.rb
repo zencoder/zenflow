@@ -34,7 +34,7 @@ module Zenflow
     def self.update(level=:patch)
       new_version = Zenflow::Version.current.bump(level)
       new_version.save
-      Zenflow::Shell["git add VERSION.yml && git commit -a -m 'Bumping version to #{new_version}.'"]
+      Zenflow::Shell["git add VERSION.yml && git commit -m 'Bumping version to #{new_version}.'"]
       new_version
     end
 
