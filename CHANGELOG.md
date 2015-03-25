@@ -13,3 +13,9 @@ CHANGELOG
 
 ---- 0.8.12 / 2014-08-12 / updates-for-github-enterprise-support
 * updates for github enterprise support
+
+---- 0.8.13 / 2015-03-24 / only-commit-changelog-and-files
+* only commit CHANGELOG.md and VERSION.yml when finishing a branch
+* add chore branch types
+* prevent feature branch push & track when merge strategy is rebase
+* publish local feature branch with tracking
