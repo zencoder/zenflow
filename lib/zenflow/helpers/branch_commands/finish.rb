@@ -13,7 +13,7 @@ module Zenflow
                                       "Sorry, deploy to a staging environment first")
             confirm(:confirm_review, "Has this been code reviewed yet?",
                                      "Please have someone look at this first")
-            update_branches_from_destinations
+            update_branch_from_destination
             update_version_and_changelog(version, changelog)
             merge_branch_into_destinations
             create_tag
@@ -44,17 +44,20 @@ module Zenflow
               Zenflow::Branch.push_tags if !options[:offline]
             end
 
-            def update_branches_from_destinations
-              primary_destination = (branch(:destination) || branch(:source))
-              [primary_destination, branch(:secondary_destination)].compact.each do |destination|
-                Zenflow::Branch.update(destination) if !options[:offline]
-                Zenflow::Branch.apply_merge_strategy(flow, branch_name, destination)
-              end
+            def update_branch_from_destination
+              destination = (branch(:destination) || branch(:source))
+              Zenflow::Branch.update(destination) if !options[:offline]
+              Zenflow::Branch.apply_merge_strategy(flow, branch_name, destination)
             end
 
             def merge_branch_into_destinations
               [branch(:source), branch(:destination), branch(:secondary_destination)].compact.each do |finish|
-                Zenflow::Branch.checkout(finish)
+                if finish != branch(:secondary_destination) || options[:offline]
+                  Zenflow::Branch.checkout(finish)
+                else
+                  Zenflow::Branch.update(finish)
+                end
+
                 Zenflow::Branch.merge("#{flow}/#{branch_name}")
                 Zenflow::Branch.push(finish) if !options[:offline]
               end
