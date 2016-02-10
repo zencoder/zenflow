@@ -15,7 +15,7 @@ module Zenflow
                                      "Please have someone look at this first")
             update_branch_from_destination
             update_version_and_changelog(version, changelog)
-            merge_branch_into_destination
+            merge_branch_into_destinations
             create_tag
             delete_branches
           end
@@ -50,9 +50,14 @@ module Zenflow
               Zenflow::Branch.apply_merge_strategy(flow, branch_name, destination)
             end
 
-            def merge_branch_into_destination
+            def merge_branch_into_destinations
               [branch(:source), branch(:destination), branch(:secondary_destination)].compact.each do |finish|
-                Zenflow::Branch.checkout(finish)
+                if finish != branch(:secondary_destination) || options[:offline]
+                  Zenflow::Branch.checkout(finish)
+                else
+                  Zenflow::Branch.update(finish)
+                end
+
                 Zenflow::Branch.merge("#{flow}/#{branch_name}")
                 Zenflow::Branch.push(finish) if !options[:offline]
               end
