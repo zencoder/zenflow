@@ -4,19 +4,19 @@ describe Zenflow::Shell do
 
   describe '.failed!' do
     before(:all){ Zenflow::Shell.failed!(404) }
-    it{expect(Zenflow::Shell.instance_variable_get('@failed')).to be_true}
+    it{expect(Zenflow::Shell.instance_variable_get('@failed')).to be_truthy}
     it{expect(Zenflow::Shell.instance_variable_get('@status')).to eq(404)}
   end
 
   describe '.failed?' do
     context 'when failed' do
       before(:all){ Zenflow::Shell.failed!('bad') }
-      it{expect(Zenflow::Shell.failed?).to be_true}
+      it{expect(Zenflow::Shell.failed?).to be_truthy}
     end
 
     context 'when not failed' do
       before(:all){ Zenflow::Shell.instance_variable_set('@failed', false) }
-      it{expect(Zenflow::Shell.failed?).to be_false}
+      it{expect(Zenflow::Shell.failed?).to be false}
     end
   end
 

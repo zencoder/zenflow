@@ -54,11 +54,11 @@ describe Zenflow::PullRequest do
     before(:each){Zenflow.should_receive(:Log).with(Regexp.new('Looking up'))}
 
     context 'a valid pull', vcr: { cassette_name: "existing pull request" } do
-      it{expect(Zenflow::PullRequest.exist?('feature/example')).to be_true}
+      it{expect(Zenflow::PullRequest.exist?('feature/example')).to be true}
     end
 
     context 'an invalid pull', vcr: { cassette_name: "unexisting pull request" } do
-      it{expect(Zenflow::PullRequest.exist?('feature/foo')).to be_false}
+      it{expect(Zenflow::PullRequest.exist?('feature/foo')).to be false}
     end
   end
 
@@ -90,12 +90,12 @@ describe Zenflow::PullRequest do
     describe '#valid?' do
       context 'good request', vcr: { cassette_name: "create pull request" } do
         let(:request){Zenflow::PullRequest.create(good_request_options)}
-        it{expect(request.valid?).to be_true}
+        it{expect(request.valid?).to be_truthy}
       end
 
       context 'bad request', vcr: { cassette_name: "create bad pull request" } do
         let(:request){Zenflow::PullRequest.create(bad_request_options)}
-        it{expect(request.valid?).to be_false}
+        it{expect(request.valid?).to be false}
       end
     end
 
