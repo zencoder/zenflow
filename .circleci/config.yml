@@ -1,0 +1,16 @@
+version: 2.1
+orbs: # Reusable configuration objects from CircleCI
+  ruby: circleci/ruby@1.0
+jobs:
+  test:
+    docker:
+      - image: cimg/ruby-2.7
+    steps:
+      - checkout
+      - ruby/install-deps # Using the orb to install deps
+      - ruby/rspec-test
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test
