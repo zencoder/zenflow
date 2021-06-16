@@ -15,7 +15,7 @@ describe Zenflow::Version do
 
   describe '.current' do
     before(:each) do
-      YAML.stub(:load_file).and_return(
+      allow(YAML).to receive(:load_file).and_return(
         {'major' => 1, 'minor' => 2, 'patch' => 4, 'pre' => nil}
       )
     end
@@ -29,7 +29,7 @@ describe Zenflow::Version do
 
   describe '.bump' do
     before(:each) do
-      Zenflow::Version.stub(:current).and_return(Zenflow::Version[1,2,4])
+      allow(Zenflow::Version).to receive(:current).and_return(Zenflow::Version[1,2,4])
     end
 
     context 'patch' do

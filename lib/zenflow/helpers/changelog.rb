@@ -19,7 +19,7 @@ module Zenflow
 
       def prompt_for_change(options={})
         required = ' (optional)' if options[:required] == false
-        Zenflow::Ask("Add one line to the changelog#{required}:", :required => !(options[:required] == false))
+        Zenflow::Requests.ask("Add one line to the changelog#{required}:", :required => !(options[:required] == false))
       end
 
       def prepend_change_to_changelog(change, options={})

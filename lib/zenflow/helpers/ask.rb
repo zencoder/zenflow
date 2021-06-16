@@ -13,7 +13,7 @@ module Zenflow
       retry if ['y', 'yes', ''].include? retry_response.downcase
       puts Rainbow("-----> Exiting...").cyan
       Zenflow::LogToFile("-----> Received bad response with no retry. Exiting...")
-      exit(1)
+      raise e
     rescue Interrupt => e
       puts
       puts Rainbow("-----> Exiting...").cyan

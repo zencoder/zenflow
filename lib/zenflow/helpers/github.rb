@@ -46,12 +46,12 @@ module Zenflow
     end
 
     def ask_should_update_base_api_url?
-      Zenflow::Ask("The GitHub API base URL for this hub is currently #{api_base_url(false)}. Do you want to use that?", :options => ["Y", "n"], :default => "y") == "n"
+      Zenflow::Requests.ask("The GitHub API base URL for this hub is currently #{api_base_url(false)}. Do you want to use that?", :options => ["Y", "n"], :default => "y") == "n"
     end
 
     def set_api_base_url
       if api_base_url(false).nil? || ask_should_update_base_api_url?
-        api_base_url = Zenflow::Ask("What is the base URL of your Github API?", {:default => DEFAULT_API_BASE_URL})
+        api_base_url = Zenflow::Requests.ask("What is the base URL of your Github API?", {:default => DEFAULT_API_BASE_URL})
         set_config(API_BASE_URL_KEY, api_base_url)
       end
     end
@@ -61,12 +61,12 @@ module Zenflow
     end
 
     def ask_should_update_user?
-      Zenflow::Ask("The GitHub user for this hub is currently #{user}. Do you want to use that?", :options => ["Y", "n"], :default => "y") == "n"
+      Zenflow::Requests.ask("The GitHub user for this hub is currently #{user}. Do you want to use that?", :options => ["Y", "n"], :default => "y") == "n"
     end
 
     def set_user
       if user.nil? || ask_should_update_user?
-        username = Zenflow::Ask("What is your Github username?")
+        username = Zenflow::Requests.ask("What is your Github username?")
         set_config(USER_KEY, username)
       end
     end
@@ -76,7 +76,7 @@ module Zenflow
     end
 
     def ask_should_update_zenflow_token?
-      Zenflow::Ask("You already have a token from GitHub. Do you want to set a new one?", :options => ["y", "N"], :default => "n") == "y"
+      Zenflow::Requests.ask("You already have a token from GitHub. Do you want to set a new one?", :options => ["y", "N"], :default => "n") == "y"
     end
 
     def authorize
@@ -100,12 +100,12 @@ module Zenflow
     end
 
     def ask_should_update_user_agent_base?
-      Zenflow::Ask("The GitHub User Agent base for this hub is currently #{user_agent_base(false)}. Do you want to use that?", :options => ["Y", "n"], :default => "y") == "n"
+      Zenflow::Requests.ask("The GitHub User Agent base for this hub is currently #{user_agent_base(false)}. Do you want to use that?", :options => ["Y", "n"], :default => "y") == "n"
     end
 
     def set_user_agent_base
       if user_agent_base(false).nil? || ask_should_update_user_agent_base?
-        user_agent_base = Zenflow::Ask("What base string would you like to use for the User Agent header, 'User-Agent: [user-agent-base]/Zenflow-#{VERSION}?", {:default => DEFAULT_USER_AGENT_BASE})
+        user_agent_base = Zenflow::Requests.ask("What base string would you like to use for the User Agent header, 'User-Agent: [user-agent-base]/Zenflow-#{VERSION}?", {:default => DEFAULT_USER_AGENT_BASE})
         set_config(USER_AGENT_BASE_KEY, user_agent_base)
       end
     end
