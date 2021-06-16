@@ -64,12 +64,12 @@ module Zenflow
 
     # DSL METHODS
 
-    def self.flow(flow=nil)
+    def self.flow(flow = nil)
       @flow = flow if flow
       @flow
     end
 
-    def self.branch(branch={})
+    def self.branch(branch = {})
       @branch ||= {}
       branch.keys.each do |key|
         @branch[key] ||= []

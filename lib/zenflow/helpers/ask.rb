@@ -13,7 +13,7 @@ module Zenflow
       retry if ['y', 'yes', ''].include? retry_response.downcase
       puts Rainbow("-----> Exiting...").cyan
       Zenflow::LogToFile("-----> Received bad response with no retry. Exiting...")
-      raise e
+      exit(1)
     rescue Interrupt => e
       puts
       puts Rainbow("-----> Exiting...").cyan
@@ -66,7 +66,7 @@ module Zenflow
 
       def self.build_error_message(response, options = {})
         message = if options[:required]
-                    "You must respond to this prompt."
+                    "You must respond to this prompt with a valid response."
                   elsif options[:error_message]
                     options[:error_message]
                   else
