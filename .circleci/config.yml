@@ -5,6 +5,7 @@ jobs:
   build:
     docker:
       - image: circleci/ruby:2.5.5-node
+    working_directory: ~/zenflow-build
     steps:
       - checkout
       - ruby/install-deps # Using the orb to install deps
