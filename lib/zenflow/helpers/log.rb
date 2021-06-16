@@ -8,7 +8,7 @@ module Zenflow
     output << "-----> " if !(options[:arrows] === false)
     output << message
     LogToFile(output)
-    output = output.send(options[:color] || :cyan) unless options[:color] == false
+    output = Rainbow(output).send(options[:color] || :cyan) unless options[:color] == false
     puts output
   end
 

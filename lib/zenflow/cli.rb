@@ -63,7 +63,7 @@ module Zenflow
     no_commands do
       def already_configured
         Zenflow::Log("Warning", color: :red)
-        if Zenflow::Ask(
+        if Zenflow::Requests.ask(
           "There is an existing config file. Overwrite it?",
           options: ["y", "N"],
           default: "n"
@@ -86,7 +86,7 @@ module Zenflow
 
       def configure_project
         Zenflow::Log("Project")
-        Zenflow::Config[:project] = Zenflow::Ask(
+        Zenflow::Config[:project] = Zenflow::Requests.ask(
           "What is the name of this project?",
           required: true
         )
@@ -94,7 +94,7 @@ module Zenflow
 
       def configure_branches
         Zenflow::Log("Branches")
-        Zenflow::Config[:development_branch] = Zenflow::Ask(
+        Zenflow::Config[:development_branch] = Zenflow::Requests.ask(
           "What is the name of the main development branch?",
           default: "master"
         )
@@ -108,23 +108,23 @@ module Zenflow
       end
 
       def configure_branch(branch, question, default)
-        Zenflow::Config[branch] = if Zenflow::Ask(question, options: ["Y", "n"], default: "y") == "y"
-                                    Zenflow::Ask(
-                                      "What is the name of that branch?",
-                                      default: default
-                                    )
-                                  else
-                                    false
-                                  end
+        if Zenflow::Requests.ask(question, options: ["Y", "n"], default: "y") == "y"
+          Zenflow::Config[branch] = Zenflow::Requests.ask(
+            "What is the name of that branch?",
+            default: default
+          )
+        else
+          Zenflow::Config[branch] = false
+        end
       end
 
       def configure_remotes
-        Zenflow::Config[:remote] = Zenflow::Ask(
+        Zenflow::Config[:remote] = Zenflow::Requests.ask(
           "What is the name of your primary remote?",
           default: "origin"
         )
-        if Zenflow::Ask("Use a backup remote?", options: ["y", "N"], default: "n") == "y"
-          Zenflow::Config[:backup_remote] = Zenflow::Ask(
+        if Zenflow::Requests.ask("Use a backup remote?", options: ["y", "N"], default: "n") == "y"
+          Zenflow::Config[:backup_remote] = Zenflow::Requests.ask(
             "What is the name of your backup remote?",
             default: "backup"
           )
@@ -134,7 +134,7 @@ module Zenflow
       end
 
       def configure_merge_strategy
-        Zenflow::Config[:merge_strategy] = Zenflow::Ask(
+        Zenflow::Config[:merge_strategy] = Zenflow::Requests.ask(
           "What merge strategy would you prefer?",
           default: "merge",
           options: ['merge', 'rebase']
@@ -143,12 +143,12 @@ module Zenflow
 
       def confirm_some_stuff
         Zenflow::Log("Confirmations")
-        Zenflow::Config[:confirm_staging] = Zenflow::Ask(
+        Zenflow::Config[:confirm_staging] = Zenflow::Requests.ask(
           "Require deployment to a staging environment?",
           options: ["Y", "n"],
           default: "y"
         ) == "y"
-        Zenflow::Config[:confirm_review] = Zenflow::Ask(
+        Zenflow::Config[:confirm_review] = Zenflow::Requests.ask(
           "Require code reviews?",
           options: ["Y", "n"], default: "y"
         ) == "y"
@@ -158,7 +158,7 @@ module Zenflow
         return if File.exist?("CHANGELOG.md")
 
         Zenflow::Log("Changelog Management")
-        Zenflow::Changelog.create if Zenflow::Ask(
+        Zenflow::Changelog.create if Zenflow::Requests.ask(
           "Set up a changelog?",
           options: ["Y", "n"], default: "y"
         ) == "y"

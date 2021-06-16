@@ -19,7 +19,7 @@ module Zenflow
                 base:  branch(:destination) || branch(:source),
                 head:  "#{flow}/#{branch_name}",
                 title: "#{flow}: #{branch_name}",
-                body:  Zenflow::Ask("Describe this #{flow}:", required: true)
+                body:  Zenflow::Requests.ask("Describe this #{flow}:", required: true)
               )
 
               return handle_invalid_pull_request(pull) unless pull.valid?

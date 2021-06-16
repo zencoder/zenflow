@@ -1,19 +1,20 @@
 module Zenflow
+  # Branch operations and commands
   module Branch
     class << self
-
       def list(prefix)
-        branches = Zenflow::Shell.run "git branch | grep #{prefix}", :silent => true
+        branches = Zenflow::Shell.run "git branch | grep #{prefix}", silent: true
         return ['!! NONE !!'] if branches.empty?
+
         branches.split("\n").map{|branch| branch.sub(/.*#{prefix}\/?/, "") }
       end
 
       def current(prefix)
-        branch = Zenflow::Shell.run("git branch | grep '* #{prefix}'", :silent => true)
+        branch = Zenflow::Shell.run("git branch | grep '* #{prefix}'", silent: true)
         branch.chomp.sub(/\* #{prefix}\/?/, "") unless branch.empty?
       end
 
-      def update(name, rebase_override=false)
+      def update(name, rebase_override = false)
         if Zenflow::Config[:merge_strategy] == 'rebase' || rebase_override == true
           Zenflow::Log("Updating the #{name} branch using pull with --rebase")
           Zenflow::Shell["git checkout #{name} && git pull --rebase"]
@@ -23,7 +24,7 @@ module Zenflow
         end
       end
 
-      def apply_merge_strategy(flow, name, destination, rebase_override=false)
+      def apply_merge_strategy(flow, name, destination, rebase_override = false)
         if Zenflow::Config[:merge_strategy] == 'rebase' || rebase_override == true
           Zenflow::Branch.rebase("#{flow}/#{name}", destination)
         else
@@ -40,19 +41,19 @@ module Zenflow
       def push(name)
         Zenflow::Log("Pushing the #{name} branch to #{Zenflow::Config[:remote] || 'origin'}")
         Zenflow::Shell["git push #{Zenflow::Config[:remote] || 'origin'} #{name}"]
-        if Zenflow::Config[:backup_remote]
-          Zenflow::Log("Pushing the #{name} branch to #{Zenflow::Config[:backup_remote]}")
-          Zenflow::Shell["git push #{Zenflow::Config[:backup_remote]} #{name}"]
-        end
+        return unless Zenflow::Config[:backup_remote]
+
+        Zenflow::Log("Pushing the #{name} branch to #{Zenflow::Config[:backup_remote]}")
+        Zenflow::Shell["git push #{Zenflow::Config[:backup_remote]} #{name}"]
       end
 
       def push_tags
         Zenflow::Log("Pushing tags to #{Zenflow::Config[:remote] || 'origin'}")
         Zenflow::Shell["git push #{Zenflow::Config[:remote] || 'origin'} --tags"]
-        if Zenflow::Config[:backup_remote]
-          Zenflow::Log("Pushing tags to #{Zenflow::Config[:backup_remote]}")
-          Zenflow::Shell["git push #{Zenflow::Config[:backup_remote]} --tags"]
-        end
+        return unless Zenflow::Config[:backup_remote]
+
+        Zenflow::Log("Pushing tags to #{Zenflow::Config[:backup_remote]}")
+        Zenflow::Shell["git push #{Zenflow::Config[:backup_remote]} --tags"]
       end
 
       def track(name)
@@ -75,25 +76,35 @@ module Zenflow
         Zenflow::Shell["git merge --no-ff #{name}"]
       end
 
-      def tag(name=nil, description=nil)
+      def tag(name = nil, description = nil)
         Zenflow::Log("Tagging the release")
-        Zenflow::Shell["git tag -a '#{name || Zenflow::Ask('Name of the tag:', :required => true)}' -m '#{Zenflow::Shell.shell_escape_for_single_quoting((description || Zenflow::Ask('Tag message:', :required => true)).to_s)}'"]
+        Zenflow::Shell[
+          "git tag -a '#{name || Zenflow::Requests.ask('Name of the tag:', required: true)}' -m '#{
+            Zenflow::Shell.shell_escape_for_single_quoting(
+              (description || Zenflow::Requests.ask('Tag message:', required: true)).to_s
+            )
+          }'"]
       end
 
       def delete_remote(name)
         Zenflow::Log("Removing the remote branch from #{Zenflow::Config[:remote] || 'origin'}")
-        Zenflow::Shell["git branch -r | grep #{Zenflow::Config[:remote] || 'origin'}/#{name} && git push #{Zenflow::Config[:remote] || 'origin'} :#{name} || echo ''"]
-        if Zenflow::Config[:backup_remote]
-          Zenflow::Log("Removing the remote branch from #{Zenflow::Config[:backup_remote]}")
-          Zenflow::Shell["git branch -r | grep #{Zenflow::Config[:backup_remote]}/#{name} && git push #{Zenflow::Config[:backup_remote]} :#{name} || echo ''"]
-        end
+        Zenflow::Shell[
+          "git branch -r | grep #{Zenflow::Config[:remote] || 'origin'}/#{name} && git push #{
+            Zenflow::Config[:remote] || 'origin'
+          } :#{name} || echo ''"
+        ]
+        return unless Zenflow::Config[:backup_remote]
+
+        Zenflow::Log("Removing the remote branch from #{Zenflow::Config[:backup_remote]}")
+        Zenflow::Shell["git branch -r | grep #{Zenflow::Config[:backup_remote]}/#{name} && git push #{
+                       Zenflow::Config[:backup_remote]
+                     } :#{name} || echo ''"]
       end
 
-      def delete_local(name, options={})
+      def delete_local(name, options = {})
         Zenflow::Log("Removing the local branch")
         Zenflow::Shell["git branch -#{options[:force] ? 'D' : 'd'} #{name}"]
       end
-
     end
   end
 end

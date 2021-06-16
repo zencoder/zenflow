@@ -12,7 +12,7 @@ module Zenflow
     end
 
     def title(text)
-      "- #{text} ".ljust(40, "-").cyan
+      Rainbow("- #{text} ".ljust(40, "-")).cyan
     end
 
     def banner
