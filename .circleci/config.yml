@@ -8,6 +8,7 @@ jobs:
     working_directory: ~/zenflow-build
     steps:
       - run: git clone https://github.com/zencoder/zenflow ~/zenflow-build
+      - run: gem install bundler --version 2.1.4
       - ruby/install-deps # Using the orb to install deps
       - run: echo "Ruby build"
       - ruby/rspec-test
