@@ -7,7 +7,7 @@ jobs:
       - image: circleci/ruby:2.5.5-node
     working_directory: ~/zenflow-build
     steps:
-      - checkout
+      - run: git clone https://github.com/zencoder/zenflow ~/zenflow-build
       - ruby/install-deps # Using the orb to install deps
       - run: echo "Ruby build"
       - ruby/rspec-test
