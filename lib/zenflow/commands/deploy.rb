@@ -1,6 +1,6 @@
+# Main Zenflow Module
 module Zenflow
-
-  def self.Deploy(to, opts={})
+  def self.Deploy(to, opts = {})
     Branch.push(to)
     if opts[:migrations]
       Log("Deploying with migrations to #{to}")
@@ -11,6 +11,7 @@ module Zenflow
     end
   end
 
+  # Deployment sub-commands
   class Deploy < Thor
     class_option :migrations, type: :boolean, desc: "Run migrations during deployment", aliases: :m
 
@@ -29,5 +30,4 @@ module Zenflow
       Zenflow::Deploy("production", options)
     end
   end
-
 end

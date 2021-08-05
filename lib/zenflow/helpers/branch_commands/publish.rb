@@ -1,10 +1,9 @@
 module Zenflow
   module BranchCommands
+    # Publish branch commands
     module Publish
-
       def self.included(thor)
         thor.class_eval do
-
           desc "publish", "Publish a branch (push to remote and setup tracking)"
           def publish
             publish_branch
@@ -16,10 +15,8 @@ module Zenflow
               Zenflow::Branch.track("#{flow}/#{branch_name}")
             end
           end
-
         end
       end
-
     end
   end
 end

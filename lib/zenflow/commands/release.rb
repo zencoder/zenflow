@@ -1,6 +1,5 @@
 module Zenflow
   class Release < BranchCommand
-
     flow "release"
 
     branch source: Zenflow::Config[:development_branch]
@@ -11,6 +10,5 @@ module Zenflow
     changelog :rotate
     version :minor
     tag true
-
   end
 end

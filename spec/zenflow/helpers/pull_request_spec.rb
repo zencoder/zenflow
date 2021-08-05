@@ -1,64 +1,64 @@
 require 'spec_helper'
 
 describe Zenflow::PullRequest do
-  before(:each){
+  before(:each) do
     allow(Zenflow::Github).to receive(:zenflow_token).and_return('zenflow-token')
     allow(Zenflow::Github).to receive(:user).and_return('github-user')
     Zenflow::GithubRequest.base_uri 'https://api.github.com/repos/zencoder/zenflow-example'
-  }
+  end
 
   describe '.list', vcr: { cassette_name: "pull request list" } do
-    let(:pull_requests){Zenflow::PullRequest.list}
-    it{expect(pull_requests).to be_a_kind_of(Array)}
-    it{expect(pull_requests.first).to be_a_kind_of(Zenflow::PullRequest)}
+    let(:pull_requests) { Zenflow::PullRequest.list }
+    it { expect(pull_requests).to be_a_kind_of(Array) }
+    it { expect(pull_requests.first).to be_a_kind_of(Zenflow::PullRequest) }
   end
 
   describe '.find', vcr: { cassette_name: "pull request find" } do
-    let(:pull_request){Zenflow::PullRequest.find(1)}
-    it{expect(pull_request).to be_a_kind_of(Zenflow::PullRequest)}
+    let(:pull_request) { Zenflow::PullRequest.find(1) }
+    it { expect(pull_request).to be_a_kind_of(Zenflow::PullRequest) }
   end
 
   describe '.find_by_ref' do
-    before(:each){expect(Zenflow).to receive(:Log).with(Regexp.new('Looking up'))}
+    before(:each) { expect(Zenflow).to receive(:Log).with(Regexp.new('Looking up')) }
 
     context 'existing ref', vcr: { cassette_name: "pull request by ref" } do
-      let(:pull_request){Zenflow::PullRequest.find_by_ref('feature/example')}
-      it{expect(pull_request).to be_a_kind_of(Zenflow::PullRequest)}
+      let(:pull_request) { Zenflow::PullRequest.find_by_ref('feature/example') }
+      it { expect(pull_request).to be_a_kind_of(Zenflow::PullRequest) }
     end
 
     context 'non-existant ref', vcr: { cassette_name: "pull request for non-existent ref" } do
-      let(:pull_request){Zenflow::PullRequest.find_by_ref('feature/foo')}
-      it{expect(pull_request).to be_nil}
+      let(:pull_request) { Zenflow::PullRequest.find_by_ref('feature/foo') }
+      it { expect(pull_request).to be_nil }
     end
   end
 
   describe '.find_by_ref!' do
-    before(:each){expect(Zenflow).to receive(:Log).with(Regexp.new('Looking up'))}
+    before(:each) { expect(Zenflow).to receive(:Log).with(Regexp.new('Looking up')) }
 
     context 'existing ref', vcr: { cassette_name: "pull request by ref" } do
-      let(:pull_request){Zenflow::PullRequest.find_by_ref!('feature/example')}
-      it{expect(pull_request).to be_a_kind_of(Zenflow::PullRequest)}
+      let(:pull_request) { Zenflow::PullRequest.find_by_ref!('feature/example') }
+      it { expect(pull_request).to be_a_kind_of(Zenflow::PullRequest) }
     end
 
     context 'non-existent ref', vcr: { cassette_name: "pull request for non-existent ref" } do
-      let(:ref){'feature/foo'}
+      let(:ref) { 'feature/foo' }
 
       it 'logs the failure' do
         expect(Zenflow).to receive(:Log).with(Regexp.new(ref), color: :red)
-        expect{Zenflow::PullRequest.find_by_ref!(ref)}.to raise_error(SystemExit)
+        expect { Zenflow::PullRequest.find_by_ref!(ref) }.to raise_error(SystemExit)
       end
     end
   end
 
   describe '.exist?' do
-    before(:each){expect(Zenflow).to receive(:Log).with(Regexp.new('Looking up'))}
+    before(:each) { expect(Zenflow).to receive(:Log).with(Regexp.new('Looking up')) }
 
     context 'a valid pull', vcr: { cassette_name: "existing pull request" } do
-      it{expect(Zenflow::PullRequest.exist?('feature/example')).to be true}
+      it { expect(Zenflow::PullRequest.exist?('feature/example')).to be true }
     end
 
     context 'an invalid pull', vcr: { cassette_name: "unexisting pull request" } do
-      it{expect(Zenflow::PullRequest.exist?('feature/foo')).to be false}
+      it { expect(Zenflow::PullRequest.exist?('feature/foo')).to be false }
     end
   end
 
@@ -82,30 +82,31 @@ describe Zenflow::PullRequest do
     end
 
     describe '.create', vcr: { cassette_name: "create pull request" } do
-      it{ expect(Zenflow::PullRequest.create(good_request_options)).to(
-        be_a_kind_of(Zenflow::PullRequest)
-      ) }
+      it do
+        expect(Zenflow::PullRequest.create(good_request_options)).to(
+          be_a_kind_of(Zenflow::PullRequest)
+        )
+      end
     end
 
     describe '#valid?' do
       context 'good request', vcr: { cassette_name: "create pull request" } do
-        let(:request){Zenflow::PullRequest.create(good_request_options)}
-        it{expect(request.valid?).to be_truthy}
+        let(:request) { Zenflow::PullRequest.create(good_request_options) }
+        it { expect(request.valid?).to be_truthy }
       end
 
       context 'bad request', vcr: { cassette_name: "create bad pull request" } do
-        let(:request){Zenflow::PullRequest.create(bad_request_options)}
-        it{expect(request.valid?).to be false}
+        let(:request) { Zenflow::PullRequest.create(bad_request_options) }
+        it { expect(request.valid?).to be false }
       end
     end
 
     describe '#[]' do
       context 'good request', vcr: { cassette_name: "create pull request" } do
-        let(:request){Zenflow::PullRequest.create(good_request_options)}
-        it{expect(request["comments"]).to_not be_nil}
-        it{expect(request["fdsfa"]).to be_nil}
+        let(:request) { Zenflow::PullRequest.create(good_request_options) }
+        it { expect(request["comments"]).to_not be_nil }
+        it { expect(request["fdsfa"]).to be_nil }
       end
     end
   end
-
 end

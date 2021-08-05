@@ -1,6 +1,6 @@
 module Zenflow
+  # Hotfix Flow
   class Hotfix < BranchCommand
-
     flow "hotfix"
 
     branch source:                Zenflow::Config[:release_branch]
@@ -11,6 +11,5 @@ module Zenflow
     changelog :rotate
     version :patch
     tag true
-
   end
 end

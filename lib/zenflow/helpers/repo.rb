@@ -1,6 +1,6 @@
 module Zenflow
+  # Repository related methods
   module Repo
-
     def self.url
       `git remote -v`[/^#{Zenflow::Config[:remote] || 'origin'}\s+(.*?)\s/, 1]
     end

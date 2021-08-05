@@ -1,6 +1,6 @@
 module Zenflow
+  # Chore sub-command
   class Chore < BranchCommand
-
     flow "chore"
 
     branch source: Zenflow::Config[:development_branch]
@@ -12,6 +12,5 @@ module Zenflow
       changelog :rotate
       version :patch
     end
-
   end
 end

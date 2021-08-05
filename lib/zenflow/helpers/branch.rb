@@ -6,12 +6,12 @@ module Zenflow
         branches = Zenflow::Shell.run "git branch | grep #{prefix}", silent: true
         return ['!! NONE !!'] if branches.empty?
 
-        branches.split("\n").map{|branch| branch.sub(/.*#{prefix}\/?/, "") }
+        branches.split("\n").map { |branch| branch.sub(%r{.*#{prefix}/?}, "") }
       end
 
       def current(prefix)
         branch = Zenflow::Shell.run("git branch | grep '* #{prefix}'", silent: true)
-        branch.chomp.sub(/\* #{prefix}\/?/, "") unless branch.empty?
+        branch.chomp.sub(%r{\* #{prefix}/?}, "") unless branch.empty?
       end
 
       def update(name, rebase_override = false)

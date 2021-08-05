@@ -1,10 +1,9 @@
 module Zenflow
   module BranchCommands
+    # Branch commands
     module Branches
-
       def self.included(thor)
         thor.class_eval do
-
           desc "branches", "List branches"
           def branches
             Zenflow::Log("Available #{flow} branches:")
@@ -12,10 +11,8 @@ module Zenflow
               Zenflow::Log("* #{branch}", indent: true, color: false)
             end
           end
-
         end
       end
-
     end
   end
 end

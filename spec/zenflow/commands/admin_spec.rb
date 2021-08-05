@@ -5,15 +5,17 @@ describe Zenflow::Admin do
 
   describe '.list' do
     it 'lists recognized hubs in git config' do
-      expect(Zenflow::Shell).to receive(:run).with("git config --get-regexp zenflow\.hub\..*", silent: true).and_return(
-<<EOS
-zenflow.hub.hub.1.api.base.url api_base_url
-zenflow.hub.yet.another.hub.github.user github_user
-zenflow.hub.hub.1.token token
-zenflow.hub.my-hub.token token
-zenflow.hub.one.more.hub.user.agent.base user_agent_base
-zenflow.hub.bad.token.hub.goobers user_agent_base
-EOS
+      expect(Zenflow::Shell).to(
+        receive(:run).with("git config --get-regexp zenflow\.hub\..*", silent: true).and_return(
+          <<~TOKEN
+            zenflow.hub.hub.1.api.base.url api_base_url
+            zenflow.hub.yet.another.hub.github.user github_user
+            zenflow.hub.hub.1.token token
+            zenflow.hub.my-hub.token token
+            zenflow.hub.one.more.hub.user.agent.base user_agent_base
+            zenflow.hub.bad.token.hub.goobers user_agent_base
+          TOKEN
+        )
       )
       expect(Zenflow).to receive(:Log).with("Recogized hubs")
       expect(Terminal::Table).to receive(:new).with(
@@ -44,11 +46,13 @@ EOS
       expect(admin).to receive(:resolve_hub).with('my-hub').and_return(hub)
       expect(admin).to receive(:hub_label).with('my-hub').and_return('my-hub')
       expect(Zenflow).to receive(:Log).with("Configuration details for hub my-hub")
-      expect(hub).to receive(:describe).and_return([
-        ["Parameter 1", "Github Config Key 1", "Github Conifg Value 1", "Value 1"],
-        ["Parameter 2", "Github Config Key 2", "Github Conifg Value 2", "Value 2"],
-        ["Parameter 3", "Github Config Key 3", "Github Conifg Value 3", "Value 3"]
-      ])
+      expect(hub).to receive(:describe).and_return(
+        [
+          ["Parameter 1", "Github Config Key 1", "Github Conifg Value 1", "Value 1"],
+          ["Parameter 2", "Github Config Key 2", "Github Conifg Value 2", "Value 2"],
+          ["Parameter 3", "Github Config Key 3", "Github Conifg Value 3", "Value 3"]
+        ]
+      )
       expect(Terminal::Table).to receive(:new).with(
         headings: ["Parameter", "Github Config Key", "Github Config Value", "Value (with system defaults)"],
         rows: [
@@ -57,7 +61,7 @@ EOS
           ["Parameter 3", "Github Config Key 3", "Github Conifg Value 3", "Value 3"]
         ]
       ).and_return("log-data")
-      expect(Zenflow).to receive(:Log).with("log-data", {:indent=>false, :arrows=>false, :color=>false})
+      expect(Zenflow).to receive(:Log).with("log-data", { indent: false, arrows: false, color: false })
       admin.describe('my-hub')
     end
   end
@@ -123,30 +127,34 @@ EOS
   describe '.hub_label' do
     context 'hub is default hub' do
       context 'hub is current hub' do
-        before(:each){
+        before(:each) do
           stub_const("Zenflow::Github::CURRENT", Zenflow::Github.new(Zenflow::Github::DEFAULT_HUB))
-        }
+        end
 
         it 'returns the expected label' do
-          expect(admin.hub_label(Zenflow::Github::DEFAULT_HUB)).to eq("#{Zenflow::Github::DEFAULT_HUB} [default] [current]")
+          expect(admin.hub_label(Zenflow::Github::DEFAULT_HUB)).to(
+            eq("#{Zenflow::Github::DEFAULT_HUB} [default] [current]")
+          )
         end
       end
 
       context 'hub is not current hub' do
-        before(:each){
+        before(:each) do
           stub_const("Zenflow::Github::CURRENT", Zenflow::Github.new('current-hub'))
-        }
+        end
 
         it 'returns the expected label' do
-          expect(admin.hub_label(Zenflow::Github::DEFAULT_HUB)).to eq("#{Zenflow::Github::DEFAULT_HUB} [default]")
+          expect(admin.hub_label(Zenflow::Github::DEFAULT_HUB)).to(
+            eq("#{Zenflow::Github::DEFAULT_HUB} [default]")
+          )
         end
       end
     end
 
     context 'hub is not default hub' do
-      before(:each){
+      before(:each) do
         stub_const("Zenflow::Github::CURRENT", Zenflow::Github.new('current-hub'))
-      }
+      end
 
       context 'hub is current hub' do
         it 'returns the expected label' do
@@ -177,9 +185,9 @@ EOS
   end
 
   describe '.current_hub_tag' do
-    before(:each){
+    before(:each) do
       stub_const("Zenflow::Github::CURRENT", Zenflow::Github.new('current-hub'))
-    }
+    end
 
     context 'hub is current hub' do
       it 'returns the expected tag' do

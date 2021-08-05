@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Zenflow::Reviews do
-
   describe "#list" do
     before do
       pull = double
@@ -11,5 +10,4 @@ describe Zenflow::Reviews do
     end
     it { capture(:stdout) { Zenflow::Reviews.new.invoke(:list) } }
   end
-
 end

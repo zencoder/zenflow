@@ -1,13 +1,14 @@
+# Zenflow inner functionality
 module Zenflow
-
-  def self.Help(options={})
+  def self.Help(options = {})
     Zenflow::Help.new(options)
   end
 
+  # Help command
   class Help
     attr_accessor :options
 
-    def initialize(options={})
+    def initialize(options = {})
       @options = options
     end
 
@@ -17,21 +18,20 @@ module Zenflow
 
     def banner
       help = []
-      help << "#{title("Summary")}\n#{options[:summary]}" if options[:summary]
-      help << "#{title("Usage")}\n#{options[:usage]}" if options[:usage]
-      help << "#{title("Available Commands")}\n#{options[:commands]}" if options[:commands]
-      help << "#{title("Options")}"
+      help << "#{title('Summary')}\n#{options[:summary]}" if options[:summary]
+      help << "#{title('Usage')}\n#{options[:usage]}" if options[:usage]
+      help << "#{title('Available Commands')}\n#{options[:commands]}" if options[:commands]
+      help << title('Options').to_s
       help.join("\n\n")
     end
 
     def unknown_command
       if options[:command].nil?
-        Zenflow::Log("Missing command", :color => :red)
+        Zenflow::Log("Missing command", color: :red)
       else
-        Zenflow::Log("Unknown command #{options[:command].inspect}", :color => :red)
+        Zenflow::Log("Unknown command #{options[:command].inspect}", color: :red)
       end
       exit(1)
     end
   end
-
 end

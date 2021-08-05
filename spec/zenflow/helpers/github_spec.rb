@@ -5,9 +5,9 @@ describe Zenflow::Github do
     context 'when the value is present' do
       let(:hub) { Zenflow::Github.new('test-hub') }
 
-      before(:each){
+      before(:each) do
         expect(hub).to receive(:get_config).with('api.base.url').and_return("api-base-url")
-      }
+      end
 
       context 'and use_default_when_value_is_nil is not specified' do
         it 'returns the expected value' do
@@ -31,9 +31,9 @@ describe Zenflow::Github do
     context 'when the value is absent' do
       let(:hub) { Zenflow::Github.new('test-hub') }
 
-      before(:each){
+      before(:each) do
         expect(hub).to receive(:get_config).with('api.base.url').and_return(nil)
-      }
+      end
 
       context 'and use_default_when_value_is_nil is not specified' do
         it 'returns the expected value' do
@@ -56,14 +56,13 @@ describe Zenflow::Github do
   end
 
   describe '.set_api_base_url' do
-
     it 'asks for the API base URL and sets it to zenflow.api.base.url' do
     end
   end
 
   describe '.set_api_base_url' do
-    let(:hub){Zenflow::Github.new('test-hub')}
-    let(:api_base_url){'api-base-url'}
+    let(:hub) { Zenflow::Github.new('test-hub') }
+    let(:api_base_url) { 'api-base-url' }
 
     context 'when a github api base url is already saved' do
       before do
@@ -109,12 +108,12 @@ describe Zenflow::Github do
   end
 
   describe '.user' do
-    let(:hub){Zenflow::Github.new('hub')}
-    let(:user){'github-user'}
+    let(:hub) { Zenflow::Github.new('hub') }
+    let(:user) { 'github-user' }
 
-    before(:each){
+    before(:each) do
       expect(hub).to receive(:get_config).with('github.user').and_return(user)
-    }
+    end
 
     it "returns the user" do
       expect(hub.user).to eq(user)
@@ -122,8 +121,8 @@ describe Zenflow::Github do
   end
 
   describe '.set_user' do
-    let(:hub){Zenflow::Github.new('test-hub')}
-    let(:user){'github-user'}
+    let(:hub) { Zenflow::Github.new('test-hub') }
+    let(:user) { 'github-user' }
 
     context 'when a github user is already saved' do
       before do
@@ -169,7 +168,7 @@ describe Zenflow::Github do
   end
 
   describe '.authorize' do
-    let(:hub){Zenflow::Github.new('my-hub')}
+    let(:hub) { Zenflow::Github.new('my-hub') }
 
     context 'when a zenflow_token is already saved' do
       before do
@@ -178,15 +177,31 @@ describe Zenflow::Github do
 
       context 'and the user decides to set a new one' do
         before do
-          expect(Zenflow::Requests).to receive(:ask).with("You already have a token from GitHub. Do you want to set a new one?", :options => ["y", "N"], :default => "n").and_return('y')
+          expect(Zenflow::Requests).to(
+            receive(:ask)
+            .with(
+              "You already have a token from GitHub. Do you want to set a new one?",
+              options: ["y", "N"],
+              default: "n"
+            ).and_return('y')
+          )
         end
 
         context 'and authorization succeeds' do
           before do
-            expect(Zenflow).to receive("Log").with("Authorizing with GitHub (adamkittelson@my-hub)... Enter your GitHub password.")
+            expect(Zenflow).to(
+              receive("Log")
+              .with("Authorizing with GitHub (adamkittelson@my-hub)... Enter your GitHub password.")
+            )
             expect(hub).to receive(:user).twice.and_return('adamkittelson')
             expect(hub).to receive(:api_base_url).and_return('https://api.base.url')
-            expect(Zenflow::Shell).to receive(:run).with(%{curl -u "adamkittelson" https://api.base.url/authorizations -d '{"scopes":["repo"], "note":"Zenflow"}' --silent}, :silent => true).and_return('{"token": "super secure token"}')
+            expect(Zenflow::Shell).to(
+              receive(:run)
+              .with(
+                %{curl -u "adamkittelson" https://api.base.url/authorizations -d '{"scopes":["repo"], "note":"Zenflow"}' --silent},
+                silent: true
+              ).and_return('{"token": "super secure token"}')
+            )
           end
 
           it 'authorizes with Github' do
@@ -198,14 +213,26 @@ describe Zenflow::Github do
 
         context 'and authorization fails' do
           before do
-            expect(Zenflow).to receive("Log").with("Authorizing with GitHub (adamkittelson@my-hub)... Enter your GitHub password.")
+            expect(Zenflow).to(
+              receive("Log")
+              .with("Authorizing with GitHub (adamkittelson@my-hub)... Enter your GitHub password.")
+            )
             expect(hub).to receive(:user).twice.and_return('adamkittelson')
             expect(hub).to receive(:api_base_url).and_return('https://api.base.url')
-            expect(Zenflow::Shell).to receive(:run).with(%{curl -u "adamkittelson" https://api.base.url/authorizations -d '{"scopes":["repo"], "note":"Zenflow"}' --silent}, :silent => true).and_return('{"message": "failed to authorize, bummer"}')
+            expect(Zenflow::Shell).to(
+              receive(:run)
+              .with(
+                %{curl -u "adamkittelson" https://api.base.url/authorizations -d '{"scopes":["repo"], "note":"Zenflow"}' --silent},
+                silent: true
+              ).and_return('{"message": "failed to authorize, bummer"}')
+            )
           end
 
           it 'authorizes with Github' do
-            expect(Zenflow).to receive("Log").with("Something went wrong. Error from GitHub was: failed to authorize, bummer")
+            expect(Zenflow).to(
+              receive("Log")
+              .with("Something went wrong. Error from GitHub was: failed to authorize, bummer")
+            )
             hub.authorize
           end
         end
@@ -229,10 +256,19 @@ describe Zenflow::Github do
 
       context 'and authorization succeeds' do
         before do
-          expect(Zenflow).to receive("Log").with("Authorizing with GitHub (adamkittelson@my-hub)... Enter your GitHub password.")
+          expect(Zenflow).to(
+            receive("Log")
+            .with("Authorizing with GitHub (adamkittelson@my-hub)... Enter your GitHub password.")
+          )
           expect(hub).to receive(:user).twice.and_return('adamkittelson')
           expect(hub).to receive(:api_base_url).and_return('https://api.base.url')
-          expect(Zenflow::Shell).to receive(:run).with(%{curl -u "adamkittelson" https://api.base.url/authorizations -d '{"scopes":["repo"], "note":"Zenflow"}' --silent}, :silent => true).and_return('{"token": "super secure token"}')
+          expect(Zenflow::Shell).to(
+            receive(:run)
+            .with(
+              %{curl -u "adamkittelson" https://api.base.url/authorizations -d '{"scopes":["repo"], "note":"Zenflow"}' --silent},
+              silent: true
+            ).and_return('{"token": "super secure token"}')
+          )
         end
 
         it 'authorizes with Github' do
@@ -244,14 +280,26 @@ describe Zenflow::Github do
 
       context 'and authorization fails' do
         before do
-          expect(Zenflow).to receive("Log").with("Authorizing with GitHub (adamkittelson@my-hub)... Enter your GitHub password.")
+          expect(Zenflow).to(
+            receive("Log")
+            .with("Authorizing with GitHub (adamkittelson@my-hub)... Enter your GitHub password.")
+          )
           expect(hub).to receive(:user).twice.and_return('adamkittelson')
           expect(hub).to receive(:api_base_url).and_return('https://api.base.url')
-          expect(Zenflow::Shell).to receive(:run).with(%{curl -u "adamkittelson" https://api.base.url/authorizations -d '{"scopes":["repo"], "note":"Zenflow"}' --silent}, :silent => true).and_return('{"message": "failed to authorize, bummer"}')
+          expect(Zenflow::Shell).to(
+            receive(:run)
+            .with(
+              %{curl -u "adamkittelson" https://api.base.url/authorizations -d '{"scopes":["repo"], "note":"Zenflow"}' --silent},
+              silent: true
+            ).and_return('{"message": "failed to authorize, bummer"}')
+          )
         end
 
         it 'does not authorize with Github' do
-          expect(Zenflow).to receive("Log").with("Something went wrong. Error from GitHub was: failed to authorize, bummer")
+          expect(Zenflow).to(
+            receive("Log")
+            .with("Something went wrong. Error from GitHub was: failed to authorize, bummer")
+          )
           hub.authorize
         end
       end
@@ -259,12 +307,12 @@ describe Zenflow::Github do
   end
 
   describe '.user_agent_base' do
-    let(:hub){Zenflow::Github.new('hub')}
+    let(:hub) { Zenflow::Github.new('hub') }
 
     context 'when the value is present' do
-      before(:each){
+      before(:each) do
         expect(hub).to receive(:get_config).with('user.agent.base').and_return("user-agent-base")
-      }
+      end
 
       context 'and use_default_when_value_is_nil is not specified' do
         it 'returns the expected value' do
@@ -286,9 +334,9 @@ describe Zenflow::Github do
     end
 
     context 'when the value is absent' do
-      before(:each){
+      before(:each) do
         expect(hub).to receive(:get_config).with('user.agent.base').and_return(nil)
-      }
+      end
 
       context 'and use_default_when_value_is_nil is not specified' do
         it 'returns the expected value' do
@@ -311,8 +359,8 @@ describe Zenflow::Github do
   end
 
   describe '.set_user_agent_base' do
-    let(:hub){Zenflow::Github.new('test-hub')}
-    let(:user_agent_base){'user-agent-base'}
+    let(:hub) { Zenflow::Github.new('test-hub') }
+    let(:user_agent_base) { 'user-agent-base' }
 
     context 'when a github user agent base is already saved' do
       before do
@@ -359,30 +407,29 @@ describe Zenflow::Github do
 
   describe '.current' do
     context 'when the current repo is nil' do
-      before(:each){
+      before(:each) do
         expect(Zenflow::Repo).to receive(:hub).and_return(nil)
-      }
+      end
 
       it 'returns the default hub' do
         expect(Zenflow::Github.current.hub).to eq 'github.com'
-      end    
+      end
     end
 
     context 'when the current repo is not nil' do
-      before(:each){
+      before(:each) do
         expect(Zenflow::Repo).to receive(:hub).and_return('current.repo.hub')
-      }
+      end
 
       it 'returns the current repo\'s hub' do
         expect(Zenflow::Github.current.hub).to eq 'current.repo.hub'
-      end    
+      end
     end
   end
 
   describe '.parameter_key_for_hub' do
-
     context 'when hub is the default hub' do
-      let(:hub){Zenflow::Github.new('github.com')}
+      let(:hub) { Zenflow::Github.new('github.com') }
 
       context 'and key is the api url base key' do
         it 'prepends \'zenflow\' as a prefix' do
@@ -410,7 +457,7 @@ describe Zenflow::Github do
     end
 
     context 'hub is not the default hub' do
-      let(:hub){Zenflow::Github.new('my-hub')}
+      let(:hub) { Zenflow::Github.new('my-hub') }
 
       context 'and key is the api url base key' do
         it 'prepends a hub-specific prefix' do
@@ -439,7 +486,7 @@ describe Zenflow::Github do
   end
 
   describe '.get_config' do
-    let(:hub){Zenflow::Github.new('test-hub')}
+    let(:hub) { Zenflow::Github.new('test-hub') }
 
     it 'gets the correct global config parameter' do
       expect(hub).to receive(:get_global_config).with("zenflow.hub.test-hub.test-key")
@@ -448,7 +495,7 @@ describe Zenflow::Github do
   end
 
   describe '.set_config' do
-    let(:hub){Zenflow::Github.new('test-hub')}
+    let(:hub) { Zenflow::Github.new('test-hub') }
 
     it 'sets the correct global config parameter' do
       expect(hub).to receive(:set_global_config).with("zenflow.hub.test-hub.test-key", "test-value")
@@ -457,12 +504,12 @@ describe Zenflow::Github do
   end
 
   describe '.get_global_config' do
-    let(:hub){Zenflow::Github.new('test-hub')}
+    let(:hub) { Zenflow::Github.new('test-hub') }
 
     context 'when value is present' do
-      before(:each){
+      before(:each) do
         expect(Zenflow::Shell).to receive(:run).with('git config --get key', silent: true).and_return('value')
-      }
+      end
 
       it 'returns the value' do
         expect(hub.get_global_config('key')).to eq('value')
@@ -470,9 +517,9 @@ describe Zenflow::Github do
     end
 
     context 'when value is missing' do
-      before(:each){
+      before(:each) do
         expect(Zenflow::Shell).to receive(:run).with('git config --get key', silent: true).and_return('')
-      }
+      end
 
       it 'returns nil' do
         expect(hub.get_global_config('key')).to eq(nil)
@@ -481,11 +528,11 @@ describe Zenflow::Github do
   end
 
   describe '.set_global_config' do
-    let(:hub){Zenflow::Github.new('test-hub')}
+    let(:hub) { Zenflow::Github.new('test-hub') }
 
-    before(:each){
+    before(:each) do
       expect(Zenflow::Shell).to receive(:run).with('git config --global key value', silent: true)
-    }
+    end
 
     it 'sets the value' do
       hub.set_global_config('key', 'value')
@@ -494,17 +541,19 @@ describe Zenflow::Github do
 
   describe '.config_keys' do
     it 'returns the expected array of keys' do
-      expect(Zenflow::Github::CONFIG_KEYS).to eq([
-        'api.base.url',
-        'github.user',
-        'token',
-        'user.agent.base'
-      ])
+      expect(Zenflow::Github::CONFIG_KEYS).to eq(
+        [
+          'api.base.url',
+          'github.user',
+          'token',
+          'user.agent.base'
+        ]
+      )
     end
   end
 
   describe '.describe_parameter' do
-    let(:hub){Zenflow::Github.new('my-hub')}
+    let(:hub) { Zenflow::Github.new('my-hub') }
 
     it 'returns the expected array' do
       expect(hub).to receive(:get_config).with('key').and_return('config-value')
@@ -517,25 +566,32 @@ describe Zenflow::Github do
 
   describe '.describe' do
     context 'all parameters configured' do
-      let(:hub){Zenflow::Github.new('my-hub')}
+      let(:hub) { Zenflow::Github.new('my-hub') }
 
       it 'returns the expected data' do
         expect(hub).to receive(:get_config).twice.with('api.base.url').and_return('api-base-url-config-value')
         expect(hub).to receive(:get_config).twice.with('github.user').and_return('github-user-config-value')
         expect(hub).to receive(:get_config).twice.with('token').and_return('token-config-value')
-        expect(hub).to receive(:get_config).twice.with('user.agent.base').and_return('user-agent-base-config-value')
+        expect(hub).to(
+          receive(:get_config)
+          .twice
+          .with('user.agent.base')
+          .and_return('user-agent-base-config-value')
+        )
 
-        expect(hub.describe).to eq([
-          ['API Base URL',    'zenflow.hub.my-hub.api.base.url',    'api-base-url-config-value',    'api-base-url-config-value'],
-          ['User',            'zenflow.hub.my-hub.github.user',     'github-user-config-value',     'github-user-config-value'],
-          ['Token',           'zenflow.hub.my-hub.token',           'token-config-value',           'token-config-value'],
-          ['User Agent Base', 'zenflow.hub.my-hub.user.agent.base', 'user-agent-base-config-value', 'user-agent-base-config-value']
-        ])
+        expect(hub.describe).to eq(
+          [
+            ['API Base URL',    'zenflow.hub.my-hub.api.base.url',    'api-base-url-config-value',    'api-base-url-config-value'],
+            ['User',            'zenflow.hub.my-hub.github.user',     'github-user-config-value',     'github-user-config-value'],
+            ['Token',           'zenflow.hub.my-hub.token',           'token-config-value',           'token-config-value'],
+            ['User Agent Base', 'zenflow.hub.my-hub.user.agent.base', 'user-agent-base-config-value', 'user-agent-base-config-value']
+          ]
+        )
       end
     end
 
     context 'no parameters configured' do
-      let(:hub){Zenflow::Github.new('my-hub')}
+      let(:hub) { Zenflow::Github.new('my-hub') }
 
       it 'returns the expected data' do
         expect(hub).to receive(:get_config).twice.with('api.base.url').and_return(nil)
@@ -543,17 +599,19 @@ describe Zenflow::Github do
         expect(hub).to receive(:get_config).twice.with('token').and_return(nil)
         expect(hub).to receive(:get_config).twice.with('user.agent.base').and_return(nil)
 
-        expect(hub.describe).to eq([
-          ['API Base URL',    'zenflow.hub.my-hub.api.base.url',    nil, 'https://api.github.com'],
-          ['User',            'zenflow.hub.my-hub.github.user',     nil, nil],
-          ['Token',           'zenflow.hub.my-hub.token',           nil, nil],
-          ['User Agent Base', 'zenflow.hub.my-hub.user.agent.base', nil, 'Zencoder']
-        ])
+        expect(hub.describe).to eq(
+          [
+            ['API Base URL',    'zenflow.hub.my-hub.api.base.url',    nil, 'https://api.github.com'],
+            ['User',            'zenflow.hub.my-hub.github.user',     nil, nil],
+            ['Token',           'zenflow.hub.my-hub.token',           nil, nil],
+            ['User Agent Base', 'zenflow.hub.my-hub.user.agent.base', nil, 'Zencoder']
+          ]
+        )
       end
     end
 
     context 'hub is default' do
-      let(:hub){Zenflow::Github.new(Zenflow::Github::DEFAULT_HUB)}
+      let(:hub) { Zenflow::Github.new(Zenflow::Github::DEFAULT_HUB) }
 
       it 'returns the expected data' do
         expect(hub).to receive(:get_config).twice.with('api.base.url').and_return(nil)
@@ -561,12 +619,14 @@ describe Zenflow::Github do
         expect(hub).to receive(:get_config).twice.with('token').and_return(nil)
         expect(hub).to receive(:get_config).twice.with('user.agent.base').and_return(nil)
 
-        expect(hub.describe).to eq([
-          ['API Base URL',    'zenflow.api.base.url',    nil, 'https://api.github.com'],
-          ['User',            'github.user',             nil, nil],
-          ['Token',           'zenflow.token',           nil, nil],
-          ['User Agent Base', 'zenflow.user.agent.base', nil, 'Zencoder']
-        ])
+        expect(hub.describe).to eq(
+          [
+            ['API Base URL',    'zenflow.api.base.url',    nil, 'https://api.github.com'],
+            ['User',            'github.user',             nil, nil],
+            ['Token',           'zenflow.token',           nil, nil],
+            ['User Agent Base', 'zenflow.user.agent.base', nil, 'Zencoder']
+          ]
+        )
       end
     end
   end

@@ -1,14 +1,13 @@
 require 'spec_helper'
 
 describe Zenflow::Deploy do
-
   describe "Zenflow.Deploy" do
     context 'with migrations' do
       it 'deploys with migrations' do
         expect(Zenflow::Branch).to receive(:push).with('some-server')
         expect(Zenflow).to receive(:Log).with("Deploying with migrations to some-server")
         expect(Zenflow::Shell).to receive(:run).with("cap some-server deploy:migrations")
-        Zenflow::Deploy('some-server', :migrations => true)
+        Zenflow::Deploy('some-server', migrations: true)
       end
     end
 
@@ -22,7 +21,7 @@ describe Zenflow::Deploy do
     end
   end
 
-  subject {Zenflow::Deploy.new}
+  subject { Zenflow::Deploy.new }
 
   describe '#qa' do
     it 'Deploys to QA' do
@@ -44,5 +43,4 @@ describe Zenflow::Deploy do
       subject.production
     end
   end
-
 end

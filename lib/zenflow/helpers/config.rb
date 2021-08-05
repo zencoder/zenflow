@@ -1,9 +1,10 @@
 module Zenflow
+  # Configuration settings
   class Config
     class << self
       attr_accessor :config
 
-      CONFIG_FILE = "#{Dir.pwd}/.zenflow"
+      CONFIG_FILE = "#{Dir.pwd}/.zenflow".freeze
 
       def load!
         @config = {}
@@ -30,7 +31,6 @@ module Zenflow
       def configured?
         File.exist?(CONFIG_FILE)
       end
-
     end
   end
 end

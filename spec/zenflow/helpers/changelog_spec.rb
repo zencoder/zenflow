@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Zenflow::Changelog do
-
   describe '.update' do
     context "when no changelog exists" do
       before { expect(File).to receive(:exist?).with("CHANGELOG.md").and_return(false) }
@@ -15,10 +14,15 @@ describe Zenflow::Changelog do
       before { expect(File).to receive(:exist?).with("CHANGELOG.md").and_return(true) }
 
       context "when a change is received" do
-        before { expect(Zenflow::Changelog).to receive(:prompt_for_change).and_return('wrote tests for updating the changelog') }
+        before do
+          expect(Zenflow::Changelog).to receive(:prompt_for_change)
+            .and_return('wrote tests for updating the changelog')
+        end
 
         it "prepends the change to the changelog and returns the change" do
-          expect(Zenflow::Changelog).to receive(:prepend_change_to_changelog).with('* wrote tests for updating the changelog', {})
+          expect(Zenflow::Changelog)
+            .to receive(:prepend_change_to_changelog)
+            .with('* wrote tests for updating the changelog', {})
           expect(Zenflow::Changelog.update).to eq('wrote tests for updating the changelog')
         end
       end
@@ -28,8 +32,8 @@ describe Zenflow::Changelog do
 
         context "and the rotate option is invoked" do
           it "rotates the changelog and returns nil" do
-            expect(Zenflow::Changelog).to receive(:rotate).with(:commit => true)
-            expect(Zenflow::Changelog.update(:rotate => true)).to be_nil
+            expect(Zenflow::Changelog).to receive(:rotate).with(commit: true)
+            expect(Zenflow::Changelog.update(rotate: true)).to be_nil
           end
         end
 
@@ -46,14 +50,16 @@ describe Zenflow::Changelog do
   describe '.prompt_for_change' do
     context "when the required option is false" do
       it "asks for a change and indicates it is optional" do
-        expect(Zenflow::Requests).to receive(:ask).with("Add one line to the changelog (optional):", :required => false)
-        Zenflow::Changelog.prompt_for_change(:required => false)
+        expect(Zenflow::Requests).to(
+          receive(:ask).with("Add one line to the changelog (optional):", required: false)
+        )
+        Zenflow::Changelog.prompt_for_change(required: false)
       end
     end
 
     context "when the required option is anything else" do
       it "asks for a change and does not indicate is optional" do
-        expect(Zenflow::Requests).to receive(:ask).with("Add one line to the changelog:", :required => true)
+        expect(Zenflow::Requests).to receive(:ask).with("Add one line to the changelog:", required: true)
         Zenflow::Changelog.prompt_for_change
       end
     end
@@ -62,12 +68,17 @@ describe Zenflow::Changelog do
   describe '.prepend_change_to_changelog' do
     context "when the rotate option is not invoked" do
       it "prepends changes to the changelog" do
-        expect(Zenflow::Changelog).to receive(:prepended_changelog).with('changed the world').and_return('some other text I suppose')
+        expect(Zenflow::Changelog).to(
+          receive(:prepended_changelog).with('changed the world').and_return('some other text I suppose')
+        )
         file_handler = double()
         expect(file_handler).to receive(:write).with('some other text I suppose')
         expect(File).to receive(:open).with("CHANGELOG.md", "w").and_yield(file_handler)
         expect(Zenflow::Changelog).to_not receive(:rotate)
-        expect(Zenflow::Shell).to receive(:run).with("git add CHANGELOG.md && git commit -m 'Adding line to CHANGELOG: changed the world'")
+        expect(Zenflow::Shell).to(
+          receive(:run)
+            .with("git add CHANGELOG.md && git commit -m 'Adding line to CHANGELOG: changed the world'")
+        )
         Zenflow::Changelog.prepend_change_to_changelog('changed the world')
       end
     end
@@ -76,16 +87,21 @@ describe Zenflow::Changelog do
       it "prepends changes to the changelog" do
         expect(File).to receive(:open).with("CHANGELOG.md", "w")
         expect(Zenflow::Changelog).to receive(:rotate)
-        expect(Zenflow::Shell).to receive(:run).with("git add CHANGELOG.md && git commit -m 'Adding line to CHANGELOG: changed the world'")
-        Zenflow::Changelog.prepend_change_to_changelog('changed the world', :rotate => true)
+        expect(Zenflow::Shell).to(
+          receive(:run)
+            .with("git add CHANGELOG.md && git commit -m 'Adding line to CHANGELOG: changed the world'")
+        )
+        Zenflow::Changelog.prepend_change_to_changelog('changed the world', rotate: true)
       end
     end
   end
 
   describe '.prepended_changelog' do
     it "returns the new changes prepended to the existing changelog" do
-      expect(Zenflow::Changelog).to receive(:get_changes).and_return(['test branching', 'amongst other things'])
-      expect(Zenflow::Changelog.prepended_changelog('test prepended changelog')).to eq("test prepended changelog\ntest branching\namongst other things\n")
+      expect(Zenflow::Changelog).to receive(:changes).and_return(['test branching', 'amongst other things'])
+      expect(Zenflow::Changelog.prepended_changelog('test prepended changelog')).to(
+        eq("test prepended changelog\ntest branching\namongst other things\n")
+      )
     end
   end
 
@@ -121,8 +137,10 @@ describe Zenflow::Changelog do
           file_handler = double()
           expect(file_handler).to receive(:write).with('amazing new changelog')
           expect(File).to receive(:open).with("CHANGELOG.md", "w").and_yield(file_handler)
-          expect(Zenflow::Shell).to receive(:run).with("git add CHANGELOG.md && git commit -m 'Rotating CHANGELOG.'")
-          Zenflow::Changelog.rotate(:commit => true)
+          expect(Zenflow::Shell).to(
+            receive(:run).with("git add CHANGELOG.md && git commit -m 'Rotating CHANGELOG.'")
+          )
+          Zenflow::Changelog.rotate(commit: true)
         end
       end
     end
@@ -130,12 +148,16 @@ describe Zenflow::Changelog do
 
   describe '.rotated_changelog' do
     it "returns the changelog with changes rotated to the bottom" do
-      expect(Zenflow::Changelog).to receive(:get_changes).and_return(['test branching', 'amongst other things'])
-      expect(Zenflow::Changelog.rotated_changelog).to match(/amongst other things\n\n---- #{Zenflow::Version.current.to_s} \/ #{Time.now.strftime('%Y-%m-%d')} [-]+\ntest branching\n/)
+      expect(Zenflow::Changelog).to receive(:changes).and_return(['test branching', 'amongst other things'])
+      expect(Zenflow::Changelog.rotated_changelog).to(
+        match(
+          /amongst other things\n\n---- #{Zenflow::Version.current.to_s} \/ #{Time.now.strftime('%Y-%m-%d')} [-]+\ntest branching\n/
+        )
+      )
     end
   end
 
-  describe '.get_changes' do
+  describe '.changes' do
     context "when the changelog file doesn't exist" do
       before do
         expect(Zenflow::Changelog).to receive(:exist?).and_return(false)
@@ -143,7 +165,7 @@ describe Zenflow::Changelog do
 
       it 'does nothing' do
         expect(File).to_not receive(:read)
-        expect(Zenflow::Changelog.get_changes).to be_nil
+        expect(Zenflow::Changelog.changes).to be_nil
       end
     end
 
@@ -154,23 +176,23 @@ describe Zenflow::Changelog do
 
       context "but there are no changes" do
         before do
-          @file = "\n--------------------------------------------------------------------------------\nold changes"
+          @file = "\n#{'-'.ljust(80, '-')}\nold changes"
           expect(File).to receive(:read).with('CHANGELOG.md').and_return(@file)
         end
 
         it 'returns the no new changes, but include old changes' do
-          expect(Zenflow::Changelog.get_changes).to eq(["", @file.strip])
+          expect(Zenflow::Changelog.changes).to eq(["", @file.strip])
         end
       end
 
       context "and there are changes" do
         before do
-          file = "new changes\n--------------------------------------------------------------------------------\nold changes"
+          file = "new changes\n#{'-'.ljust(80, '-')}\nold changes"
           expect(File).to receive(:read).with('CHANGELOG.md').and_return(file)
         end
 
         it "returns the new changes and the rest of the changelog" do
-          expect(Zenflow::Changelog.get_changes).to eq(["new changes", "--------------------------------------------------------------------------------\nold changes"])
+          expect(Zenflow::Changelog.changes).to eq(["new changes", "#{'-'.ljust(80, '-')}\nold changes"])
         end
       end
     end
@@ -184,5 +206,4 @@ describe Zenflow::Changelog do
       Zenflow::Changelog.create
     end
   end
-
 end

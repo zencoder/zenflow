@@ -1,10 +1,9 @@
 module Zenflow
   module BranchCommands
+    # Code Review Commands
     module Review
-
       def self.included(thor)
         thor.class_eval do
-
           desc "review", "Start a code review."
           def review
             branch_name
@@ -16,10 +15,10 @@ module Zenflow
               already_created?(Zenflow::PullRequest.find_by_ref("#{flow}/#{branch_name}"))
 
               pull = Zenflow::PullRequest.create(
-                base:  branch(:destination) || branch(:source),
-                head:  "#{flow}/#{branch_name}",
+                base: branch(:destination) || branch(:source),
+                head: "#{flow}/#{branch_name}",
                 title: "#{flow}: #{branch_name}",
-                body:  Zenflow::Requests.ask("Describe this #{flow}:", required: true)
+                body: Zenflow::Requests.ask("Describe this #{flow}:", required: true)
               )
 
               return handle_invalid_pull_request(pull) unless pull.valid?
@@ -31,6 +30,7 @@ module Zenflow
 
             def already_created?(pull)
               return unless pull
+
               Zenflow::Log("A pull request for #{flow}/#{branch_name} already exists", color: :red)
               Zenflow::Log(pull[:html_url], indent: true, color: false)
               exit(1)
@@ -40,7 +40,7 @@ module Zenflow
               Zenflow::Log("There was a problem creating the pull request:", color: :red)
               if pull["errors"]
                 pull["errors"].each do |error|
-                  Zenflow::Log("* #{error['message'].gsub(/^base\s*/,'')}", indent: true, color: :red)
+                  Zenflow::Log("* #{error['message'].gsub(/^base\s*/, '')}", indent: true, color: :red)
                 end
               elsif pull["message"]
                 Zenflow::Log("* #{pull['message']}", indent: true, color: :red)
@@ -49,10 +49,8 @@ module Zenflow
               end
             end
           end
-
         end
       end
-
     end
   end
 end

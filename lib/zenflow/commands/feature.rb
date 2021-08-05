@@ -1,6 +1,6 @@
 module Zenflow
+  # Feature Command
   class Feature < BranchCommand
-
     flow "feature"
 
     branch source: Zenflow::Config[:development_branch]
@@ -12,6 +12,5 @@ module Zenflow
       changelog :rotate
       version :patch
     end
-
   end
 end

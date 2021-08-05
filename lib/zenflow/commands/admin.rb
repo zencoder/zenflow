@@ -1,6 +1,6 @@
 module Zenflow
+  # Admin commands
   class Admin < Thor
-
     desc "list", "Show all configured hubs."
     def list
       Zenflow::Log("Recogized hubs")
@@ -15,8 +15,11 @@ module Zenflow
       Zenflow::Log("This project's hub is #{hub_label(Zenflow::Github::CURRENT.hub)}")
     end
 
-    desc "describe [HUB]", "Show configuration details for HUB (current project hub if none specified, or default if no current project)."
-    def describe(hub=nil)
+    desc(
+      "describe [HUB]",
+      "Show configuration details for HUB (current project hub if none specified, or default if no current project)."
+    )
+    def describe(hub = nil)
       hub = resolve_hub(hub)
 
       Zenflow::Log("Configuration details for hub #{hub_label(hub.hub)}")
@@ -27,8 +30,11 @@ module Zenflow
       ).to_s, indent: false, arrows: false, color: false)
     end
 
-    desc "config [HUB]", "Configure the specified HUB (current project hub if none specified, or default hub if no current project)."
-    def config(hub=nil)
+    desc(
+      "config [HUB]",
+      "Configure the specified HUB (current project hub if none specified, or default hub if no current project)."
+    )
+    def config(hub = nil)
       hub = resolve_hub(hub)
 
       Zenflow::Log("Configuring #{hub_label(hub.hub)}")
@@ -36,8 +42,11 @@ module Zenflow
       hub.config
     end
 
-    desc "authorize [HUB]", "Grab an auth token for HUB (current project hub if none specified, or default hub if no current project)."
-    def authorize(hub=nil)
+    desc(
+      "authorize [HUB]",
+      "Grab an auth token for HUB (current project hub if none specified, or default hub if no current project)."
+    )
+    def authorize(hub = nil)
       hub = resolve_hub(hub)
 
       Zenflow::Log("Authorizing #{hub_label(hub.hub)}")
@@ -45,26 +54,29 @@ module Zenflow
       hub.authorize
     end
 
-    no_commands {
-      def resolve_hub(hub=nil)
+    no_commands do
+      def resolve_hub(hub = nil)
         hub = Zenflow::Github.new(hub) if hub
-        hub ||= Zenflow::Github::CURRENT
+        hub || Zenflow::Github::CURRENT
       end
 
       def get_list_of_hubs
-        hub_config_parameters = Zenflow::Shell.run("git config --get-regexp zenflow\.hub\..*", silent: true).split("\n")
+        hub_config_parameters = Zenflow::Shell.run(
+          "git config --get-regexp zenflow\.hub\..*",
+          silent: true
+        ).split("\n")
 
         # unique, sorted, list of hubs with at least one valid config key
-        configured_hubs = hub_config_parameters.inject([]) { |hubs, parameter|
+        configured_hubs = hub_config_parameters.inject([]) do |hubs, parameter|
           if parameter =~ /^zenflow\.hub\.(.*)\.#{config_keys_regex}\s.*$/
-            hubs << [hub_label($1)]
+            hubs << [hub_label(Regexp.last_match(1))]
           end
 
           hubs
-        }.sort.uniq
+        end.sort.uniq
 
         [
-          ["#{hub_label(Zenflow::Github::DEFAULT_HUB)}"]
+          [hub_label(Zenflow::Github::DEFAULT_HUB).to_s]
         ] + configured_hubs
       end
 
@@ -81,8 +93,8 @@ module Zenflow
       end
 
       def config_keys_regex
-        "(?:#{Zenflow::Github::CONFIG_KEYS.map { |s| s.gsub('.','\\.') }.join('|')})"
+        "(?:#{Zenflow::Github::CONFIG_KEYS.map { |s| s.gsub('.', '\\.') }.join('|')})"
       end
-    }
+    end
   end
 end

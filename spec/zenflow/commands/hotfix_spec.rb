@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Zenflow::Hotfix do
-
   subject { Zenflow::Hotfix.new }
 
   it { expect(subject.flow).to eq("hotfix") }
@@ -11,5 +10,4 @@ describe Zenflow::Hotfix do
   it { expect(subject.changelog).to eq(:rotate) }
   it { expect(subject.version).to eq(:patch) }
   it { expect(subject.tag).to be_truthy }
-
 end

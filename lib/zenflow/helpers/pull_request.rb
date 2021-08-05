@@ -1,30 +1,30 @@
 module Zenflow
+  # Pull Request actions
   class PullRequest
-
     class << self
       def list
         response = Zenflow::GithubRequest.get("/pulls").parsed_response
-        response.map{ |pull| new(pull) }
+        response.map { |pull| new(pull) }
       end
 
       def find(number)
         new(Zenflow::GithubRequest.get("/pulls/#{number}").parsed_response["pull"])
       end
 
-      def find_by_ref(ref, options={})
+      def find_by_ref(ref, options = {})
         Zenflow::Log("Looking up pull request for #{ref}") unless options[:silent]
-        if list.any?
-          pull = list.detect do |p|
-            p["head"]["ref"] == ref
-          end
-          if pull
-            new(pull)
-          end
+        return unless list.any?
+
+        pull = list.detect do |p|
+          p["head"]["ref"] == ref
         end
+
+        new(pull) if pull
       end
 
       def find_by_ref!(ref)
-        if pull = find_by_ref(ref)
+        pull = find_by_ref(ref)
+        if pull
           new(pull)
         else
           Zenflow::Log("No open pull request was found for #{ref}", color: :red)
@@ -36,19 +36,19 @@ module Zenflow
         !!find_by_ref(ref)
       end
 
-      def create(options={})
-        response = Zenflow::GithubRequest.post("/pulls",
+      def create(options = {})
+        response = Zenflow::GithubRequest.post(
+          "/pulls",
           body: {
-            "base"  => options[:base],
-            "head"  => options[:head],
+            "base" => options[:base],
+            "head" => options[:head],
             "title" => options[:title],
-            "body"  => options[:body]
+            "body" => options[:body]
           }.to_json
         )
         new(response.parsed_response)
       end
     end
-
 
     attr_reader :pull
 
@@ -63,6 +63,5 @@ module Zenflow
     def [](key)
       pull[key.to_s]
     end
-
   end
 end

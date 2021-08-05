@@ -1,10 +1,10 @@
 module Zenflow
+  # Shell helper methods
   class Shell
     class << self
-
-      def failed!(x)
+      def failed!(status)
         @failed = true
-        @status = x
+        @status = status
       end
 
       def failed?
@@ -19,60 +19,57 @@ module Zenflow
         run(command)
       end
 
-      def run(command, options={})
+      def run(command, options = {})
         if options[:silent]
           Zenflow::LogToFile("$ #{command}\n")
         else
           Zenflow::Log("$ #{command}", arrows: false, color: :yellow)
         end
-        if !failed?
-          if options[:silent]
-            run_without_output(command, options)
-          else
-            run_with_output(command, options)
-          end
+        return if failed?
+
+        if options[:silent]
+          run_without_output(command, options)
+        else
+          run_with_output(command, options)
         end
       end
 
-      def run_with_output(command, options={})
+      def run_with_output(command, options = {})
         output = run_with_result_check(command, options)
-        if output.strip != ""
-          puts "#{output.strip}\n"
-        end
+        puts "#{output.strip}\n" if output.strip != ""
+
         output
       end
 
-      def run_without_output(command, options={})
+      def run_without_output(command, options = {})
         output = ""
-        log_stream(STDERR) do
+        log_stream($stderr) do
           output = run_with_result_check(command, options)
         end
         output
       end
 
-      def run_with_result_check(command, options={})
+      def run_with_result_check(command, options = {})
         output = `#{command}`
         Zenflow::LogToFile(output)
-        if last_exit_status.to_i > 0 && !options[:silent]
-          if output.strip != ""
-            puts "#{output.strip}\n"
-          end
+        if last_exit_status.to_i.positive? && !options[:silent]
+          puts "#{output.strip}\n" if output.strip != ""
+
           Zenflow::Log("Process aborted", color: :red)
           Zenflow::Log("Exit status: #{last_exit_status}", color: :red, indent: true)
           Zenflow::Log("You may need to run any following commands manually...", color: :red)
-          failed!($?.to_i)
+          failed!($CHILD_STATUS.to_i)
         end
         output
       end
 
       def last_exit_status
-        $?
+        $CHILD_STATUS
       end
 
       def shell_escape_for_single_quoting(string)
-        string.gsub("'","'\\\\''")
+        string.gsub("'", "'\\\\''")
       end
-
 
       # Stolen from ActiveSupport
       def log_stream(stream)
@@ -83,7 +80,6 @@ module Zenflow
       ensure
         stream.reopen(old_stream)
       end
-
     end
   end
 end

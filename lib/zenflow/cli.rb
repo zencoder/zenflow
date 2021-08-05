@@ -76,7 +76,7 @@ module Zenflow
       end
 
       def configure_github
-        if Zenflow::Github::CURRENT.is_default_hub?
+        if Zenflow::Github::CURRENT.default_hub?
           Zenflow::Github::CURRENT.set_user
         else
           Zenflow::Github::CURRENT.config

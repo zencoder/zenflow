@@ -1,6 +1,6 @@
 module Zenflow
+  # Branching command
   class BranchCommand < Thor
-
     include Zenflow::BranchCommands::Abort
     include Zenflow::BranchCommands::Branches
     include Zenflow::BranchCommands::Compare
@@ -43,24 +43,10 @@ module Zenflow
       end
 
       def delete_branches
-        Zenflow::Branch.delete_remote("#{flow}/#{branch_name}") if !options[:offline]
+        Zenflow::Branch.delete_remote("#{flow}/#{branch_name}") unless options[:offline]
         Zenflow::Branch.delete_local("#{flow}/#{branch_name}", force: true)
       end
-
     end
-
-
-  protected
-
-    #TODO: move the validation regex to a single place
-    def branch_name
-      @branch_name ||= Zenflow::Branch.current(flow) ||
-                       Zenflow::Ask("Name of the #{flow}:",
-                           required:      true,
-                           validate:      /^[-_0-9a-z]+$/,
-                           error_message: "Names can only contain dashes, underscores, 0-9, and a-z").downcase
-    end
-
 
     # DSL METHODS
 
@@ -71,27 +57,39 @@ module Zenflow
 
     def self.branch(branch = {})
       @branch ||= {}
-      branch.keys.each do |key|
+      branch.each_key do |key|
         @branch[key] ||= []
         @branch[key] << branch[key]
       end
       @branch
     end
 
-    def self.version(version=nil)
+    def self.version(version = nil)
       @version = version if version
       @version
     end
 
-    def self.changelog(changelog=nil)
+    def self.changelog(changelog = nil)
       @changelog = changelog if changelog
       @changelog
     end
 
-    def self.tag(tag=nil)
+    def self.tag(tag = nil)
       @tag = tag if tag
       @tag
     end
 
+    protected
+
+    # TODO: move the validation regex to a single place
+    def branch_name
+      @branch_name ||= Zenflow::Branch.current(flow) ||
+                       Zenflow::Ask(
+                         "Name of the #{flow}:",
+                         required: true,
+                         validate: /^[-_0-9a-z]+$/,
+                         error_message: "Names can only contain dashes, underscores, 0-9, and a-z"
+                       ).downcase
+    end
   end
 end
