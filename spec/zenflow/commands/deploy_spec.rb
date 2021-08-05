@@ -6,7 +6,7 @@ describe Zenflow::Deploy do
       it 'deploys with migrations' do
         expect(Zenflow::Branch).to receive(:push).with('some-server')
         expect(Zenflow).to receive(:Log).with("Deploying with migrations to some-server")
-        expect(Zenflow::Shell).to receive(:run).with("cap some-server deploy:migrations")
+        expect(Zenflow::Shell).to receive(:run).with("bundle exec cap some-server deploy:migrations")
         Zenflow::Deploy('some-server', migrations: true)
       end
     end
@@ -15,7 +15,7 @@ describe Zenflow::Deploy do
       it 'deploys without migrations' do
         expect(Zenflow::Branch).to receive(:push).with('some-server')
         expect(Zenflow).to receive(:Log).with("Deploying to some-server")
-        expect(Zenflow::Shell).to receive(:run).with("cap some-server deploy")
+        expect(Zenflow::Shell).to receive(:run).with("bundle exec cap some-server deploy")
         Zenflow::Deploy('some-server')
       end
     end

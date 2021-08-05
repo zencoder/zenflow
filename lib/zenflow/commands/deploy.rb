@@ -1,13 +1,16 @@
 # Main Zenflow Module
 module Zenflow
   def self.Deploy(to, opts = {})
+    bundle_exec = ''
+    bundle_exec = 'bundle exec ' if File.exist?('./Gemfile')
+
     Branch.push(to)
     if opts[:migrations]
       Log("Deploying with migrations to #{to}")
-      Shell["cap #{to} deploy:migrations"]
+      Shell["#{bundle_exec}cap #{to} deploy:migrations"]
     else
       Log("Deploying to #{to}")
-      Shell["cap #{to} deploy"]
+      Shell["#{bundle_exec}cap #{to} deploy"]
     end
   end
 
