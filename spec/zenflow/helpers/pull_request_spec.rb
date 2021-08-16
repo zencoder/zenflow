@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe Zenflow::PullRequest do
   before(:each){
-    Zenflow::Github.stub(:zenflow_token).and_return('zenflow-token')
-    Zenflow::Github.stub(:user).and_return('github-user')
+    allow(Zenflow::Github).to receive(:zenflow_token).and_return('zenflow-token')
+    allow(Zenflow::Github).to receive(:user).and_return('github-user')
     Zenflow::GithubRequest.base_uri 'https://api.github.com/repos/zencoder/zenflow-example'
   }
 
@@ -19,7 +19,7 @@ describe Zenflow::PullRequest do
   end
 
   describe '.find_by_ref' do
-    before(:each){Zenflow.should_receive(:Log).with(Regexp.new('Looking up'))}
+    before(:each){expect(Zenflow).to receive(:Log).with(Regexp.new('Looking up'))}
 
     context 'existing ref', vcr: { cassette_name: "pull request by ref" } do
       let(:pull_request){Zenflow::PullRequest.find_by_ref('feature/example')}
@@ -33,7 +33,7 @@ describe Zenflow::PullRequest do
   end
 
   describe '.find_by_ref!' do
-    before(:each){Zenflow.should_receive(:Log).with(Regexp.new('Looking up'))}
+    before(:each){expect(Zenflow).to receive(:Log).with(Regexp.new('Looking up'))}
 
     context 'existing ref', vcr: { cassette_name: "pull request by ref" } do
       let(:pull_request){Zenflow::PullRequest.find_by_ref!('feature/example')}
@@ -44,21 +44,21 @@ describe Zenflow::PullRequest do
       let(:ref){'feature/foo'}
 
       it 'logs the failure' do
-        Zenflow.should_receive(:Log).with(Regexp.new(ref), color: :red)
+        expect(Zenflow).to receive(:Log).with(Regexp.new(ref), color: :red)
         expect{Zenflow::PullRequest.find_by_ref!(ref)}.to raise_error(SystemExit)
       end
     end
   end
 
   describe '.exist?' do
-    before(:each){Zenflow.should_receive(:Log).with(Regexp.new('Looking up'))}
+    before(:each){expect(Zenflow).to receive(:Log).with(Regexp.new('Looking up'))}
 
     context 'a valid pull', vcr: { cassette_name: "existing pull request" } do
-      it{expect(Zenflow::PullRequest.exist?('feature/example')).to be_true}
+      it{expect(Zenflow::PullRequest.exist?('feature/example')).to be true}
     end
 
     context 'an invalid pull', vcr: { cassette_name: "unexisting pull request" } do
-      it{expect(Zenflow::PullRequest.exist?('feature/foo')).to be_false}
+      it{expect(Zenflow::PullRequest.exist?('feature/foo')).to be false}
     end
   end
 
@@ -90,12 +90,12 @@ describe Zenflow::PullRequest do
     describe '#valid?' do
       context 'good request', vcr: { cassette_name: "create pull request" } do
         let(:request){Zenflow::PullRequest.create(good_request_options)}
-        it{expect(request.valid?).to be_true}
+        it{expect(request.valid?).to be_truthy}
       end
 
       context 'bad request', vcr: { cassette_name: "create bad pull request" } do
         let(:request){Zenflow::PullRequest.create(bad_request_options)}
-        it{expect(request.valid?).to be_false}
+        it{expect(request.valid?).to be_falsey}
       end
     end
 

@@ -4,35 +4,36 @@ describe Zenflow do
 
   describe "prompt" do
     before do
-      Zenflow.stub(:LogToFile)
-      $stdin.stub(:gets).and_return("good")
+      allow(Zenflow).to receive(:LogToFile)
+      allow($stdin).to receive(:gets).and_return("good")
     end
 
     it "displays a prompt" do
-      Zenflow::Query.should_receive(:print).with(">> How are you? ")
+      allow(Zenflow::Query).to receive(:print).with(">> How are you? ")
       Zenflow::Ask("How are you?")
     end
 
     it "displays a prompt with options" do
-      Zenflow::Query.should_receive(:print).with(">> How are you? [good/bad] ")
+      allow(Zenflow::Query).to receive(:print).with(">> How are you? [good/bad] ")
       Zenflow::Ask("How are you?", options: ["good", "bad"])
     end
 
     it "displays a prompt with default" do
-      Zenflow::Query.should_receive(:print).with(">> How are you? [good] ")
+      allow(Zenflow::Query).to receive(:print).with(">> How are you? [good] ")
       Zenflow::Ask("How are you?", default: "good")
     end
 
     it "displays a prompt with options and default" do
-      Zenflow::Query.should_receive(:print).with(">> How are you? [good/bad] ")
+      allow(Zenflow::Query).to receive(:print).with(">> How are you? [good/bad] ")
       Zenflow::Ask("How are you?", options: ["good", "bad"], default: "good")
     end
 
     context "on error" do
       before(:each) do
-        Zenflow::Query.should_receive(:ask_question).at_least(:once).and_return('foo')
-        Zenflow::Query.should_receive(:handle_response).once.and_raise('something failed')
-        $stdout.should_receive(:puts).once
+        expect(Zenflow::Query).to receive(:ask_question).at_least(:once).and_return('foo')
+        expect(Zenflow::Query).to receive(:handle_response).once.and_raise('something failed')
+        allow($stdin).to receive(:gets).and_return('n') # Accounting for retry mechanic
+        expect($stdout).to receive(:puts).twice # With Retry there is a new puts
       end
 
       it{expect{Zenflow::Ask('howdy', response: 'foo', error_message: 'something failed')}.to raise_error(/something failed/)}
@@ -40,10 +41,10 @@ describe Zenflow do
 
     context "on interrupt" do
       before(:each) do
-        Zenflow::Query.should_receive(:ask_question).once.and_return('foo')
-        Zenflow::Query.should_receive(:handle_response).once.and_raise(Interrupt)
-        Zenflow.should_receive(:LogToFile)
-        $stdout.should_receive(:puts).at_least(:once)
+        allow(Zenflow::Query).to receive(:ask_question).once.and_return('foo')
+        expect(Zenflow::Query).to receive(:handle_response).once.and_raise(Interrupt)
+        expect(Zenflow).to receive(:LogToFile)
+        allow($stdout).to receive(:puts).at_least(:once)
       end
 
       it{expect{Zenflow::Ask('howdy')}.to raise_error(SystemExit)}
@@ -60,7 +61,7 @@ describe Zenflow do
 
       context 'with a response' do
         before(:each) do
-          Zenflow::Query.should_receive(:prompt_for_answer).with('foo?',{}).and_return('bar')
+          expect(Zenflow::Query).to receive(:prompt_for_answer).with('foo?',{}).and_return('bar')
         end
 
         it{expect(Zenflow::Query.ask_question('foo?')).to eq('bar')}
@@ -69,8 +70,8 @@ describe Zenflow do
 
     describe '.prompt_for_answer' do
       before(:each) do
-        Zenflow::Query.should_receive(:print).with(">> Hi? [yes/bye] ")
-        STDIN.should_receive(:gets).and_return("bye")
+        expect(Zenflow::Query).to receive(:print).with(">> Hi? [yes/bye] ")
+        allow(STDIN).to receive(:gets).and_return("bye")
       end
 
       it{expect(
@@ -82,12 +83,12 @@ describe Zenflow do
 
     describe '.handle_response' do
       context 'invalid response' do
-        before(:each){Zenflow::Query.should_receive(:valid_response?).and_return(false)}
-        it{expect{Zenflow::Query.handle_response('foo')}.to raise_error}
+        before(:each){expect(Zenflow::Query).to receive(:valid_response?).and_return(false)}
+        it{expect{Zenflow::Query.handle_response('foo')}.to raise_error(/is not a valid response/)}
       end
 
       context 'valid response' do
-        before(:each){Zenflow::Query.should_receive(:valid_response?).and_return(true)}
+        before(:each){expect(Zenflow::Query).to receive(:valid_response?).and_return(true)}
         it{expect(Zenflow::Query.handle_response('foo')).to eq('foo')}
         it{expect(Zenflow::Query.handle_response('Y')).to eq('y')}
         it{expect(Zenflow::Query.handle_response('N')).to eq('n')}

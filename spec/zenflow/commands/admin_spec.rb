@@ -5,7 +5,7 @@ describe Zenflow::Admin do
 
   describe '.list' do
     it 'lists recognized hubs in git config' do
-      Zenflow::Shell.should_receive(:run).with("git config --get-regexp zenflow\.hub\..*", silent: true).and_return(
+      expect(Zenflow::Shell).to receive(:run).with("git config --get-regexp zenflow\.hub\..*", silent: true).and_return(
 <<EOS
 zenflow.hub.hub.1.api.base.url api_base_url
 zenflow.hub.yet.another.hub.github.user github_user
@@ -15,8 +15,8 @@ zenflow.hub.one.more.hub.user.agent.base user_agent_base
 zenflow.hub.bad.token.hub.goobers user_agent_base
 EOS
       )
-      Zenflow.should_receive(:Log).with("Recogized hubs")
-      Terminal::Table.should_receive(:new).with(
+      expect(Zenflow).to receive(:Log).with("Recogized hubs")
+      expect(Terminal::Table).to receive(:new).with(
         headings: ["Hub"],
         rows: [
           ["github.com [default] [current]"],
@@ -26,14 +26,14 @@ EOS
           ["yet.another.hub"]
         ]
       ).and_return("log-data")
-      Zenflow.should_receive(:Log).with("log-data", indent: false, arrows: false, color: false)
+      expect(Zenflow).to receive(:Log).with("log-data", indent: false, arrows: false, color: false)
       admin.list
     end
   end
 
   describe '.current' do
     it 'logs the hubs of the current project' do
-      Zenflow.should_receive(:Log).with("This project's hub is github.com [default] [current]")
+      expect(Zenflow).to receive(:Log).with("This project's hub is github.com [default] [current]")
       admin.current
     end
   end
@@ -41,15 +41,15 @@ EOS
   describe '.describe' do
     it 'displays config parameters for the hub' do
       hub = Zenflow::Github.new('my-hub')
-      admin.should_receive(:resolve_hub).with('my-hub').and_return(hub)
-      admin.should_receive(:hub_label).with('my-hub').and_return('my-hub')
-      Zenflow.should_receive(:Log).with("Configuration details for hub my-hub")
-      hub.should_receive(:describe).and_return([
+      expect(admin).to receive(:resolve_hub).with('my-hub').and_return(hub)
+      expect(admin).to receive(:hub_label).with('my-hub').and_return('my-hub')
+      expect(Zenflow).to receive(:Log).with("Configuration details for hub my-hub")
+      expect(hub).to receive(:describe).and_return([
         ["Parameter 1", "Github Config Key 1", "Github Conifg Value 1", "Value 1"],
         ["Parameter 2", "Github Config Key 2", "Github Conifg Value 2", "Value 2"],
         ["Parameter 3", "Github Config Key 3", "Github Conifg Value 3", "Value 3"]
       ])
-      Terminal::Table.should_receive(:new).with(
+      expect(Terminal::Table).to receive(:new).with(
         headings: ["Parameter", "Github Config Key", "Github Config Value", "Value (with system defaults)"],
         rows: [
           ["Parameter 1", "Github Config Key 1", "Github Conifg Value 1", "Value 1"],
@@ -57,7 +57,7 @@ EOS
           ["Parameter 3", "Github Config Key 3", "Github Conifg Value 3", "Value 3"]
         ]
       ).and_return("log-data")
-      Zenflow.should_receive(:Log).with("log-data", {:indent=>false, :arrows=>false, :color=>false})
+      expect(Zenflow).to receive(:Log).with("log-data", {:indent=>false, :arrows=>false, :color=>false})
       admin.describe('my-hub')
     end
   end
@@ -66,19 +66,19 @@ EOS
     context 'when called with a hub parameter' do
       it 'calls the individual parameter config methods' do
         myhub = Zenflow::Github.new('my-hub')
-        Zenflow::Github.should_receive(:new).with('my-hub').and_return(myhub)
-        admin.should_receive(:hub_label).with('my-hub').and_return('my-hub')
-        Zenflow.should_receive(:Log).with("Configuring my-hub")
-        myhub.should_receive(:config)
+        expect(Zenflow::Github).to receive(:new).with('my-hub').and_return(myhub)
+        expect(admin).to receive(:hub_label).with('my-hub').and_return('my-hub')
+        expect(Zenflow).to receive(:Log).with("Configuring my-hub")
+        expect(myhub).to receive(:config)
         admin.config('my-hub')
       end
     end
 
     context 'when called with no hub parameter' do
       it 'calls the individual parameter config methods' do
-        admin.should_receive(:hub_label).with('github.com').and_return('github.com')
-        Zenflow.should_receive(:Log).with("Configuring github.com")
-        Zenflow::Github::CURRENT.should_receive(:config)
+        expect(admin).to receive(:hub_label).with('github.com').and_return('github.com')
+        expect(Zenflow).to receive(:Log).with("Configuring github.com")
+        expect(Zenflow::Github::CURRENT).to receive(:config)
         admin.config
       end
     end
@@ -88,19 +88,19 @@ EOS
     context 'when called with a hub parameter' do
       it 'call the hubs authorize method' do
         myhub = Zenflow::Github.new('my-hub')
-        Zenflow::Github.should_receive(:new).with('my-hub').and_return(myhub)
-        admin.should_receive(:hub_label).with('my-hub').and_return('my-hub')
-        Zenflow.should_receive(:Log).with("Authorizing my-hub")
-        myhub.should_receive(:authorize)
+        expect(Zenflow::Github).to receive(:new).with('my-hub').and_return(myhub)
+        expect(admin).to receive(:hub_label).with('my-hub').and_return('my-hub')
+        expect(Zenflow).to receive(:Log).with("Authorizing my-hub")
+        expect(myhub).to receive(:authorize)
         admin.authorize('my-hub')
       end
     end
 
     context 'when called with no hub parameter' do
       it 'call the current hubs authorize method' do
-        admin.should_receive(:hub_label).with('github.com').and_return('github.com')
-        Zenflow.should_receive(:Log).with("Authorizing github.com")
-        Zenflow::Github::CURRENT.should_receive(:authorize)
+        expect(admin).to receive(:hub_label).with('github.com').and_return('github.com')
+        expect(Zenflow).to receive(:Log).with("Authorizing github.com")
+        expect(Zenflow::Github::CURRENT).to receive(:authorize)
         admin.authorize
       end
     end
