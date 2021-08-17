@@ -9,22 +9,22 @@ describe Zenflow do
     end
 
     it "displays a prompt" do
-      allow(Zenflow::Query).to receive(:print).with(">> How are you? ")
+      expect(Zenflow::Query).to receive(:print).with(">> How are you? ")
       Zenflow::Ask("How are you?")
     end
 
     it "displays a prompt with options" do
-      allow(Zenflow::Query).to receive(:print).with(">> How are you? [good/bad] ")
+      expect(Zenflow::Query).to receive(:print).with(">> How are you? [good/bad] ")
       Zenflow::Ask("How are you?", options: ["good", "bad"])
     end
 
     it "displays a prompt with default" do
-      allow(Zenflow::Query).to receive(:print).with(">> How are you? [good] ")
+      expect(Zenflow::Query).to receive(:print).with(">> How are you? [good] ")
       Zenflow::Ask("How are you?", default: "good")
     end
 
     it "displays a prompt with options and default" do
-      allow(Zenflow::Query).to receive(:print).with(">> How are you? [good/bad] ")
+      expect(Zenflow::Query).to receive(:print).with(">> How are you? [good/bad] ")
       Zenflow::Ask("How are you?", options: ["good", "bad"], default: "good")
     end
 
@@ -41,10 +41,10 @@ describe Zenflow do
 
     context "on interrupt" do
       before(:each) do
-        allow(Zenflow::Query).to receive(:ask_question).once.and_return('foo')
+        expect(Zenflow::Query).to receive(:ask_question).once.and_return('foo')
         expect(Zenflow::Query).to receive(:handle_response).once.and_raise(Interrupt)
         expect(Zenflow).to receive(:LogToFile)
-        allow($stdout).to receive(:puts).at_least(:once)
+        expect($stdout).to receive(:puts).at_least(:once)
       end
 
       it{expect{Zenflow::Ask('howdy')}.to raise_error(SystemExit)}
@@ -71,7 +71,7 @@ describe Zenflow do
     describe '.prompt_for_answer' do
       before(:each) do
         expect(Zenflow::Query).to receive(:print).with(">> Hi? [yes/bye] ")
-        allow(STDIN).to receive(:gets).and_return("bye")
+        expect(STDIN).to receive(:gets).and_return("bye")
       end
 
       it{expect(
