@@ -34,6 +34,20 @@ To get started make sure you're in the root directory of the repository you want
 
 and answer the questions, then you're ready to start using Zenflow!
 
+## Add a Zenflow GitHub token to enable interaction with GitHub
+
+Zenflow will perform some actions with GitHub (opening pull requests, for example), if it is able to access your GitHub account. In order for these behaviors to work, you must configure a GitHub Token:
+
+Visit https://github.com/settings/tokens to create a token for Zenflow (for this purpose, "no expiration" is appropriate).
+
+Once you have your token, you can add it to your `~/.github`, e.g.:
+
+```
+[zenflow]
+	user = yourgithandle
+	token = <snip>
+```
+
 ### <a name="usage"></a> Usage
 
 #### Features
