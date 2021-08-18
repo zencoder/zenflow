@@ -7,6 +7,8 @@ module Zenflow
 
           desc "deploy [OPTIONS]", "Deploy"
           option :migrations, type: :boolean, desc: "Run migrations during deployment", aliases: :m
+          option :trace, type: :boolean, desc: "Run capistrano trace option", aliases: :t
+
           def deploy
             branch_name
             if !Zenflow::Config[:deployable]
