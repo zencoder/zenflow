@@ -6,11 +6,23 @@ module Zenflow
     end
 
     def self.hub
-      (url && url[/\w+@(.*?):.*?\.git/, 1]) || nil
+      return unless url
+
+      if url[/git@/]
+        url[/\w+@(.*?):.*?\.git/, 1]
+      else
+        url[%r{https://([^/]+)/(.*?)/(.*?)\.git}, 1]
+      end
     end
 
     def self.slug
-      (url && url[/:(.*?)\.git/, 1]) || nil
+      return unless url
+
+      if url[/git@/]
+        url[/:(.*?)\.git/, 1]
+      else
+        url[%r{https://github.com/(.*?)\.git}, 1]
+      end
     end
   end
 end
