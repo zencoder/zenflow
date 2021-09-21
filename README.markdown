@@ -40,7 +40,7 @@ Zenflow will perform some actions with GitHub (opening pull requests, for exampl
 
 Visit https://github.com/settings/tokens to create a token for Zenflow (for this purpose, "no expiration" is appropriate).
 
-Once you have your token, you can add it to your `~/.github`, e.g.:
+Once you have your token, you can add it to your `~/.gitconfig`, e.g.:
 
 ```
 [zenflow]
