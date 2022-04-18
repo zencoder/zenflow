@@ -11,10 +11,12 @@ module Zenflow
 
           def deploy
             branch_name
+            # FIXME: (2014-12-03) jonk => this needs to be added to the init script
             if !Zenflow::Config[:deployable]
               Zenflow::Log("This project is not deployable right now", color: :red)
               exit(1)
             end
+            # FIXME: (2014-12-03) jonk => why is it deploying to all branches at the same time?
             all_branches(:deploy).each do |branch|
               Zenflow::Branch.update(branch)
               Zenflow::Branch.merge("#{flow}/#{branch_name}")

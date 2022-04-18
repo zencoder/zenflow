@@ -38,13 +38,15 @@ module Zenflow
 
             def handle_invalid_pull_request(pull)
               Zenflow::Log("There was a problem creating the pull request:", color: :red)
+              # FIXME: (2014-12-03) jonk => need to check for the existence of a production branch and give that as an error
               if pull["errors"]
                 pull["errors"].each do |error|
-                  Zenflow::Log("* #{error['message'].gsub(/^base\s*/,'')}", indent: true, color: :red)
+                  Zenflow::Log("* #{error['message'].to_s.gsub(/^base\s*/,'')}", indent: true, color: :red)
                 end
               elsif pull["message"]
                 Zenflow::Log("* #{pull['message']}", indent: true, color: :red)
               else
+                # FIXME: (2014-12-03) jonk => this doesn't get hit when it should
                 Zenflow::Log(" * unexpected failure, both 'errors' and 'message' were empty in the response")
               end
             end

@@ -5,7 +5,7 @@ module Zenflow
 
     branch source: Zenflow::Config[:development_branch]
     branch deploy: Zenflow::Config[:staging_branch]
-    branch deploy: Zenflow::Config[:qa_branch]
+    branch deploy: Zenflow::Config[:qa_branch] unless Zenflow::Config[:qa_branch] == false
     branch destination: Zenflow::Config[:release_branch]
 
     changelog :rotate
