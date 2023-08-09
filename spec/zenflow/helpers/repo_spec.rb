@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Zenflow::Repo do
   describe '.hub' do
     before(:each){  
-      Zenflow::Repo.should_receive(:url).twice.and_return("git@github.com:zencoder/zenflow.git")
+      expect(Zenflow::Repo).to receive(:url).twice.and_return("git@github.com:zencoder/zenflow.git")
     }
 
     it 'selects the hub from the git remote -v url' do
@@ -13,7 +13,7 @@ describe Zenflow::Repo do
 
   describe '.slug' do
     before(:each){  
-      Zenflow::Repo.should_receive(:url).twice.and_return("git@github.com:zencoder/zenflow.git")
+      expect(Zenflow::Repo).to receive(:url).twice.and_return("git@github.com:zencoder/zenflow.git")
     }
 
     it 'selects the repo slug from the git remote -v url' do

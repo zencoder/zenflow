@@ -6,7 +6,14 @@ module Zenflow
   rescue StandardError => e
     puts e.message
     options[:response] = nil
-    retry
+
+    print '>> Retry? [Y/n]'
+    retry_response = $stdin.gets.chomp
+    retry if ['y', 'yes', ''].include? retry_response.downcase
+
+    puts "-----> Exiting...".cyan
+    LogToFile("-----> Received bad response with no retry. Exiting...")
+    raise e
   rescue Interrupt => e
     puts
     puts "-----> Exiting...".cyan

@@ -21,15 +21,15 @@ describe Zenflow::Help do
   context "#unknown_command" do
     describe "when the command is missing" do
       it "logs the error and exits" do
-        Zenflow.should_receive(:Log).with "Missing command", :color => :red
-        lambda {Zenflow::Help.new.unknown_command}.should raise_error(SystemExit)
+        expect(Zenflow).to receive(:Log).with "Missing command", :color => :red
+        expect(lambda {Zenflow::Help.new.unknown_command}).to raise_error(SystemExit)
       end
     end
 
     describe "when the command is present" do
       it "logs the error and exits" do
-        Zenflow.should_receive(:Log).with "Unknown command \"test-unknown_command\"", :color => :red
-        lambda {Zenflow::Help.new(:command => 'test-unknown_command').unknown_command}.should raise_error(SystemExit)
+        expect(Zenflow).to receive(:Log).with "Unknown command \"test-unknown_command\"", :color => :red
+        expect(lambda {Zenflow::Help.new(:command => 'test-unknown_command').unknown_command}).to raise_error(SystemExit)
       end
     end
   end
